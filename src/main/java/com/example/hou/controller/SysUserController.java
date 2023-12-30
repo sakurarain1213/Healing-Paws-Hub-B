@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 /*
 
 登录接口   返回token
+localhost:8080/sysUser/login
 47.103.113.75:8080/sysUser/login
 {
     "userName":"888",
@@ -23,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 直接退出会失败 需要先在header里加入token 和具体值  不需要body参数
 47.103.113.75:8080/sysUser/logout
-
-
 
  */
 

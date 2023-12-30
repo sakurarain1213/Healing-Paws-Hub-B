@@ -3,6 +3,7 @@ package com.example.hou.config;
 import com.example.hou.service.impl.AuthenticationEntryPointImpl;
 import com.example.hou.util.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    //@Autowired
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -66,7 +68,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //开启权限拦截
                 .authorizeRequests()
                 // 允许登录接口匿名访问
-                .antMatchers("/sysUser/login", "/sysUser/test","/test/**").anonymous()
+                .antMatchers("/sysUser/login", "/sysUser/test",
+
+                        "/test/chat",
+                        "/test/**").anonymous()
+
+
                 .antMatchers("/**.html","/js/**","/css/**","/img/**").permitAll()//放行静态资源
 
 

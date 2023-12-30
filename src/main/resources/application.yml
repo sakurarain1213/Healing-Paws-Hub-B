@@ -68,3 +68,9 @@ mybatis-plus:
 
  #jwt 暂时不自定义配置
 
+
+#文心一言模型配置
+gear:
+  wenxin:
+    api-key: 'Ov7A87aDXw1Fbf0Zp6DOE2s2'
+    secret-key: 'kXNj66TYV2zYnKOTaKXL8nGDWW22OEQd'
