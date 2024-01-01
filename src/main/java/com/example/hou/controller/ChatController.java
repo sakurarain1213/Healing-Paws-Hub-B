@@ -15,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 
 import javax.annotation.Resource;
 import javax.annotation.Resources;
@@ -59,6 +62,19 @@ localhost:8080/test/chat
 localhost:8080/test/chats
  有记忆功能
 
+
+localhost:8080/test/stream/chat
+ 流式返回   逐字返回  适合做动态效果   但是要在form-data  里用msg 和值   发送
+只需要msg
+
+
+
+ 长对话流返回
+在form-data  传递两个参数
+msgUid:自己定义  随便取   可以是用户+对话编号
+msg
+
+
  */
 
 
@@ -81,11 +97,23 @@ public class ChatController {
             return ernieBotClient.chatSingle(msg);
     }
 
-    // 连续对话
-    @PostMapping("/chats")
-    public Mono<ChatResponse> chatCont(String msg) {
+    // 连续对话  一次性返回
+    @PostMapping(value = "/chats", produces = MediaType.APPLICATION_JSON_VALUE)//string 变 json的注释
+    public Mono<String> chatCont(String msg) {       //注意这里改了返回值的类型    如果要回复  参见/chat
+
+        //需要对话的ID   后续封装成函数即可   id由用户名+编号  决定
         String chatUID = "test-user-1001";
-        return ernieBotClient.chatCont(msg, chatUID);
+        //return ernieBotClient.chatCont(msg, chatUID);
+        //现在返回的json太冗余   精简处理
+        // Mono<ChatResponse> 是响应式编程模型  Mono 是一个表示单个异步值的容器
+        Mono<ChatResponse> responseMono = ernieBotClient.chatCont(msg, chatUID);
+
+        return responseMono.map(chatResponse -> {
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("id", chatResponse.getId());
+            jsonObj.put("result", chatResponse.getResult());
+            return jsonObj.toString();
+        });
     }
 
     // 流式返回,单次对话
