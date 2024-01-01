@@ -36,7 +36,6 @@ AppID	API Key                              Secret Key
 public class GPT3Util {
 
 
-
     public String chat(String prompt){
 
         return "暂时先不写";

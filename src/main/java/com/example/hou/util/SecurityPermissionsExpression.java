@@ -9,9 +9,13 @@ import java.util.List;
 
 
 //自定义security权限校验方法
+
+//有点问题  先不用
 @Component("syex")
 public class SecurityPermissionsExpression {
     public boolean hasAuthority(String authority){
+
+
         //获取当前用户的权限
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LogUser loginUser = (LogUser) authentication.getPrincipal();
@@ -20,7 +24,25 @@ public class SecurityPermissionsExpression {
         //重大debug，loginUser的 permissions=[] authorities=[] 会找不到 权限
         //这边根据数据库临时补写join查询
         List<String> permissions = loginUser.getPermissions();
+        //-------------------
+        System.out.println( permissions);
         //判断用户权限集合中是否存在authority
         return permissions.contains(authority);
+
+
+        /*
+                // 获取当前用户的权限
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            //System.out.println( "noooooooooooooo");
+            return false;
+        }
+        System.out.println( authentication+"noooooooooooooo");
+        // 检查是否具有指定的权限
+        return authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority));
+        */
     }
+
 }
+

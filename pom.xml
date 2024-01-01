@@ -140,11 +140,11 @@
             <version>1.0.2</version>
         </dependency>-->
 
-        <!--处理json的阿里巴巴包 -->
+        <!--处理json的阿里巴巴包   逆天版本问题  不能用太新的version  不然 redis配置类的序列化会失败-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.62</version>
+            <version>1.2.49</version>
         </dependency>
 
         <!--语音转文字功能的包 -->

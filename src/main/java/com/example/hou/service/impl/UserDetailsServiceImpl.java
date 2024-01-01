@@ -21,11 +21,11 @@ import java.util.Objects;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     //接口是不能够直接创建Bean（mapper）的，实际上项目运行时SpringBoot底层使用了动态代理创建了这个Bean
-    //这里不够严谨   就修饰一下@Autowired  用  (required=false)
-    @Autowired (required=false)
+    //这里不够严谨   就修饰一下@Autowired  用  (required=false)  但是这样掩耳盗铃  还是找不到
+    @Autowired
     private SysPermissionMapper sysPermissionMapper;
 
-    @Autowired (required=false)
+    @Autowired
     private SysUserMapper userMapper;
 
 
@@ -34,6 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         //需要构造出 org.springframework.security.core.userdetails.User 对象并返回
+        //这整个方法在 登录时调用  并存信息到SecurityContext 中   供后续鉴权
 
         System.out.println("用户名："+username);
         if (username == null || "".equals(username)) {
@@ -63,6 +64,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         try {
             // 获取该用户所拥有的权限
             List<SysPermission> sysPermissions = sysPermissionMapper.selectPermissionList(user.getUserId());
+            //System.out.println( sysPermissions+"is   get？？？？？？？？？？？？？？？   no");
+            //重大debug
+
             if (sysPermissions != null) {
                 sysPermissions.stream()
                         .filter(Objects::nonNull)
@@ -71,12 +75,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         .filter(code -> !code.trim().isEmpty())
                         .forEach(permissionsList::add);
             }
+            //---------------- 已经拿到
+            //System.out.println( sysPermissions+"111111111111111111111111111111");
+
+
         } catch (Exception e) {
             // 日志记录异常，处理或抛出
             throw new RuntimeException("获取用户权限时发生异常", e);
         }
 
-        //返回用户信息
+        //返回用户信息    ok
+
+        //System.out.println(permissionsList+"111111111111111111111111111111");
         return new LogUser(user,permissionsList);
 
     }

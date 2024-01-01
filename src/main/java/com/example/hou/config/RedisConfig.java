@@ -1,5 +1,6 @@
 package com.example.hou.config;
 
+import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -24,6 +25,36 @@ public class RedisConfig {
     @Bean  //一定不要忘记注入
     @SuppressWarnings("all")
     //解决redis可视化乱码问题，方便调试查找问题
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        // 为了自己开发方便，一般使用<String,Object>
+        RedisTemplate<String, Object> template = new RedisTemplate();
+        template.setConnectionFactory(redisConnectionFactory);
+        // json的序列化配置
+        GenericFastJsonRedisSerializer serializer = new GenericFastJsonRedisSerializer();
+        template.setDefaultSerializer(serializer);
+
+        // string的序列化配置
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        // key采用string序列化方式
+        template.setKeySerializer(stringRedisSerializer);
+        // hash的key也采用string的序列化方式
+        template.setHashKeySerializer(stringRedisSerializer);
+
+        // value采用FastJson的序列化方式
+        template.setValueSerializer(serializer);
+        // hash的value也采用FastJson的序列化方式
+        template.setHashValueSerializer(serializer);
+
+        template.afterPropertiesSet();
+        return template;
+    }
+
+
+
+
+/*
+
+官方博客版本
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
@@ -53,7 +84,12 @@ public class RedisConfig {
 
 
 
-/*
+
+
+
+
+
+
    可替代方案
  public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
@@ -75,6 +111,44 @@ public class RedisConfig {
         template.afterPropertiesSet();
         return template;
     }
+
+
+
+
+fastjson版本
+@Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        // 为了自己开发方便，一般使用<String,Object>
+        RedisTemplate<String, Object> template = new RedisTemplate();
+        template.setConnectionFactory(redisConnectionFactory);
+        // json的序列化配置
+        GenericFastJsonRedisSerializer serializer = new GenericFastJsonRedisSerializer();
+        template.setDefaultSerializer(serializer);
+
+        // string的序列化配置
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        // key采用string序列化方式
+        template.setKeySerializer(stringRedisSerializer);
+        // hash的key也采用string的序列化方式
+        template.setHashKeySerializer(stringRedisSerializer);
+
+        // value采用FastJson的序列化方式
+        template.setValueSerializer(serializer);
+        // hash的value也采用FastJson的序列化方式
+        template.setHashValueSerializer(serializer);
+
+        template.afterPropertiesSet();
+        return template;
+    }
+}
+————————————————
+版权声明：本文为CSDN博主「sunyiwenlong」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_41542723/article/details/125809173
+
+
+
+
+
 
 */
 

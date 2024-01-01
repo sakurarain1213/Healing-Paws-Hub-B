@@ -72,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                         "/test/chat",
                         "/test/**").anonymous()
-
+                //换成.permitAll()?
 
                 .antMatchers("/**.html","/js/**","/css/**","/img/**").permitAll()//放行静态资源
 

@@ -6,6 +6,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/*
+
+localhost:8080/testPreAuthorize/hello
+{
+
+}
+
+
+
+*/
+
 
 //在controller层控制用户能访问的接口权限
 @RestController
@@ -18,7 +29,6 @@ public class TestPreAuthorizeController {
     //@PreAuthorize("hasAuthority('sys:queryUser')") //这是没有自定义权限校验方法的默认写法
     @PreAuthorize("@syex.hasAuthority('sys:queryUser')")
     public String hello(){
-
         return "hello";
     }
 
@@ -26,7 +36,6 @@ public class TestPreAuthorizeController {
     // 只有sys:queryUser2 权限才能访问
     @PreAuthorize("@syex.hasAuthority('sys:queryUser2')")
     public String hello2(){
-
         return "hello2";
     }
 }
