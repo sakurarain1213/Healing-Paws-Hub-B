@@ -23,7 +23,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     //复杂查询建议还是用sql和 @Select    不要写mp的wrapper了
     //重大debug   select已经找到 Row: 1, sys:queryUser, 查询用户, /getUser   但是存到 List<SysPermission>
     //的时候存在映射问题  这边强制映射一下结果
-    //但是加了这个有神奇恶性问题  登录后会影响到鉴权找不到token   其它功能不受影响
+    //但是加了这个有序列化问题  现在已经通过更改fastjson版本修复
     @Results({
             @Result(property = "permissionId", column = "permission_id"),
             @Result(property = "permissionCode", column = "permission_code"),

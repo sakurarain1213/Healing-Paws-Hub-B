@@ -15,7 +15,6 @@ public interface SecurityUserService {
 
     Result logOut();
 
-
-
+    Result update(LoginUserParam user);
 
 }

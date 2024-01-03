@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 关键实现    获取Headers上的token，我命名为token
         String token = request.getHeader("token");
 
-        System.out.println("doFilterInternal:已经生成token:::"+token);
+        //System.out.println("doFilterInternal:已经生成token:::"+token);
 
 
         if (StringUtils.isEmpty(token)) {

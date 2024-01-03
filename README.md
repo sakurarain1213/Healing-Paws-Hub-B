@@ -27,6 +27,7 @@ Xftp
 
 
 公网ip  47.103.113.75
+域名绑定  hsinchien.top
 
 jdk目录
 /usr/java/jdk1.8.0_371/bin/java

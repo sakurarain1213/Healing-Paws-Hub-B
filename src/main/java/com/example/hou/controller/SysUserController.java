@@ -25,6 +25,17 @@ localhost:8080/sysUser/login
 直接退出会失败 需要先在header里加入token 和具体值  不需要body参数
 47.103.113.75:8080/sysUser/logout
 
+
+
+localhost:8080/sysUser/update
+47.103.113.75:8080/sysUser/update
+{
+    "userName":"888",
+    "password":"123"
+}
+
+
+
  */
 
 
@@ -44,5 +55,13 @@ public class SysUserController {
     public Result logOut() {
         return logService.logOut();
     }
+
+    @PostMapping("/update")
+    public Result up(@RequestBody LoginUserParam param) {
+        return logService.update(param);
+    }
+
+
+
 
 }
