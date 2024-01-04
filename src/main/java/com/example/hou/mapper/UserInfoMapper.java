@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+@Mapper
 //@MapperScan("com.baomidou.mybatisplus.samples.quickstart.mapper")
 
 

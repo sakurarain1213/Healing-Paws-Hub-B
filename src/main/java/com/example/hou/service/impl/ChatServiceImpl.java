@@ -5,6 +5,7 @@ import com.gearwenxin.client.ernie.ErnieBotClient;
 import com.gearwenxin.client.stable.StableDiffusionXLClient;
 import com.gearwenxin.entity.response.ChatResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
@@ -18,7 +19,7 @@ import javax.annotation.Resource;
  * 把controller层的方法封装移动到统一放服务层来实现
  *
  */
-@Component
+@Service
 public class ChatServiceImpl implements ChatService {
 
     @Resource

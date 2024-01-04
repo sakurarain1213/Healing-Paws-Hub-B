@@ -3,10 +3,12 @@ package com.example.hou.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.hou.entity.SysPermission;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
+@Repository
+@Mapper
 public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 
     /*
