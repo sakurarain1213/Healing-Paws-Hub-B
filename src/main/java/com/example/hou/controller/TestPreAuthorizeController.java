@@ -1,7 +1,10 @@
 package com.example.hou.controller;
 
 
+import com.example.hou.entity.LogUser;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +32,25 @@ public class TestPreAuthorizeController {
     //@PreAuthorize("hasAuthority('sys:queryUser')") //这是没有自定义权限校验方法的默认写法
     @PreAuthorize("@syex.hasAuthority('sys:queryUser')")
     public String hello(){
+
+        //在任何函数都可以自由截获token  解析出信息 再作为一部分返回
+        // 获取当前用户的身份验证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 检查用户是否已经登录
+        if (authentication.isAuthenticated()) {
+            Object o = authentication.getPrincipal();
+            if (o instanceof LogUser) {
+                LogUser logUser = (LogUser) o;
+                int userId = logUser.getUser().getUserId();
+                //可以拿到各种信息
+                System.out.println("User ID: " + userId);
+            } else {
+                // 用户未登录，处理未登录情况
+                System.out.println("nooooooooooooooooo");
+            }
+        }
+
+
         return "hello";
     }
 

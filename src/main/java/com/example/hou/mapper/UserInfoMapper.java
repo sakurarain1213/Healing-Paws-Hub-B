@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 //@MapperScan("com.baomidou.mybatisplus.samples.quickstart.mapper")
 
-@Mapper
+
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
    // @Select("select * from user_info where username = #{un}")

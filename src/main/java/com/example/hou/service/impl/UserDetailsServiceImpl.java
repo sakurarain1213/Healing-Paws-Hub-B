@@ -6,6 +6,7 @@ import com.example.hou.entity.SysPermission;
 import com.example.hou.entity.SysUser;
 import com.example.hou.mapper.SysPermissionMapper;
 import com.example.hou.mapper.SysUserMapper;
+import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -116,17 +117,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 */
 
 
-
-
-
-
-
-
     //加密算法，把加密后的密码update你用户表的数据库用户的密码上   可以测试一下
     public static void main(String[] args) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encode = bCryptPasswordEncoder.encode("123456");
         System.out.println(encode);
+
+
     }
 
 

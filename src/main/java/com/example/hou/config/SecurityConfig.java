@@ -69,10 +69,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 允许登录接口匿名访问
                 .antMatchers("/sysUser/login", "/sysUser/test",
-
-                        "/test/chat",
-                        "/test/**").anonymous()
-                //换成.permitAll()?
+                       // "/test/**",
+                        "/test/chat"
+                      ).anonymous()
+                //换成.permitAll()?    //究极debug   在匿名访问的接口加token会报暂无权限错误
 
                 .antMatchers("/**.html","/js/**","/css/**","/img/**").permitAll()//放行静态资源
 

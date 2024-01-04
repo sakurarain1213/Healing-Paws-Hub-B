@@ -56,7 +56,7 @@ public class AuthExceptionUtil {
    return ResultUtil.error("认证服务异常请重试!");
   }else if (e instanceof AccessDeniedException) {
 
-   return ResultUtil.error("权限不足不允许访问!");
+   return ResultUtil.error("权限不足不允许访问! (debug模式 请检查此接口是否已经设置为匿名可访问，此时不需要传token)");
   }
 
   return ResultUtil.error(e.getMessage());

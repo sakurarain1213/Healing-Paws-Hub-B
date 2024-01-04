@@ -5,7 +5,7 @@ import com.example.hou.entity.SysUserPermissionRelation;
 import org.apache.ibatis.annotations.Mapper;
 
 
-@Mapper
+
 public interface SysUserPermissionRelationMapper extends BaseMapper<SysUserPermissionRelation> {
 
 }
