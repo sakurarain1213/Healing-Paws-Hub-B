@@ -67,6 +67,10 @@ public class Record {
     //这里即概括的内容存储位置
     private String ps;
 
+//课程的编号
+    @TableField("class_id")
+    private Integer classId;
+
 
 
 }

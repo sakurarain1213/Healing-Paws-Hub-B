@@ -5,6 +5,7 @@ package com.example.hou.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.example.hou.entity.LogUser;
 import com.example.hou.entity.Record;
+import com.example.hou.entity.Class;
 import com.example.hou.result.Result;
 
 import com.example.hou.service.RecordService;
@@ -133,64 +134,14 @@ public class RecordController {
     @PreAuthorize("@syex.hasAuthority('sys:queryUser')")
     @RequestMapping("/get")
     //因为返回的是一个list  所以消息需要根据新的格式自定义
-    public Mono<String> recordGet() {
-
-        List<Record> l = recordService.recordGetService();
-
-        String name="";
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.isAuthenticated()) {
-            Object o = authentication.getPrincipal();
-            if (o instanceof LogUser) {
-                LogUser logUser = (LogUser) o;
-                name = logUser.getUser().getUserName();
-            }
-        }
-        String userName = name;
-
-
-        //对返回的多个行做合并和总结
+    public Result  recordGet() {
+        List<Class> l = recordService.recordGetService();
         if (l!=null) {
-            //相当于重新打开了ResultUtil的封装  自定义返回消息也在返回类的属性位置编辑
-            String chatUID = "test-user-1001";//随意  不重要  当单条来发
-
-          // "成功查询并概括的语音记录数量：" + l.size());
-
-            //进行单次对话 用于概括内容
-            StringBuilder resultBuilder = new StringBuilder(); // 用于拼接字符串的 StringBuilder
-            for (Record record : l) {
-                String txt = record.getTxt(); // 获取当前 Record 对象的 txt 属性
-                if (txt != null) {
-                    resultBuilder.append(txt); // 将 txt 拼接到结果字符串中
-                }
-            }
-            String result = resultBuilder.toString(); // 最终拼接好的字符串
-
-            //System.out.println(result);
-
-            //调用GPT
-            String msg="概括[]内的内容，"+
-                    "场景是课堂，可以忽略语气词。"+
-                    "要求提炼课堂主题，关键词，概要，三者缺一不可！"+
-                    "并在概要中把涉及到的关键词句用<>标识。"+
-                    "["+result+"]"
-                    ;
-
-            Mono<ChatResponse> ans =ernieBotClient.chatSingle(msg);
-            //过滤拿到mono的值  封装 返回
-
-            return ans.map(chatResponse -> {
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("totalrecord", l.size());
-                jsonObj.put("username", userName);
-                jsonObj.put("result", chatResponse.getResult());
-                return jsonObj.toString();
-            });
-
+            return ResultUtil.success(l);
         }
         else {
             // 返回一个包含错误信息的Mono<String>
-            return Mono.just("缺少用户与时间查询条件或查询结果为空");
+            return ResultUtil.error("缺少用户与时间查询条件或查询结果为空");
         }
 
     }

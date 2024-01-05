@@ -1,6 +1,7 @@
 package com.example.hou.service;
 
 
+import com.example.hou.entity.Class;
 import com.example.hou.entity.Record;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,7 @@ public interface RecordService /*extends IService<Record> */{
     public Record recordUpload(MultipartFile file) throws Exception;
 
     //核心函数  得到一节课的记录的概括   无参
-    public List<Record> recordGetService();
+    public  List<Class> recordGetService();
 
 
 }
