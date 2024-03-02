@@ -4,7 +4,7 @@
 赛博宠物医院学习平台后端
 # 技术栈
 springboot+mybatisplus  
-redis+MongoDB  
+mysql+redis+MongoDB  
 ...
 # 项目结构
 主体工程： com.example.hou
@@ -23,23 +23,21 @@ redis+MongoDB
 
 + 3.2 增加项目框架 pom.xml 数据库未配置 无法直接运行
   请增加resources下的yml配置、pom.xml配置、启动类HouApplication配置
-    
-
++ 3.3 01 部署mysql+MongoDB+redis数据库 CRUD测试通过 可直接运行启动类
 
 
 
 # 延伸阅读
 
 部署：Tencent cloud
-
-管理：宝塔面板  
-
-配置：Nginx 1.18.0  
+管理：宝塔面板
+配置：  
+Nginx 1.18.0  
 MySQL 5.7.43  
 PHP-7.4.33  
 Redis 7.2.3  
 Java项目一键部署 3.5  
-phpMyAdmin 5.0
+phpMyAdmin 5.0  
 
 模块：  
 见pom配置文件  
@@ -47,12 +45,13 @@ phpMyAdmin 5.0
 本地管理：  
 navicat  
 Another Redis Desktop Manager  
+MongoDB Compass
 
 Xshell  
 Xftp  
 
-公网ip  
-域名绑定
+公网ip  http://150.158.110.63/
+域名绑定 无
 
 jdk目录
 /usr/java/jdk1.8.0_371/bin/java
