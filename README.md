@@ -6,6 +6,28 @@
 springboot+mybatisplus  
 redis+MongoDB  
 ...
+# 项目结构
+主体工程： com.example.hou
+
+- config 配置类  
+- controller 控制层  
+- entity 实体类  
+- mapper 映射层  
+- result 模板返回工具类  
+- service和impl 主要服务和实现层  
+- util 其它工具类  
+
+
+
+# 更新日志
+
++ 3.2 增加项目框架 pom.xml 数据库未配置 无法直接运行
+  请增加resources下的yml配置、pom.xml配置、启动类HouApplication配置
+    
+
+
+
+
 # 延伸阅读
 
 部署：Tencent cloud
@@ -25,6 +47,7 @@ phpMyAdmin 5.0
 本地管理：  
 navicat  
 Another Redis Desktop Manager  
+
 Xshell  
 Xftp  
 
