@@ -28,15 +28,8 @@ public class ChatServiceImpl implements ChatService {
     @Resource
     private StableDiffusionXLClient stableDiffusionXLClient;
 
-
     public Mono<ChatResponse> chatSingle(String msg) {
         return ernieBotClient.chatSingle(msg);
     }
-
-
-
-
-
-
 
 }

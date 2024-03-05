@@ -24,7 +24,7 @@ mysql+redis+MongoDB
 + 3.2 增加项目框架 pom.xml 数据库未配置 无法直接运行
   请增加resources下的yml配置、pom.xml配置、启动类HouApplication配置
 + 3.3 01 部署mysql+MongoDB+redis数据库 CRUD测试通过 可直接运行启动类
-
++ 3.6 01 实现简单接口
 
 
 # 延伸阅读
@@ -55,3 +55,5 @@ Xftp
 
 jdk目录
 /usr/java/jdk1.8.0_371/bin/java
+
+技术支持：copilot 某宝版本

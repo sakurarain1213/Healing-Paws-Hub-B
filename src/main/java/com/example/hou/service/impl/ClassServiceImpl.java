@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ClassServiceImpl implements ClassService {
-
-
     @Autowired
     private ClassMapper classMapper;
 
@@ -23,6 +21,5 @@ public class ClassServiceImpl implements ClassService {
             Integer maxId = classMapper.selectMaxId();
             return maxId != null ? maxId : 0; // 如果没有记录，返回0
     }
-
 
 }

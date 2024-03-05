@@ -8,6 +8,4 @@ public interface ChatService {
     public Mono<ChatResponse> chatSingle(String msg);
 
 
-
-
 }
