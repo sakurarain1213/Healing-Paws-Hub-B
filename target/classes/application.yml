@@ -2,6 +2,7 @@ server:
   port: 8080
 #防止8080和8081冲突
 
+
 spring:
 
   datasource:
@@ -43,7 +44,7 @@ spring:
 # redis配置  如果不写 自动默认配置   如果服务器或者本地没有redis数据库 需要改动很多源文件
   redis:
   #url: redis://user:password@127.0.0.1:6379 #该地址配置以后会重置host,port,password的规则。
-    host: 47.103.113.75
+    host: 150.158.110.63
     # 在同机器上连接同机器的redis  建议写成localhost
     port: 6379
     password: redis    # 自定义密码
@@ -57,6 +58,25 @@ spring:
   # 连接池中的最大空闲连接
   # 连接池中的最小空闲连接
   # 连接超时时间（毫秒）
+
+  #邮箱验证码配置
+  mail:
+      #smtp服务主机  qq邮箱则为smtp.qq.com; 163邮箱是smtp.163.com
+    host: smtp.qq.com
+      #服务协议
+    protocol: smtp
+      # 编码集
+    default-encoding: UTF-8
+      #发送邮件的账户
+    username: 1511237570@qq.com
+      #授权码
+    password: egihlrcyhuwlggbf
+    # 昵称  是自定义属性 能引用到即可 无视解析报错
+    nickname: paws-hub官方
+
+
+
+
 
 web:
   uploadPath: /www/wwwroot/ # Win: D:/IdeaProjects/forum/images/

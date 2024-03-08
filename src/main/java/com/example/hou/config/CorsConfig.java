@@ -23,7 +23,7 @@ public class CorsConfig {
         //  你需要跨域的地址  注意这里的 127.0.0.1 != localhost
         // * 表示对所有的地址都可以访问
 //        corsConfiguration.addAllowedOrigin("*");  // 1
-        corsConfiguration.addAllowedOriginPattern("*");  // 1
+        corsConfiguration.addAllowedOriginPattern("*");  // 允许正则表达式的写法
         //  跨域的请求头
         corsConfiguration.addAllowedHeader("*"); // 2
         //  跨域的请求方法
