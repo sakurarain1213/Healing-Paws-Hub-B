@@ -71,6 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/sysUser/login", "/sysUser/test",
                           "/book/get",
                         "/email/code",
+                        "/email/verify",
                         "/test/chat"
                       ).anonymous()
                 //换成.permitAll()?    //究极debug   在匿名访问的接口加token会报暂无权限错误
