@@ -45,6 +45,10 @@ public class SysUserController {
 
     @Autowired
     private SecurityUserService logService;
+
+    /*自定义注册放到了邮箱注册服务 暂时不移到service层写*/
+
+
     /*自定义登录*/
     @PostMapping("/login")
     public Result login(@RequestBody LoginUserParam param) {
