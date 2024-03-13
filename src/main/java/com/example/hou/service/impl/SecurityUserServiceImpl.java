@@ -68,10 +68,13 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
     @Override
     public Result login(LoginUserParam param) {
+        //前端需求  登录字段统一成 account  不要userName
+
+
 
         // 1 获取AuthenticationManager 对象 然后调用 authenticate() 方法
         // UsernamePasswordAuthenticationToken 实现了Authentication 接口
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(param.getUserName(), param.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(param.getAccount(), param.getPassword());
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 
         //2 认证没通过 提示认证失败
@@ -160,4 +163,3 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
 
 }
-

@@ -120,9 +120,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     //加密算法，把加密后的密码update你用户表的数据库用户的密码上   可以测试一下
     public static void main(String[] args) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encode = bCryptPasswordEncoder.encode("123456");
+        String encode = bCryptPasswordEncoder.encode("0");
         System.out.println(encode);
-
 
     }
 
