@@ -45,6 +45,28 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
 
     @Override
+    public Result createUser(SysUser newUser) {
+        // 1. 检查用户是否存在
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", newUser.getAccount());
+        SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
+        if (sysuser != null) {
+            return new Result(-100, "用户已存在", null);
+        }
+
+        //debug  注意逻辑问题  找不到已存在用户才对 那么
+        // 需要new一个user来存 直接用上述sysuser会报空指针
+        // 2. 创建用户   注意功能上在email时候已经加密过
+        sysuserMapper.insert(newUser);
+
+        return new Result(200, "用户创建成功", null);
+    }
+
+
+
+
+
+    @Override
     public Result login(LoginUserParam param) {
 
         // 1 获取AuthenticationManager 对象 然后调用 authenticate() 方法
@@ -102,7 +124,7 @@ public class SecurityUserServiceImpl implements SecurityUserService {
             int userId = loginUser.getUser().getUserId();
 
             // 执行用户信息更新的逻辑
-            // 这里的updateUserInfo需要您根据自己的逻辑实现   用一下  mp
+            // 这里的updateUserInfo需要根据自己的逻辑实现   用一下  mp
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("user_id", userId);
             SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
@@ -135,11 +157,6 @@ public class SecurityUserServiceImpl implements SecurityUserService {
         }
         return new Result(-100, "未登录或用户不存在", null);
     }
-
-
-
-
-
 
 
 }

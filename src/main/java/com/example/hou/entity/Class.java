@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 
-
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName(value = "class")
