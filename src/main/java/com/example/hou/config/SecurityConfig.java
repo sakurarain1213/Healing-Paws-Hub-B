@@ -70,17 +70,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 允许登录接口匿名访问
                 .antMatchers("/sysUser/login", "/sysUser/test",
                           "/book/get",
-                        "/email/code",
-                        "/test/chat"
+                        "/email/**",
+                        "/case/**"
                       ).anonymous()
+//                开发中所有可访问
+
                 //换成.permitAll()?    //究极debug   在匿名访问的接口加token会报暂无权限错误
 
-                .antMatchers("/**.html","/js/**","/css/**","/img/**").permitAll()//放行静态资源
-
-
-
-
-                // 其他请求都需要认证
+                .antMatchers("/**.html","/js/**","/css/**","/img/**").permitAll()  //放行静态资源
+                // 其他请求都需要认证  修改
                 .anyRequest().authenticated();
 
         //将jwtAuthenticationTokenFilter过滤器注入到UsernamePasswordAuthenticationFilter过滤器之前

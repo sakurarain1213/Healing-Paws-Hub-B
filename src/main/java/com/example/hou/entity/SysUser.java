@@ -19,12 +19,12 @@ import java.util.Date;
 @TableName("sys_user")
 public class SysUser implements Serializable {
 
-    private static final long serialVersionUID = 915478504870211231L;
+    private static final long serialVersionUID = 915478504870211231L;//任何long均可 显式定义JVM序列化的类版本 用于成功反序列化
 
-    @TableId(value = "user_id", type = IdType.ID_WORKER)
-    private Integer userId;
+    @TableId(value = "user_id", type = IdType.AUTO)
+    private Integer userId;//注意long要和type = ID_WORKER匹配   或者int要type=IdType.AUTO  自增主键
 
-    //账号
+    //账号 本项目设置为邮箱
     private String account;
 
     @TableField("user_name")  //mubatis plus一定要注意的坑  数据库里列的下划线和java的驼峰之间要映射

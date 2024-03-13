@@ -1,9 +1,11 @@
 server:
+  ip: 150.158.110.63  # 自定义属性 属性改名任意
   port: 8080
 #防止8080和8081冲突
 
 
 spring:
+
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -72,7 +74,7 @@ spring:
       #授权码
     password: egihlrcyhuwlggbf
     # 昵称  是自定义属性 能引用到即可 无视解析报错
-    nickname: paws-hub官方
+    nickname: PawsHub官方
 
 
 
