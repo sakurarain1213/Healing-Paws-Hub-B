@@ -177,6 +177,19 @@
         </dependency>
 
 
+
+    <!-- 邮箱验证码依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+    <!-- 一个很强大的工具库 随机验证码生成等 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.19</version>
+        </dependency>
+
         <!--  GPT3  的依赖
         <dependency>
             <groupId>com.theokanning.openai-gpt3-java</groupId>
