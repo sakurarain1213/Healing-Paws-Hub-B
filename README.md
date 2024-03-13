@@ -26,7 +26,7 @@ mysql+redis+MongoDB
 + 3.3 01 部署mysql+MongoDB+redis数据库 CRUD测试通过 可直接运行启动类
 + 3.6 01 实现简单接口
 + 3.8 支持邮箱验证码认证 case接口实现
-+ 3.12 支持邮箱链接认证注册 redis限时缓存
++ 3.12 支持邮箱链接认证注册 redis限时缓存 发布到服务器
 # 延伸阅读
 
 部署：Tencent cloud
