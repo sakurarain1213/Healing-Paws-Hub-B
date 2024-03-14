@@ -9,11 +9,14 @@ import java.util.List;
 public interface CaseService {
     Case createCase(Case req);
 
-    Case updateCaseById(Case req);
+    Long updateCaseById(Case req);
 
     void deleteCaseById(String id);
 
     Case getCaseById(String id);
 
     Page<Case> getCaseByPage(Integer pageNum, Integer pageSize);
+
+    List<Case> getCaseByCombinedName(Integer pageNum, Integer pageSize, String diseases);
+
 }
