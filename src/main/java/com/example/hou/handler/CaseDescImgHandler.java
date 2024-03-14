@@ -25,6 +25,9 @@ public class CaseDescImgHandler implements CaseFileHandler{
                     instance = new CaseDescImgHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }

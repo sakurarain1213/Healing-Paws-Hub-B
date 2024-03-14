@@ -22,6 +22,9 @@ public class CaseCheckVdoHandler implements CaseFileHandler{
                     instance = new CaseCheckVdoHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }

@@ -22,6 +22,9 @@ public class CaseRemedyImgHandler implements CaseFileHandler{
                     instance = new CaseRemedyImgHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }

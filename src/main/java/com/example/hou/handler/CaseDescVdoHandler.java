@@ -25,6 +25,9 @@ public class CaseDescVdoHandler implements CaseFileHandler{
                     instance = new CaseDescVdoHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }

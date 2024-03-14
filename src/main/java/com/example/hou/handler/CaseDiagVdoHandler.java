@@ -22,6 +22,9 @@ public class CaseDiagVdoHandler implements CaseFileHandler{
                     instance = new CaseDiagVdoHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }

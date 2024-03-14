@@ -22,6 +22,9 @@ public class CaseDiagImgHandler implements CaseFileHandler{
                     instance = new CaseDiagImgHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }

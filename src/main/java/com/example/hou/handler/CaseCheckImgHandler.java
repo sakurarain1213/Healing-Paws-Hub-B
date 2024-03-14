@@ -25,6 +25,9 @@ public class CaseCheckImgHandler implements CaseFileHandler{
                     instance = new CaseCheckImgHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }

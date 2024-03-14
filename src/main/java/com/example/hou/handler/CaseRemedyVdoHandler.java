@@ -22,6 +22,9 @@ public class CaseRemedyVdoHandler implements CaseFileHandler{
                     instance = new CaseRemedyVdoHandler(src, cse);
                 }
             }
+        }else {
+            instance.src = src;
+            instance.cse = cse;
         }
         return instance;
     }
