@@ -176,6 +176,33 @@
             <version>2.6</version>
         </dependency>
 
+    <!-- ES的依赖   和服务器版本同步 -->
+    <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>8.9.0</version>
+    </dependency>
+    <dependency>
+        <groupId>co.elastic.clients</groupId>
+        <artifactId>elasticsearch-java</artifactId>
+        <version>8.9.0</version>
+    </dependency>
+    <!-- ES工具类里需要的依赖 -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>5.1.0</version>
+    </dependency>
+
+
+
+
+
+
+
+
+
+
 
 
     <!-- 邮箱验证码依赖 -->
