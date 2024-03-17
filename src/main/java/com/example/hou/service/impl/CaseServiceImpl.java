@@ -42,8 +42,14 @@ public class CaseServiceImpl implements CaseService {
         query.addCriteria(criteria);
 
         Update upt = new Update();
-        if(req.getName() != null)upt.set("name", req.getName());
-        if(req.getDescription() != null)upt.set("description", req.getDescription());
+        if(req.getName() != null){
+            System.out.println(req.getName());
+            upt.set("name", req.getName());
+        }
+        if(req.getDescription() != null){
+            System.out.println(req.getDescription());
+            upt.set("description", req.getDescription());
+        }
         if(req.getDescriptionImg() != null)upt.set("descriptionImg", req.getDescriptionImg());
         if(req.getDescriptionVideo() != null)upt.set("descriptionVideo", req.getDescriptionVideo());
 
@@ -63,9 +69,9 @@ public class CaseServiceImpl implements CaseService {
 
         UpdateResult updateResult = template.updateFirst(query, upt, Case.class);
         // 是否执行成功
-        System.out.println(updateResult.wasAcknowledged());
+//        System.out.println(updateResult.wasAcknowledged());
         // 匹配到的数量
-        System.out.println(updateResult.getMatchedCount());
+//        System.out.println(updateResult.getMatchedCount());
         // 更新数量
         System.out.println(updateResult.getModifiedCount());
 

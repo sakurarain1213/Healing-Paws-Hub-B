@@ -71,7 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/sysUser/login", "/sysUser/test",
                           "/book/get",
                         "/email/**",
-                        "/case/**"
+                        "/case/**",
+                        "/disease/**"
                       ).anonymous()
 //                开发中所有可访问
 

@@ -4,23 +4,33 @@ import com.example.hou.entity.Case;
 import com.example.hou.handler.*;
 import com.example.hou.result.Result;
 import com.example.hou.service.CaseService;
+import com.example.hou.service.DiseaseService;
 import com.example.hou.util.ResultUtil;
+import com.example.hou.validator.CaseTypeCreateConstraint;
+import com.example.hou.validator.CaseTypeUpdateConstraint;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/case")
+@Validated
 public class CaseController {
     @Autowired
     private CaseService caseService;
+
+    @Autowired
+    private DiseaseService diseaseService;
 
 //    @PostMapping
 //    public Result createCase(@RequestBody Case req){
@@ -36,26 +46,40 @@ public class CaseController {
 
     @PostMapping
     public Result createCase(
-            @NonNull @RequestParam("name") String name,
+            @NotBlank @Size(max = 30, message = "name不合法") @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "name为中文、英文、数字、下划线组合")
+            @RequestParam("name") String name,
+            @Size(max = 200, message = "description不合法")
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "descriptionImg", required = false) MultipartFile descriptionImg,
             @RequestParam(value = "descriptionVideo", required = false) MultipartFile descriptionVideo,
+            @Size(max = 200, message = "checkItem不合法")
             @RequestParam(value = "checkItem", required = false) String checkItem,
             @RequestParam(value = "checkItemImg", required = false) MultipartFile checkItemImg,
             @RequestParam(value = "checkItemVideo", required = false) MultipartFile checkItemVideo,
+            @Size(max = 200, message = "diagnosis不合法")
             @RequestParam(value = "diagnosis", required = false) String diagnosis,
             @RequestParam(value = "diagnosisImg", required = false) MultipartFile diagnosisImg,
             @RequestParam(value = "diagnosisVideo", required = false) MultipartFile diagnosisVideo,
+            @Size(max = 200, message = "remedy不合法")
             @RequestParam(value = "remedy", required = false) String remedy,
             @RequestParam(value = "remedyImg", required = false) MultipartFile remedyImg,
             @RequestParam(value = "remedyVideo", required = false) MultipartFile remedyVideo,
-            @NonNull @RequestParam(value = "type") List<String> types) {
+            @CaseTypeCreateConstraint @RequestParam(value = "type") List<String> types) {
 
-        if(StringUtils.isBlank(name))return ResultUtil.error("name不能是空串或只有空格");
         System.out.println("name: " + name);
         System.out.println("description: " + description);
 
-        for(String s : types) System.out.println(s);
+//        if(types.size() > 10)return ResultUtil.error("病例类型过多");
+
+//        检查type是否全部合法，若有一个不合法string就返回错误响应
+        for(String s : types){
+            System.out.println(s);
+//            if(s.length() > 30)return ResultUtil.error("存在过长的病例类型");
+            long existNum = diseaseService.existName(s);
+            if(existNum <= 0)return ResultUtil.error("存在不合法病名");
+        }
+
+
         System.out.println("==============");
 
         Case cur = new Case();
@@ -122,23 +146,37 @@ public class CaseController {
     }
 
     @PutMapping
-    public Result updateCaseById(@NonNull @RequestParam("id") String id,
+    public Result updateCaseById(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+                                 @RequestParam("id") String id,
+                                 @Size(max = 30, message = "name不合法") @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "name为中文、英文、数字、下划线组合")
                                  @RequestParam(value = "name", required = false) String name,
+                                 @Size(max = 200, message = "description不合法")
                                  @RequestParam(value = "description", required = false) String description,
                                  @RequestParam(value = "descriptionImg", required = false) MultipartFile descriptionImg,
                                  @RequestParam(value = "descriptionVideo", required = false) MultipartFile descriptionVideo,
+                                 @Size(max = 200, message = "checkItem不合法")
                                  @RequestParam(value = "checkItem", required = false) String checkItem,
                                  @RequestParam(value = "checkItemImg", required = false) MultipartFile checkItemImg,
                                  @RequestParam(value = "checkItemVideo", required = false) MultipartFile checkItemVideo,
+                                 @Size(max = 200, message = "diagnosis不合法")
                                  @RequestParam(value = "diagnosis", required = false) String diagnosis,
                                  @RequestParam(value = "diagnosisImg", required = false) MultipartFile diagnosisImg,
                                  @RequestParam(value = "diagnosisVideo", required = false) MultipartFile diagnosisVideo,
+                                 @Size(max = 200, message = "remedy不合法")
                                  @RequestParam(value = "remedy", required = false) String remedy,
                                  @RequestParam(value = "remedyImg", required = false) MultipartFile remedyImg,
                                  @RequestParam(value = "remedyVideo", required = false) MultipartFile remedyVideo,
-                                 @RequestParam(value = "type", required = false) List<String> types){
-        if(StringUtils.isBlank(id))return ResultUtil.error("id不能是空串或只有空格");
+                                 @CaseTypeUpdateConstraint @RequestParam(value = "type", required = false) List<String> types){
+//        if(StringUtils.isBlank(id))return ResultUtil.error("id不能是空串或只有空格");
         System.out.println("id: " + id);
+
+        if (types != null){
+            for(String s : types){
+                System.out.println(s);
+                long existNum = diseaseService.existName(s);
+                if(existNum <= 0)return ResultUtil.error("存在不合法病名");
+            }
+        }
         System.out.println("==============");
 
         Case cur = new Case();
@@ -170,28 +208,25 @@ public class CaseController {
 
         System.out.println("process ok");
         System.out.println(cur);
+        if(cur.nullFieldsExceptId())return ResultUtil.error("未填写任何需要更新的信息");
 
 //        数据库更新
         Long res = caseService.updateCaseById(cur);
         if (res == null || res == 0)return ResultUtil.error(null);
         else return ResultUtil.success(res);
-//        System.out.println(num);
-//        if (num == 0)return ResultUtil.error(num);
-//        if(updated == null)return ResultUtil.error(null);
-//        return ResultUtil.success(updated);
     }
 
     @DeleteMapping
-    public Result deleteCaseById(@NonNull @RequestParam("id") String id){
-        if(StringUtils.isBlank(id))return ResultUtil.error("id不能是空串或只有空格");
+    public Result deleteCaseById(@NotBlank(message = "id不能是空串或只有空格") @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+                                 @RequestParam("id") String id){
         caseService.deleteCaseById(id);
+        System.out.println("delete:"+id);
         return ResultUtil.success();
     }
 
     @GetMapping
-    public Result getCaseById(@NonNull @RequestParam("id") String id){
-        if(StringUtils.isBlank(id))return ResultUtil.error("id不能是空串或只有空格");
-
+    public Result getCaseById(@NotBlank(message = "id不能是空串或只有空格") @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+                                @RequestParam("id") String id){
         Case res = caseService.getCaseById(id);
         System.out.println(res);
         if(res == null)return ResultUtil.error(null);
@@ -217,8 +252,8 @@ public class CaseController {
     @GetMapping("/group")
     public Result getCaseByCombinedName(@NonNull @RequestParam("pageNum") Integer pageNum,
                                         @NonNull @RequestParam("pageSize") Integer pageSize,
-                                        @NonNull @RequestParam("diseases") String diseases){
-        if(pageNum < 1 || pageSize < 1 || StringUtils.isBlank(diseases))return ResultUtil.error("请求参数不合法");
+                                        @NotBlank @Size(max = 100, message = "diseases不合法") @RequestParam("diseases") String diseases){
+        if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
 
         List<Case> res = caseService.getCaseByCombinedName(pageNum, pageSize, diseases);
         if(res == null)return ResultUtil.error(null);
