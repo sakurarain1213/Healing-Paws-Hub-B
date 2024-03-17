@@ -43,11 +43,11 @@ public class CaseServiceImpl implements CaseService {
 
         Update upt = new Update();
         if(req.getName() != null){
-            System.out.println(req.getName());
+//            System.out.println(req.getName());
             upt.set("name", req.getName());
         }
         if(req.getDescription() != null){
-            System.out.println(req.getDescription());
+//            System.out.println(req.getDescription());
             upt.set("description", req.getDescription());
         }
         if(req.getDescriptionImg() != null)upt.set("descriptionImg", req.getDescriptionImg());

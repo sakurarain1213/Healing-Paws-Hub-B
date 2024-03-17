@@ -69,16 +69,13 @@ public class CaseController {
         System.out.println("name: " + name);
         System.out.println("description: " + description);
 
-//        if(types.size() > 10)return ResultUtil.error("病例类型过多");
 
 //        检查type是否全部合法，若有一个不合法string就返回错误响应
         for(String s : types){
             System.out.println(s);
-//            if(s.length() > 30)return ResultUtil.error("存在过长的病例类型");
             long existNum = diseaseService.existName(s);
             if(existNum <= 0)return ResultUtil.error("存在不合法病名");
         }
-
 
         System.out.println("==============");
 
@@ -92,22 +89,21 @@ public class CaseController {
 
 //        上传文件，并设置case的文件路径字段
         List<CaseFileHandler> handlers = new ArrayList<>();
-        if(descriptionImg != null)handlers.add(CaseDescImgHandler.getInstance(descriptionImg, cur));
-        if(descriptionVideo != null)handlers.add(CaseDescVdoHandler.getInstance(descriptionVideo, cur));
+        if(descriptionImg != null)handlers.add(new CaseDescImgHandler(descriptionImg, cur));
+        if(descriptionVideo != null)handlers.add(new CaseDescVdoHandler(descriptionVideo, cur));
 
-        if(checkItemImg != null)handlers.add(CaseCheckImgHandler.getInstance(checkItemImg, cur));
-        if(checkItemVideo != null)handlers.add(CaseCheckVdoHandler.getInstance(checkItemVideo, cur));
+        if(checkItemImg != null)handlers.add(new CaseCheckImgHandler(checkItemImg, cur));
+        if(checkItemVideo != null)handlers.add(new CaseCheckVdoHandler(checkItemVideo, cur));
 
-        if(diagnosisImg != null)handlers.add(CaseDiagImgHandler.getInstance(diagnosisImg, cur));
-        if(diagnosisVideo != null)handlers.add(CaseDiagVdoHandler.getInstance(diagnosisVideo, cur));
+        if(diagnosisImg != null)handlers.add(new CaseDiagImgHandler(diagnosisImg, cur));
+        if(diagnosisVideo != null)handlers.add(new CaseDiagVdoHandler(diagnosisVideo, cur));
 
-        if(remedyImg != null)handlers.add(CaseRemedyImgHandler.getInstance(remedyImg, cur));
-        if(remedyVideo != null)handlers.add(CaseRemedyVdoHandler.getInstance(remedyVideo, cur));
+        if(remedyImg != null)handlers.add(new CaseRemedyImgHandler(remedyImg, cur));
+        if(remedyVideo != null)handlers.add(new CaseRemedyVdoHandler(remedyVideo, cur));
 
         for(CaseFileHandler handler : handlers){
             handler.handleFile();
         }
-
 
         System.out.println("process ok");
         System.out.println(cur);
@@ -190,17 +186,17 @@ public class CaseController {
 
 //        上传文件，并设置case的文件路径字段
         List<CaseFileHandler> handlers = new ArrayList<>();
-        if(descriptionImg != null)handlers.add(CaseDescImgHandler.getInstance(descriptionImg, cur));
-        if(descriptionVideo != null)handlers.add(CaseDescVdoHandler.getInstance(descriptionVideo, cur));
+        if(descriptionImg != null)handlers.add(new CaseDescImgHandler(descriptionImg, cur));
+        if(descriptionVideo != null)handlers.add(new CaseDescVdoHandler(descriptionVideo, cur));
 
-        if(checkItemImg != null)handlers.add(CaseCheckImgHandler.getInstance(checkItemImg, cur));
-        if(checkItemVideo != null)handlers.add(CaseCheckVdoHandler.getInstance(checkItemVideo, cur));
+        if(checkItemImg != null)handlers.add(new CaseCheckImgHandler(checkItemImg, cur));
+        if(checkItemVideo != null)handlers.add(new CaseCheckVdoHandler(checkItemVideo, cur));
 
-        if(diagnosisImg != null)handlers.add(CaseDiagImgHandler.getInstance(diagnosisImg, cur));
-        if(diagnosisVideo != null)handlers.add(CaseDiagVdoHandler.getInstance(diagnosisVideo, cur));
+        if(diagnosisImg != null)handlers.add(new CaseDiagImgHandler(diagnosisImg, cur));
+        if(diagnosisVideo != null)handlers.add(new CaseDiagVdoHandler(diagnosisVideo, cur));
 
-        if(remedyImg != null)handlers.add(CaseRemedyImgHandler.getInstance(remedyImg, cur));
-        if(remedyVideo != null)handlers.add(CaseRemedyVdoHandler.getInstance(remedyVideo, cur));
+        if(remedyImg != null)handlers.add(new CaseRemedyImgHandler(remedyImg, cur));
+        if(remedyVideo != null)handlers.add(new CaseRemedyVdoHandler(remedyVideo, cur));
 
         for(CaseFileHandler handler : handlers){
             handler.handleFile();
