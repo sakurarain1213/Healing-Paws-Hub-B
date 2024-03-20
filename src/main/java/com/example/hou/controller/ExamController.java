@@ -37,12 +37,12 @@ public class ExamController {
         return ResultUtil.success(updated);
     }
 
-    @PutMapping
+    @DeleteMapping
     public Result deleteExamById(@NonNull @RequestParam String id){
         examService.deleteExamById(id);
         return ResultUtil.success();
     }
-    @PutMapping
+    @GetMapping
     public Result getExamById(@NonNull @RequestParam String id){
         Exam res = examService.getExamById(id);
         System.out.println(res);
@@ -50,7 +50,7 @@ public class ExamController {
             return ResultUtil.error(null);
         return ResultUtil.success(res);
     }
-    @PutMapping("/page")
+    @GetMapping("/page")
     public Result getExamByPage(@NonNull @RequestParam Integer pageNum, @NonNull @RequestParam Integer pageSize){
         Page<Exam> res = examService.getExamByPage(pageNum, pageSize);
         System.out.println(res.getTotalElements()); //集合中总数

@@ -30,7 +30,7 @@ spring:
 
   web:
     resources:
-      static-locations: file:www/wwwroot/ , classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+      static-locations: file:/www/wwwroot/ , classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
   #服务器的静态资源访问配置   其实默认放在resources/static下即可  通过ip地址:端口 访问
 
   # mongoDB的远程配置  为了防止扫描攻击 采用账号密码访问   root指定数据库是admin  如果用另外的数据库需要在对应数据库新建user
