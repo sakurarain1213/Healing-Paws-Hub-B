@@ -1,5 +1,6 @@
 package com.example.hou.service.impl;
 
+import com.example.hou.entity.Disease;
 import com.example.hou.entity.Question;
 import com.example.hou.mapper.QuestionRepository;
 import com.example.hou.service.QuestionService;

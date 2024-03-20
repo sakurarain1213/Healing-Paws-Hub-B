@@ -5,6 +5,7 @@ import com.example.hou.handler.*;
 import com.example.hou.result.Result;
 import com.example.hou.service.CaseService;
 import com.example.hou.service.DiseaseService;
+import com.example.hou.util.FileUtil;
 import com.example.hou.util.ResultUtil;
 import com.example.hou.validator.CaseTypeCreateConstraint;
 import com.example.hou.validator.CaseTypeUpdateConstraint;
@@ -68,13 +69,13 @@ public class CaseController {
 
         System.out.println("name: " + name);
         System.out.println("description: " + description);
-        System.out.println(types);
 
 
 //        检查type是否全部合法，若有一个不合法string就返回错误响应
         for(String s : types){
             System.out.println(s);
             long existNum = diseaseService.existName(s);
+            System.out.println(existNum);
             if(existNum <= 0)return ResultUtil.error("存在不合法病名");
         }
 
@@ -87,6 +88,22 @@ public class CaseController {
                 .setDiagnosis(diagnosis)
                 .setRemedy(remedy)
                 .setType(types);
+
+
+        //todo 后续上传修改成服务器版本
+        //以下是单个文件上传样例  使用file工具类的方法上传 要结合下面的存在检测逻辑
+        if(descriptionImg!=null){
+            String feedback= FileUtil.fileUpload(descriptionImg);
+            if (feedback!=null) {// 把文件路径存入数据库的对应位置
+                //cur.setDescriptionImg(feedback);   后续逻辑需要按照业务添加
+                System.out.println("测试上传成功: "+feedback);
+                return ResultUtil.success("临时文件上传成功 后续先不做");
+            }
+        }
+
+
+
+
 
 //        上传文件，并设置case的文件路径字段
         List<CaseFileHandler> handlers = new ArrayList<>();
