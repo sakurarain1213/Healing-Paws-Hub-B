@@ -49,19 +49,16 @@ public class JwtUtils {
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.SECOND, amount);
 
-
         //payload
         payloadMap.forEach((k, v) ->{
             builder.withClaim(k, v);
         });
-
 
         // 生成token
         String token = builder.withHeader(headers)//header
                 //.withClaim("second",amount)//jwt的过期周期/秒，可以用于jwt快过期的时候自动刷新
                 .withExpiresAt(instance.getTime())//指定令牌的过期时间
                 .sign(Algorithm.HMAC256(secretKey));//签名
-
 
         return token;
     }
@@ -84,7 +81,6 @@ public class JwtUtils {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(secretKey)).build().verify(token);
 
         //todo 考虑如果token过期，从Redis中删除这个token
-
 
         return decodedJWT;
     }
