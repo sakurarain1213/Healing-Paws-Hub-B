@@ -30,10 +30,36 @@ spring:
 
   web:
     resources:
-      static-locations: file:www/wwwroot/ , classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+      static-locations: file:/www/wwwroot/ , classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
   #服务器的静态资源访问配置   其实默认放在resources/static下即可  通过ip地址:端口 访问
 
   # mongoDB的远程配置  为了防止扫描攻击 采用账号密码访问   root指定数据库是admin  如果用另外的数据库需要在对应数据库新建user
+
+# ES访问配置 可独立部署在任意一个服务器
+
+#服务器中ES8的配置问题  更新了安全策略 :
+  #将config文件夹下的elasticsearch.yml配置文件打开
+  #将92和98行两处的 true 改为 false
+  #xpack.security.enabled: false
+  #xpack.security.http.ssl:
+  #  enabled: false
+  #通过浏览器访问 http://localhost:9200
+  #页面中显示一个json串 , 这样就表示启动ES成功了
+
+  elasticsearch:
+    rest:
+      # enable host port 自定义属性 是否启用es
+      enable: true
+      uris: http://150.158.110.63:9200  #集群时需要 用逗号隔开地址
+      host: 150.158.110.63
+      port: 9200
+      username: elastic   # 强制需要用户名
+      password: Zb6eQvd99MO7=XX=58GI
+
+
+
+
+# mongoDB的远程配置  为了防止扫描攻击 采用账号密码访问   root指定数据库是admin  如果用另外的数据库需要在对应数据库新建user
   data:
     mongodb:
       host: 150.158.110.63

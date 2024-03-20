@@ -41,11 +41,20 @@ public class FileUtil {
         // 后缀
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.lastIndexOf(".") == -1){
-            return "后缀缺少";}      // 是否包含后缀   无后缀异常
+            return null;
+        }      // 是否包含后缀   无后缀异常
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
         //todo 考虑把目标后缀作为函数参数检测
-        if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension)) {
-            return "后缀非法"; // 后缀不正确异常
+//        完成文档内要求的所有格式判断
+        if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension) &&
+            !"bmp".equalsIgnoreCase(fileExtension) && !"gif".equalsIgnoreCase(fileExtension) &&
+            !"asx".equalsIgnoreCase(fileExtension) && !"asf".equalsIgnoreCase(fileExtension) &&
+            !"mpg".equalsIgnoreCase(fileExtension) && !"wmv".equalsIgnoreCase(fileExtension) &&
+            !"3gp".equalsIgnoreCase(fileExtension) && !"mp4".equalsIgnoreCase(fileExtension) &&
+            !"mov".equalsIgnoreCase(fileExtension) && !"avi".equalsIgnoreCase(fileExtension) &&
+            !"flv".equalsIgnoreCase(fileExtension) && !"rmvb".equalsIgnoreCase(fileExtension)
+            ) {
+            return null; // 后缀不正确异常
         }
 
 
@@ -102,7 +111,7 @@ public class FileUtil {
                 }
             }
             */
-            return "success";   //成功
+            return "/www/wwwroot/mediaFile/" + newFileName;   //成功
         } catch (IOException e) {
             e.printStackTrace();
             //return "文件上传失败";
@@ -113,6 +122,7 @@ public class FileUtil {
 
     }
 
+//    TODO 传String， 返回multipartfile
 
 
 }

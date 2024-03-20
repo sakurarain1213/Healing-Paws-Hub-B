@@ -10,7 +10,6 @@ import com.example.hou.util.ResultUtil;
 import com.example.hou.validator.CaseTypeCreateConstraint;
 import com.example.hou.validator.CaseTypeUpdateConstraint;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
@@ -92,35 +91,41 @@ public class CaseController {
 
         //todo 后续上传修改成服务器版本
         //以下是单个文件上传样例  使用file工具类的方法上传 要结合下面的存在检测逻辑
-        if(descriptionImg!=null){
-            String feedback= FileUtil.fileUpload(descriptionImg);
-            if (feedback!=null) {// 把文件路径存入数据库的对应位置
-                //cur.setDescriptionImg(feedback);   后续逻辑需要按照业务添加
-                System.out.println("测试上传成功: "+feedback);
-                return ResultUtil.success("临时文件上传成功 后续先不做");
-            }
-        }
+//        if(descriptionImg!=null){
+//            String feedback= FileUtil.fileUpload(descriptionImg);
+//            if (feedback!=null) {// 把文件路径存入数据库的对应位置
+//                //cur.setDescriptionImg(feedback);   后续逻辑需要按照业务添加
+//                System.out.println("测试上传成功: "+feedback);
+//                return ResultUtil.success("临时文件上传成功 后续先不做");
+//            }
+//        }
 
 
 
 
 
 //        上传文件，并设置case的文件路径字段
-        List<CaseFileHandler> handlers = new ArrayList<>();
-        if(descriptionImg != null)handlers.add(new CaseDescImgHandler(descriptionImg, cur));
-        if(descriptionVideo != null)handlers.add(new CaseDescVdoHandler(descriptionVideo, cur));
+        List<FileHandler<Case>> handlers = new ArrayList<>();
+        if(descriptionImg != null)handlers.add(new DescImgHandler(descriptionImg, cur));
+        if(descriptionVideo != null)handlers.add(new DescVdoHandler(descriptionVideo, cur));
 
-        if(checkItemImg != null)handlers.add(new CaseCheckImgHandler(checkItemImg, cur));
-        if(checkItemVideo != null)handlers.add(new CaseCheckVdoHandler(checkItemVideo, cur));
+        if(checkItemImg != null)handlers.add(new CheckImgHandler(checkItemImg, cur));
+        if(checkItemVideo != null)handlers.add(new CheckVdoHandler(checkItemVideo, cur));
 
-        if(diagnosisImg != null)handlers.add(new CaseDiagImgHandler(diagnosisImg, cur));
-        if(diagnosisVideo != null)handlers.add(new CaseDiagVdoHandler(diagnosisVideo, cur));
+        if(diagnosisImg != null)handlers.add(new DiagImgHandler(diagnosisImg, cur));
+        if(diagnosisVideo != null)handlers.add(new DiagVdoHandler(diagnosisVideo, cur));
 
-        if(remedyImg != null)handlers.add(new CaseRemedyImgHandler(remedyImg, cur));
-        if(remedyVideo != null)handlers.add(new CaseRemedyVdoHandler(remedyVideo, cur));
+        if(remedyImg != null)handlers.add(new RemedyImgHandler(remedyImg, cur));
+        if(remedyVideo != null)handlers.add(new RemedyVdoHandler(remedyVideo, cur));
 
-        for(CaseFileHandler handler : handlers){
-            handler.handleFile();
+        try {
+            for(FileHandler<Case> handler : handlers){
+                handler.handleFile();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error("文件上传失败");
         }
 
         System.out.println("process ok");
@@ -203,20 +208,20 @@ public class CaseController {
                 .setType(types);
 
 //        上传文件，并设置case的文件路径字段
-        List<CaseFileHandler> handlers = new ArrayList<>();
-        if(descriptionImg != null)handlers.add(new CaseDescImgHandler(descriptionImg, cur));
-        if(descriptionVideo != null)handlers.add(new CaseDescVdoHandler(descriptionVideo, cur));
+        List<FileHandler<Case>> handlers = new ArrayList<>();
+        if(descriptionImg != null)handlers.add(new DescImgHandler(descriptionImg, cur));
+        if(descriptionVideo != null)handlers.add(new DescVdoHandler(descriptionVideo, cur));
 
-        if(checkItemImg != null)handlers.add(new CaseCheckImgHandler(checkItemImg, cur));
-        if(checkItemVideo != null)handlers.add(new CaseCheckVdoHandler(checkItemVideo, cur));
+        if(checkItemImg != null)handlers.add(new CheckImgHandler(checkItemImg, cur));
+        if(checkItemVideo != null)handlers.add(new CheckVdoHandler(checkItemVideo, cur));
 
-        if(diagnosisImg != null)handlers.add(new CaseDiagImgHandler(diagnosisImg, cur));
-        if(diagnosisVideo != null)handlers.add(new CaseDiagVdoHandler(diagnosisVideo, cur));
+        if(diagnosisImg != null)handlers.add(new DiagImgHandler(diagnosisImg, cur));
+        if(diagnosisVideo != null)handlers.add(new DiagVdoHandler(diagnosisVideo, cur));
 
-        if(remedyImg != null)handlers.add(new CaseRemedyImgHandler(remedyImg, cur));
-        if(remedyVideo != null)handlers.add(new CaseRemedyVdoHandler(remedyVideo, cur));
+        if(remedyImg != null)handlers.add(new RemedyImgHandler(remedyImg, cur));
+        if(remedyVideo != null)handlers.add(new RemedyVdoHandler(remedyVideo, cur));
 
-        for(CaseFileHandler handler : handlers){
+        for(FileHandler<Case> handler : handlers){
             handler.handleFile();
         }
 

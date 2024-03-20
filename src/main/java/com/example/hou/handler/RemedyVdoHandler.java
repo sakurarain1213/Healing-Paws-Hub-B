@@ -3,8 +3,8 @@ package com.example.hou.handler;
 import com.example.hou.entity.Case;
 import org.springframework.web.multipart.MultipartFile;
 
-public class CaseRemedyVdoHandler extends CaseFileHandler{
-    public CaseRemedyVdoHandler(MultipartFile src, Case cse){
+public class RemedyVdoHandler extends FileHandler<Case> {
+    public RemedyVdoHandler(MultipartFile src, Case cse){
         super(src, cse);
     }
 

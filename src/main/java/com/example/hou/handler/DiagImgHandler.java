@@ -3,8 +3,8 @@ package com.example.hou.handler;
 import com.example.hou.entity.Case;
 import org.springframework.web.multipart.MultipartFile;
 
-public class CaseDiagImgHandler extends CaseFileHandler{
-    public CaseDiagImgHandler(MultipartFile src, Case cse){
+public class DiagImgHandler extends FileHandler<Case> {
+    public DiagImgHandler(MultipartFile src, Case cse){
         super(src, cse);
     }
 
