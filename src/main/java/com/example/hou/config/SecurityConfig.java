@@ -72,6 +72,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                           "/book/get",
                         "/email/**",
                         "/case/**",
+                        "/question/**"
+                        "/case/**",
                         "/disease/**"
                       ).anonymous()
 //                开发中所有可访问
