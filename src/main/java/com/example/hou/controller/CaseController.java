@@ -68,6 +68,7 @@ public class CaseController {
 
         System.out.println("name: " + name);
         System.out.println("description: " + description);
+        System.out.println(types);
 
 
 //        检查type是否全部合法，若有一个不合法string就返回错误响应
@@ -215,9 +216,14 @@ public class CaseController {
     @DeleteMapping
     public Result deleteCaseById(@NotBlank(message = "id不能是空串或只有空格") @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                  @RequestParam("id") String id){
-        caseService.deleteCaseById(id);
-        System.out.println("delete:"+id);
-        return ResultUtil.success();
+        try {
+            caseService.deleteCaseById(id);
+            System.out.println("delete:"+id);
+            return ResultUtil.success();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error("删除失败");
+        }
     }
 
     @GetMapping

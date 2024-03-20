@@ -38,9 +38,14 @@ public class DiseaseController {
     @DeleteMapping
     public Result deleteById(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                              @RequestParam("id") String id){
-        diseaseService.deleteById(id);
-        System.out.println("delete:"+id);
-        return ResultUtil.success();
+        try {
+            diseaseService.deleteById(id);
+            System.out.println("delete:"+id);
+            return ResultUtil.success();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error("删除异常");
+        }
     }
 
     @PutMapping

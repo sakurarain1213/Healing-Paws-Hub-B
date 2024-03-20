@@ -1,6 +1,7 @@
 package com.example.hou.service.impl;
 
 import com.example.hou.entity.Disease;
+import com.example.hou.entity.Question;
 import com.example.hou.mapper.DiseaseRepository;
 import com.example.hou.service.DiseaseService;
 import com.mongodb.client.result.UpdateResult;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +51,21 @@ public class DiseaseServiceImpl implements DiseaseService {
     @Override
     public void deleteById(String id) {
         diseaseRepository.deleteById(id);
+
+        System.out.println("update=========");
+
+//        从含有指定id元素的question的id列表 删除id
+        Query query = new Query();
+        query.addCriteria(Criteria.where("type").is(id));
+
+        Update update = new Update();
+        update.pull("type", id);
+
+        UpdateResult updateResult = template.updateMulti(query, update, Question.class);
+
+        System.out.println(updateResult.getMatchedCount());
+        System.out.println(updateResult.getModifiedCount());
+        System.out.println(updateResult.wasAcknowledged());
     }
 
     @Override

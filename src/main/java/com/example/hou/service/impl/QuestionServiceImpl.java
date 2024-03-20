@@ -58,13 +58,13 @@ public class QuestionServiceImpl implements QuestionService {
         String[] diseaseList = diseases.split(" ");
         /* 思路：根据diseaseList的病名查到对应病的idList，然后查询 type属性：包含idList 的 question */
 //        Page<Question> page = template.findAll(PageRequest.of(pageNum - 1, pageSize));
-        Criteria criteria = Criteria.where("name").in(diseaseList);
-//        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
-        Query query = new Query(criteria)/*.with(pageable)*/;
-        List<Disease> diseaseList1 = template.find(query, Disease.class);
-
-        // 通过病名查询到的病的idList
-        List<Long> idList = diseaseList1.stream().map(Disease::getId).collect(Collectors.toSet());
+//        Criteria criteria = Criteria.where("name").in(diseaseList);
+////        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+//        Query query = new Query(criteria)/*.with(pageable)*/;
+//        List<Disease> diseaseList1 = template.find(query, Disease.class);
+//
+//        // 通过病名查询到的病的idList
+//        List<Long> idList = diseaseList1.stream().map(Disease::getId).collect(Collectors.toSet());
 
         return null;
     }
