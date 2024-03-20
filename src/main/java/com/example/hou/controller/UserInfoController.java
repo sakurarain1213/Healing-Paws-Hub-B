@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.*;
 /*
 
 
-47.103.113.75:8080/userInfo/login    登录 强制需要所有信息
+IP:8080/userInfo/login    登录 强制需要所有信息
 {
     "username":"1",
     "password":"123"
 }
 
-47.103.113.75:8080/userInfo/register   注册  强制需要所有信息
+IP:8080/userInfo/register   注册  强制需要所有信息
 {
     "username":"1",
     "password":"123"
 }
 
-47.103.113.75:8080/userInfo/update  更新用户信息  只需要用户名 别的信息可有可无
+IP:8080/userInfo/update  更新用户信息  只需要用户名 别的信息可有可无
 {
     "username":"1",
     "password":"123",
@@ -34,24 +34,13 @@ import org.springframework.web.bind.annotation.*;
       "email":"1889900@163.com"
 }
 
-47.103.113.75:8080/userInfo/get    拿到用户信息
+IP:8080/userInfo/get    拿到用户信息
 {
     "username":"1"
 }
 
-
 localhost
-
 */
-
-
-
-
-
-
-
-
-
 
 @SuppressWarnings({"all"}) //控制台输出过滤掉警告信息
 @RestController//控制层标志，等价于@Controller+@ResponseBody

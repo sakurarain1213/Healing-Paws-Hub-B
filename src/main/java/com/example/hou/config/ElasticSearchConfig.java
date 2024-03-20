@@ -1,46 +1,104 @@
-/*import co.elastic.clients.elasticsearch.ElasticsearchClient;
+package com.example.hou.config;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.StringUtils;
+import org.thymeleaf.expression.Lists;
 
-import javax.net.ssl.SSLContext;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
-import static java.util.stream.Collectors.toList;*/
+@Configuration
+@ConfigurationProperties(prefix = "elasticsearch")
+public class ElasticSearchConfig {
+
+    @Value("${spring.elasticsearch.rest.uris}")
+    private String hosts;
+
+    @Value("${spring.elasticsearch.rest.host}")
+    private String host;
+
+    @Value("${spring.elasticsearch.rest.port}")
+    private Integer port;
+
+    @Value("${spring.elasticsearch.rest.username}")
+    private String name;
+
+    @Value("${spring.elasticsearch.rest.password}")
+    private String password;
+
+    @Value("${spring.elasticsearch.rest.enable}")
+    private boolean enable;
+
+
+    //配置类的依赖和版本bug  再调
+
+    //注入IOC容器
+    @Bean
+    public ElasticsearchClient elasticsearchClient(){
+        ElasticsearchClient client = new ElasticsearchClient(null);
+        if (enable){
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            //设置账号密码
+            credentialsProvider.setCredentials(
+                    AuthScope.ANY, new UsernamePasswordCredentials(name, password));
+
+//        RestClients restClients =
+            RestClient restClient = RestClient.builder(new HttpHost(host, port))
+                    .setHttpClientConfigCallback(httpClientBuilder->httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)).build();
+
+            ElasticsearchTransport transport = new RestClientTransport(restClient,new JacksonJsonpMapper());
+            // And create the API client
+            client = new ElasticsearchClient(transport);
+        }
+        return client;
+
+    }
+
+
+
+    /*
+    @Bean
+    public ElasticsearchClient docqaElasticsearchClient() {
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(name, password));
+        List<HttpHost> httpHosts = new ArrayList<>();
+        String[] split = hosts.split(",");
+        for (int i = 0; i < split.length; i++) {
+            httpHosts.add(HttpHost.create(split[i]));
+        }
+        HttpHost[] httpHosts1 = httpHosts.toArray(new HttpHost[0]);
+        RestClient client = RestClient
+                .builder(httpHosts1)
+                .setHttpClientConfigCallback(httpAsyncClientBuilder ->
+                        httpAsyncClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setKeepAliveStrategy((response, context) -> 180 * 1000))
+                .build();
+
+        ElasticsearchTransport transport = new RestClientTransport(client, new JacksonJsonpMapper());
+        return new ElasticsearchClient(transport);
+    }
+  */
+
+}
+
+
+
+
+
 
 /*
-
-
 
 package com.example.hou.config;
 

@@ -55,8 +55,8 @@ public class TestPreAuthorizeController {
     }
 
     @PostMapping("/hello2")
-    // 只有sys:queryUser2 权限才能访问
-    @PreAuthorize("@syex.hasAuthority('sys:queryUser2')")
+    // 只有sys:queryUser2 权限才能访问    可以有and或者or的逻辑拼接  权限任意
+    @PreAuthorize("@syex.hasAuthority('sys:queryUser2')and @syex.hasAuthority('sys:queryUser2') ")
     public String hello2(){
         return "hello2";
     }

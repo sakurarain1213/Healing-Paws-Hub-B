@@ -49,9 +49,6 @@ public class RedisConfig {
         return template;
     }
 
-
-
-
 /*
 
 官方博客版本
@@ -82,14 +79,6 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-
-
-
-
-
-
-
-
    可替代方案
  public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
@@ -111,10 +100,6 @@ public class RedisConfig {
         template.afterPropertiesSet();
         return template;
     }
-
-
-
-
 fastjson版本
 @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -141,7 +126,6 @@ fastjson版本
         return template;
     }
 }
-
 */
 
 }

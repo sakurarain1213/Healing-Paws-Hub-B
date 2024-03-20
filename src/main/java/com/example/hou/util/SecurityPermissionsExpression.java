@@ -10,7 +10,7 @@ import java.util.List;
 
 //自定义security权限校验方法
 
-//有点问题  先不用
+//返回格式问题
 @Component("syex")
 public class SecurityPermissionsExpression {
     public boolean hasAuthority(String authority){
@@ -24,8 +24,9 @@ public class SecurityPermissionsExpression {
         //重大debug，loginUser的 permissions=[] authorities=[] 会找不到 权限
         //这边根据数据库临时补写join查询
         List<String> permissions = loginUser.getPermissions();
-        //-------------------
-        System.out.println( permissions);
+        // List permissions  已经保存mysql里特定用户的权限名的全体 可以任意使用hasAuthority方法
+        //System.out.println( permissions);
+        //System.out.println("-----------------------------");
         //判断用户权限集合中是否存在authority
         return permissions.contains(authority);
 

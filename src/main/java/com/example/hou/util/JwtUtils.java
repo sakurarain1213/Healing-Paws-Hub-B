@@ -12,12 +12,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+//鉴权方案中 有些现成的企业级框架例如shiro
+// oauth2一般是允许第三方应用代表用户获得访问权限  google facebook qq 微信登录等
+//简单的鉴权方案用 jwt + springSecurity即可
+
+
+
 @Component
 public class JwtUtils {
 
     private static String secretKey="hsinchien";   //秘钥一定要固定且大于四位数否则会报key null错误
 
-    private static Integer amount = 1800;//   jwt的过期时间设置  周期/秒 默认30分钟
+    private static final Integer amount = 1800;//   jwt的过期时间设置  周期/秒 默认30分钟
 
 
     // @Value("${jwt.secretKey}")   加了这行会报错
@@ -77,6 +83,7 @@ public class JwtUtils {
         */
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(secretKey)).build().verify(token);
 
+        //todo 考虑如果token过期，从Redis中删除这个token
 
 
         return decodedJWT;

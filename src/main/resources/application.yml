@@ -46,12 +46,14 @@ spring:
   #页面中显示一个json串 , 这样就表示启动ES成功了
 
   elasticsearch:
-    host: 150.158.110.63
-    port: 9200
-    hosts: http://150.158.110.63:9200  #集群时需要 用逗号隔开地址
-    username: elastic   # 强制需要用户名
-    password: Zb6eQvd99MO7=XX=58GI
-    apikey: your_api_key
+    rest:
+      # enable host port 自定义属性 是否启用es
+      enable: true
+      uris: http://150.158.110.63:9200  #集群时需要 用逗号隔开地址
+      host: 150.158.110.63
+      port: 9200
+      username: elastic   # 强制需要用户名
+      password: Zb6eQvd99MO7=XX=58GI
 
 
 

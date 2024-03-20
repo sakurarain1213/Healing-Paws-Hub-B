@@ -1,7 +1,6 @@
 package com.example.hou;
 
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.client.internal.ElasticsearchClient;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,13 +20,16 @@ public class ESTest {
     public void createIndex() throws IOException {
 
 
-
     }
 }
 
 
 
 /*
+springboot+ES8的相关操作可以参考
+https://blog.csdn.net/qq_24473507/article/details/123924463
+有三篇系列文章
+
 
 增加
 User user = new User();
