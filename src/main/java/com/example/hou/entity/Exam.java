@@ -7,33 +7,32 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 @Data
-@Document(collection = "question")
+@Document(collection = "exam")
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class Question {
+
+public class Exam {
     @Id
     private String id;
 
-    private String statement;
+    private String startTime;
+    /**
+     * 以分钟为单位
+     */
+    private Long totalTime;
+    /**
+     * 结束时间>=开始时间+结束时间
+     */
+    private String endTime;
+
+    private String examName;
 
     /**
-     * 判断 - 0,1；选择:A,B,C,D(单选/多选)
+     * 存放questionId列表
      */
-    private String answer;
+    private String[] questionList;
 
-    /**
-     * 所属病Disease列表
-     */
-    private List<String> type;
-
-    /**
-     * 答案解析
-     */
-    private String detail;
-
-    private long score;
+    private Long totalScore;
 }
