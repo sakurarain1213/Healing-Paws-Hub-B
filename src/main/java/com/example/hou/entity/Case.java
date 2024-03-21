@@ -57,12 +57,15 @@ public class Case {
 //    @TextIndexed
     private List<String> type;
 
+    private String mdText;
+
     // 除id以外的field是否全为空
     public boolean nullFieldsExceptId() {
         return name == null && description == null && descriptionImg == null && descriptionVideo == null &&
                 checkItem == null && checkItemImg == null && checkItemVideo == null &&
                 diagnosis == null && diagnosisImg == null && diagnosisVideo == null &&
-                remedy == null && remedyImg == null && remedyVideo == null && type == null;
+                remedy == null && remedyImg == null && remedyVideo == null && type == null &&
+                mdText == null;
 
     }
 }
