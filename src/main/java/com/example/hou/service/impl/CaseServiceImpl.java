@@ -67,6 +67,8 @@ public class CaseServiceImpl implements CaseService {
 
         if(req.getType() != null)upt.set("type", req.getType());
 
+        if (req.getMdText() != null)upt.set("mdText", req.getMdText());
+
         UpdateResult updateResult = template.updateFirst(query, upt, Case.class);
         // 是否执行成功
 //        System.out.println(updateResult.wasAcknowledged());

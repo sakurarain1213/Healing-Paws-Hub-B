@@ -1,25 +1,29 @@
 package com.example.hou.controller;
 
 import com.example.hou.entity.Case;
+import com.example.hou.entity.CaseCreateVo;
+import com.example.hou.entity.CaseUpdateVo;
 import com.example.hou.handler.*;
 import com.example.hou.result.Result;
 import com.example.hou.service.CaseService;
 import com.example.hou.service.DiseaseService;
+import com.example.hou.util.FileUtil;
 import com.example.hou.util.ResultUtil;
 import com.example.hou.validator.CaseTypeCreateConstraint;
 import com.example.hou.validator.CaseTypeUpdateConstraint;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -44,38 +48,173 @@ public class CaseController {
 //        return ResultUtil.success(created);
 //    }
 
+//    @PostMapping
+//    public Result createCase(
+//            @NotBlank @Size(max = 30, message = "name不合法") @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "name为中文、英文、数字、下划线组合")
+//            @RequestParam("name") String name,
+//            @Size(max = 200, message = "description不合法")
+//            @RequestParam(value = "description", required = false) String description,
+//            @RequestParam(value = "descriptionImg", required = false) MultipartFile descriptionImg,
+//            @RequestParam(value = "descriptionVideo", required = false) MultipartFile descriptionVideo,
+//            @Size(max = 200, message = "checkItem不合法")
+//            @RequestParam(value = "checkItem", required = false) String checkItem,
+//            @RequestParam(value = "checkItemImg", required = false) MultipartFile checkItemImg,
+//            @RequestParam(value = "checkItemVideo", required = false) MultipartFile checkItemVideo,
+//            @Size(max = 200, message = "diagnosis不合法")
+//            @RequestParam(value = "diagnosis", required = false) String diagnosis,
+//            @RequestParam(value = "diagnosisImg", required = false) MultipartFile diagnosisImg,
+//            @RequestParam(value = "diagnosisVideo", required = false) MultipartFile diagnosisVideo,
+//            @Size(max = 200, message = "remedy不合法")
+//            @RequestParam(value = "remedy", required = false) String remedy,
+//            @RequestParam(value = "remedyImg", required = false) MultipartFile remedyImg,
+//            @RequestParam(value = "remedyVideo", required = false) MultipartFile remedyVideo,
+//            @CaseTypeCreateConstraint @RequestParam(value = "type") List<String> types) {
+//
+//        System.out.println("name: " + name);
+//        System.out.println("description: " + description);
+//
+//
+////        检查type是否全部合法，若有一个不合法string就返回错误响应
+//        for(String s : types){
+//            System.out.println(s);
+//            long existNum = diseaseService.existName(s);
+//            System.out.println(existNum);
+//            if(existNum <= 0)return ResultUtil.error("存在不合法病名");
+//        }
+//
+//        System.out.println("==============");
+//
+//        Case cur = new Case();
+//        cur.setName(name)
+//                .setDescription(description)
+//                .setCheckItem(checkItem)
+//                .setDiagnosis(diagnosis)
+//                .setRemedy(remedy)
+//                .setType(types);
+//
+//
+//        //todo 后续上传修改成服务器版本
+//        //以下是单个文件上传样例  使用file工具类的方法上传 要结合下面的存在检测逻辑
+////        if(descriptionImg!=null){
+////            String feedback= FileUtil.fileUpload(descriptionImg);
+////            if (feedback!=null) {// 把文件路径存入数据库的对应位置
+////                //cur.setDescriptionImg(feedback);   后续逻辑需要按照业务添加
+////                System.out.println("测试上传成功: "+feedback);
+////                return ResultUtil.success("临时文件上传成功 后续先不做");
+////            }
+////        }
+//
+//
+//
+//
+//
+////        上传文件，并设置case的文件路径字段
+//        List<FileHandler<Case>> handlers = new ArrayList<>();
+//        if(descriptionImg != null)handlers.add(new DescImgHandler(descriptionImg, cur));
+//        if(descriptionVideo != null)handlers.add(new DescVdoHandler(descriptionVideo, cur));
+//
+//        if(checkItemImg != null)handlers.add(new CheckImgHandler(checkItemImg, cur));
+//        if(checkItemVideo != null)handlers.add(new CheckVdoHandler(checkItemVideo, cur));
+//
+//        if(diagnosisImg != null)handlers.add(new DiagImgHandler(diagnosisImg, cur));
+//        if(diagnosisVideo != null)handlers.add(new DiagVdoHandler(diagnosisVideo, cur));
+//
+//        if(remedyImg != null)handlers.add(new RemedyImgHandler(remedyImg, cur));
+//        if(remedyVideo != null)handlers.add(new RemedyVdoHandler(remedyVideo, cur));
+//
+//        try {
+//            for(FileHandler<Case> handler : handlers){
+//                handler.handleFile();
+//            }
+//
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return ResultUtil.error("文件上传失败");
+//        }
+//
+//        System.out.println("process ok");
+//        System.out.println(cur);
+//
+////        将所有字段set的case添加到数据库
+//        Case created = caseService.createCase(cur);
+//        if(created == null)return ResultUtil.error(null);
+//        return ResultUtil.success(created);
+//
+////        List<MultipartFile> multFiles = new ArrayList<>();
+////        if (descriptionImg != null)multFiles.add(descriptionImg);
+////        if (descriptionVideo != null)multFiles.add(descriptionVideo);
+////
+////        String prefix = System.getProperty("user.dir") + System.getProperty("file.separator") +
+////                "media" + System.getProperty("file.separator");
+////        for(MultipartFile f : multFiles){
+////            String dst = prefix + f.getOriginalFilename();
+////            System.out.println("dst: " + dst);
+//
+////            try{
+////                File dest = new File(dst);
+////                System.out.println(dest.getParentFile());
+////
+////                if(!dest.getParentFile().exists()){
+////                    System.out.println("make file");
+////                    dest.getParentFile().mkdirs();
+////                }
+////                f.transferTo(dest);
+////
+////            }catch (Exception e){
+////                e.printStackTrace();
+////            }
+////        }
+//
+////        return ResultUtil.success();
+//    }
+
+//    formdata接收不能用requestbody，使用ModelAttribute
     @PostMapping
-    public Result createCase(
-            @NotBlank @Size(max = 30, message = "name不合法") @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "name为中文、英文、数字、下划线组合")
-            @RequestParam("name") String name,
-            @Size(max = 200, message = "description不合法")
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "descriptionImg", required = false) MultipartFile descriptionImg,
-            @RequestParam(value = "descriptionVideo", required = false) MultipartFile descriptionVideo,
-            @Size(max = 200, message = "checkItem不合法")
-            @RequestParam(value = "checkItem", required = false) String checkItem,
-            @RequestParam(value = "checkItemImg", required = false) MultipartFile checkItemImg,
-            @RequestParam(value = "checkItemVideo", required = false) MultipartFile checkItemVideo,
-            @Size(max = 200, message = "diagnosis不合法")
-            @RequestParam(value = "diagnosis", required = false) String diagnosis,
-            @RequestParam(value = "diagnosisImg", required = false) MultipartFile diagnosisImg,
-            @RequestParam(value = "diagnosisVideo", required = false) MultipartFile diagnosisVideo,
-            @Size(max = 200, message = "remedy不合法")
-            @RequestParam(value = "remedy", required = false) String remedy,
-            @RequestParam(value = "remedyImg", required = false) MultipartFile remedyImg,
-            @RequestParam(value = "remedyVideo", required = false) MultipartFile remedyVideo,
-            @CaseTypeCreateConstraint @RequestParam(value = "type") List<String> types) {
+    public Result createCase(@NonNull @ModelAttribute @Valid CaseCreateVo createVo) {
+        System.out.println("vo:" + createVo);
+
+        String name = createVo.getName();
+        String description = createVo.getDescription();
+        MultipartFile descriptionImg = createVo.getDescriptionImg();
+        MultipartFile descriptionVideo = createVo.getDescriptionVideo();
+
+        String checkItem = createVo.getCheckItem();
+        MultipartFile checkItemImg = createVo.getCheckItemImg();
+        MultipartFile checkItemVideo = createVo.getCheckItemVideo();
+
+        String diagnosis = createVo.getDiagnosis();
+        MultipartFile diagnosisImg = createVo.getDiagnosisImg();
+        MultipartFile diagnosisVideo = createVo.getDiagnosisVideo();
+
+        String remedy = createVo.getRemedy();
+        MultipartFile remedyImg = createVo.getRemedyImg();
+        MultipartFile remedyVideo = createVo.getRemedyVideo();
+
+        List<String> types = createVo.getType();
 
         System.out.println("name: " + name);
-        System.out.println("description: " + description);
-
+//        System.out.println("description: " + description);
+//        System.out.println(types);
 
 //        检查type是否全部合法，若有一个不合法string就返回错误响应
         for(String s : types){
             System.out.println(s);
             long existNum = diseaseService.existName(s);
+//            System.out.println(existNum);
             if(existNum <= 0)return ResultUtil.error("存在不合法病名");
         }
+
+//        if(descriptionImg != null) System.out.println(descriptionImg.getOriginalFilename());
+//        if(descriptionVideo != null)System.out.println(descriptionVideo.getOriginalFilename());
+//
+//        if(checkItemImg != null)System.out.println(checkItemImg.getOriginalFilename());
+//        if(checkItemVideo != null)System.out.println(checkItemVideo.getOriginalFilename());
+//
+//        if(diagnosisImg != null)System.out.println(diagnosisImg.getOriginalFilename());
+//        if(diagnosisVideo != null)System.out.println(diagnosisVideo.getOriginalFilename());
+//
+//        if(remedyImg != null)System.out.println(remedyImg.getOriginalFilename());
+//        if(remedyVideo != null)System.out.println(remedyVideo.getOriginalFilename());
 
         System.out.println("==============");
 
@@ -85,86 +224,81 @@ public class CaseController {
                 .setCheckItem(checkItem)
                 .setDiagnosis(diagnosis)
                 .setRemedy(remedy)
-                .setType(types);
+                .setType(types)
+                .setMdText(createVo.getMdText());
+
 
 //        上传文件，并设置case的文件路径字段
-        List<CaseFileHandler> handlers = new ArrayList<>();
-        if(descriptionImg != null)handlers.add(new CaseDescImgHandler(descriptionImg, cur));
-        if(descriptionVideo != null)handlers.add(new CaseDescVdoHandler(descriptionVideo, cur));
+        List<FileHandler<Case>> handlers = new ArrayList<>();
+        if(descriptionImg != null)handlers.add(new DescImgHandler(descriptionImg, cur));
+        if(descriptionVideo != null)handlers.add(new DescVdoHandler(descriptionVideo, cur));
 
-        if(checkItemImg != null)handlers.add(new CaseCheckImgHandler(checkItemImg, cur));
-        if(checkItemVideo != null)handlers.add(new CaseCheckVdoHandler(checkItemVideo, cur));
+        if(checkItemImg != null)handlers.add(new CheckImgHandler(checkItemImg, cur));
+        if(checkItemVideo != null)handlers.add(new CheckVdoHandler(checkItemVideo, cur));
 
-        if(diagnosisImg != null)handlers.add(new CaseDiagImgHandler(diagnosisImg, cur));
-        if(diagnosisVideo != null)handlers.add(new CaseDiagVdoHandler(diagnosisVideo, cur));
+        if(diagnosisImg != null)handlers.add(new DiagImgHandler(diagnosisImg, cur));
+        if(diagnosisVideo != null)handlers.add(new DiagVdoHandler(diagnosisVideo, cur));
 
-        if(remedyImg != null)handlers.add(new CaseRemedyImgHandler(remedyImg, cur));
-        if(remedyVideo != null)handlers.add(new CaseRemedyVdoHandler(remedyVideo, cur));
+        if(remedyImg != null)handlers.add(new RemedyImgHandler(remedyImg, cur));
+        if(remedyVideo != null)handlers.add(new RemedyVdoHandler(remedyVideo, cur));
 
-        for(CaseFileHandler handler : handlers){
-            handler.handleFile();
+        try {
+            for(FileHandler<Case> handler : handlers){
+                handler.handleFile();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error("文件上传失败");
         }
 
         System.out.println("process ok");
         System.out.println(cur);
+//        return ResultUtil.success();
 
 //        将所有字段set的case添加到数据库
         Case created = caseService.createCase(cur);
         if(created == null)return ResultUtil.error(null);
         return ResultUtil.success(created);
-
-//        List<MultipartFile> multFiles = new ArrayList<>();
-//        if (descriptionImg != null)multFiles.add(descriptionImg);
-//        if (descriptionVideo != null)multFiles.add(descriptionVideo);
-//
-//        String prefix = System.getProperty("user.dir") + System.getProperty("file.separator") +
-//                "media" + System.getProperty("file.separator");
-//        for(MultipartFile f : multFiles){
-//            String dst = prefix + f.getOriginalFilename();
-//            System.out.println("dst: " + dst);
-
-//            try{
-//                File dest = new File(dst);
-//                System.out.println(dest.getParentFile());
-//
-//                if(!dest.getParentFile().exists()){
-//                    System.out.println("make file");
-//                    dest.getParentFile().mkdirs();
-//                }
-//                f.transferTo(dest);
-//
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        }
-
-//        return ResultUtil.success();
     }
 
     @PutMapping
-    public Result updateCaseById(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
-                                 @RequestParam("id") String id,
-                                 @Size(max = 30, message = "name不合法") @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "name为中文、英文、数字、下划线组合")
-                                 @RequestParam(value = "name", required = false) String name,
-                                 @Size(max = 200, message = "description不合法")
-                                 @RequestParam(value = "description", required = false) String description,
-                                 @RequestParam(value = "descriptionImg", required = false) MultipartFile descriptionImg,
-                                 @RequestParam(value = "descriptionVideo", required = false) MultipartFile descriptionVideo,
-                                 @Size(max = 200, message = "checkItem不合法")
-                                 @RequestParam(value = "checkItem", required = false) String checkItem,
-                                 @RequestParam(value = "checkItemImg", required = false) MultipartFile checkItemImg,
-                                 @RequestParam(value = "checkItemVideo", required = false) MultipartFile checkItemVideo,
-                                 @Size(max = 200, message = "diagnosis不合法")
-                                 @RequestParam(value = "diagnosis", required = false) String diagnosis,
-                                 @RequestParam(value = "diagnosisImg", required = false) MultipartFile diagnosisImg,
-                                 @RequestParam(value = "diagnosisVideo", required = false) MultipartFile diagnosisVideo,
-                                 @Size(max = 200, message = "remedy不合法")
-                                 @RequestParam(value = "remedy", required = false) String remedy,
-                                 @RequestParam(value = "remedyImg", required = false) MultipartFile remedyImg,
-                                 @RequestParam(value = "remedyVideo", required = false) MultipartFile remedyVideo,
-                                 @CaseTypeUpdateConstraint @RequestParam(value = "type", required = false) List<String> types){
-//        if(StringUtils.isBlank(id))return ResultUtil.error("id不能是空串或只有空格");
+    public Result updateCaseById(@NonNull @ModelAttribute @Valid CaseUpdateVo updateVo){
+        System.out.println("vo:" + updateVo);
+
+        String id = updateVo.getId();
+        String name = updateVo.getName();
+        String description = updateVo.getDescription();
+        MultipartFile descriptionImg = updateVo.getDescriptionImg();
+        MultipartFile descriptionVideo = updateVo.getDescriptionVideo();
+
+        String checkItem = updateVo.getCheckItem();
+        MultipartFile checkItemImg = updateVo.getCheckItemImg();
+        MultipartFile checkItemVideo = updateVo.getCheckItemVideo();
+
+        String diagnosis = updateVo.getDiagnosis();
+        MultipartFile diagnosisImg = updateVo.getDiagnosisImg();
+        MultipartFile diagnosisVideo = updateVo.getDiagnosisVideo();
+
+        String remedy = updateVo.getRemedy();
+        MultipartFile remedyImg = updateVo.getRemedyImg();
+        MultipartFile remedyVideo = updateVo.getRemedyVideo();
+
+        List<String> types = updateVo.getType();
+
         System.out.println("id: " + id);
+
+//        if(descriptionImg != null) System.out.println(descriptionImg.getOriginalFilename());
+//        if(descriptionVideo != null)System.out.println(descriptionVideo.getOriginalFilename());
+//
+//        if(checkItemImg != null)System.out.println(checkItemImg.getOriginalFilename());
+//        if(checkItemVideo != null)System.out.println(checkItemVideo.getOriginalFilename());
+//
+//        if(diagnosisImg != null)System.out.println(diagnosisImg.getOriginalFilename());
+//        if(diagnosisVideo != null)System.out.println(diagnosisVideo.getOriginalFilename());
+//
+//        if(remedyImg != null)System.out.println(remedyImg.getOriginalFilename());
+//        if(remedyVideo != null)System.out.println(remedyVideo.getOriginalFilename());
 
         if (types != null){
             for(String s : types){
@@ -182,24 +316,32 @@ public class CaseController {
                 .setCheckItem(checkItem)
                 .setDiagnosis(diagnosis)
                 .setRemedy(remedy)
-                .setType(types);
+                .setType(types)
+                .setMdText(updateVo.getMdText());
+
 
 //        上传文件，并设置case的文件路径字段
-        List<CaseFileHandler> handlers = new ArrayList<>();
-        if(descriptionImg != null)handlers.add(new CaseDescImgHandler(descriptionImg, cur));
-        if(descriptionVideo != null)handlers.add(new CaseDescVdoHandler(descriptionVideo, cur));
+        List<FileHandler<Case>> handlers = new ArrayList<>();
+        if(descriptionImg != null)handlers.add(new DescImgHandler(descriptionImg, cur));
+        if(descriptionVideo != null)handlers.add(new DescVdoHandler(descriptionVideo, cur));
 
-        if(checkItemImg != null)handlers.add(new CaseCheckImgHandler(checkItemImg, cur));
-        if(checkItemVideo != null)handlers.add(new CaseCheckVdoHandler(checkItemVideo, cur));
+        if(checkItemImg != null)handlers.add(new CheckImgHandler(checkItemImg, cur));
+        if(checkItemVideo != null)handlers.add(new CheckVdoHandler(checkItemVideo, cur));
 
-        if(diagnosisImg != null)handlers.add(new CaseDiagImgHandler(diagnosisImg, cur));
-        if(diagnosisVideo != null)handlers.add(new CaseDiagVdoHandler(diagnosisVideo, cur));
+        if(diagnosisImg != null)handlers.add(new DiagImgHandler(diagnosisImg, cur));
+        if(diagnosisVideo != null)handlers.add(new DiagVdoHandler(diagnosisVideo, cur));
 
-        if(remedyImg != null)handlers.add(new CaseRemedyImgHandler(remedyImg, cur));
-        if(remedyVideo != null)handlers.add(new CaseRemedyVdoHandler(remedyVideo, cur));
+        if(remedyImg != null)handlers.add(new RemedyImgHandler(remedyImg, cur));
+        if(remedyVideo != null)handlers.add(new RemedyVdoHandler(remedyVideo, cur));
 
-        for(CaseFileHandler handler : handlers){
-            handler.handleFile();
+        try {
+            for(FileHandler<Case> handler : handlers){
+                handler.handleFile();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error("文件上传失败");
         }
 
         System.out.println("process ok");
@@ -212,12 +354,89 @@ public class CaseController {
         else return ResultUtil.success(res);
     }
 
+
+//    @PutMapping
+//    public Result updateCaseById(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+//                                 @RequestParam("id") String id,
+//                                 @Size(max = 30, message = "name不合法") @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "name为中文、英文、数字、下划线组合")
+//                                 @RequestParam(value = "name", required = false) String name,
+//                                 @Size(max = 200, message = "description不合法")
+//                                 @RequestParam(value = "description", required = false) String description,
+//                                 @RequestParam(value = "descriptionImg", required = false) MultipartFile descriptionImg,
+//                                 @RequestParam(value = "descriptionVideo", required = false) MultipartFile descriptionVideo,
+//                                 @Size(max = 200, message = "checkItem不合法")
+//                                 @RequestParam(value = "checkItem", required = false) String checkItem,
+//                                 @RequestParam(value = "checkItemImg", required = false) MultipartFile checkItemImg,
+//                                 @RequestParam(value = "checkItemVideo", required = false) MultipartFile checkItemVideo,
+//                                 @Size(max = 200, message = "diagnosis不合法")
+//                                 @RequestParam(value = "diagnosis", required = false) String diagnosis,
+//                                 @RequestParam(value = "diagnosisImg", required = false) MultipartFile diagnosisImg,
+//                                 @RequestParam(value = "diagnosisVideo", required = false) MultipartFile diagnosisVideo,
+//                                 @Size(max = 200, message = "remedy不合法")
+//                                 @RequestParam(value = "remedy", required = false) String remedy,
+//                                 @RequestParam(value = "remedyImg", required = false) MultipartFile remedyImg,
+//                                 @RequestParam(value = "remedyVideo", required = false) MultipartFile remedyVideo,
+//                                 @CaseTypeUpdateConstraint @RequestParam(value = "type", required = false) List<String> types){
+////        if(StringUtils.isBlank(id))return ResultUtil.error("id不能是空串或只有空格");
+//        System.out.println("id: " + id);
+//
+//        if (types != null){
+//            for(String s : types){
+//                System.out.println(s);
+//                long existNum = diseaseService.existName(s);
+//                if(existNum <= 0)return ResultUtil.error("存在不合法病名");
+//            }
+//        }
+//        System.out.println("==============");
+//
+//        Case cur = new Case();
+//        cur.setId(id)
+//                .setName(name)
+//                .setDescription(description)
+//                .setCheckItem(checkItem)
+//                .setDiagnosis(diagnosis)
+//                .setRemedy(remedy)
+//                .setType(types);
+//
+////        上传文件，并设置case的文件路径字段
+//        List<FileHandler<Case>> handlers = new ArrayList<>();
+//        if(descriptionImg != null)handlers.add(new DescImgHandler(descriptionImg, cur));
+//        if(descriptionVideo != null)handlers.add(new DescVdoHandler(descriptionVideo, cur));
+//
+//        if(checkItemImg != null)handlers.add(new CheckImgHandler(checkItemImg, cur));
+//        if(checkItemVideo != null)handlers.add(new CheckVdoHandler(checkItemVideo, cur));
+//
+//        if(diagnosisImg != null)handlers.add(new DiagImgHandler(diagnosisImg, cur));
+//        if(diagnosisVideo != null)handlers.add(new DiagVdoHandler(diagnosisVideo, cur));
+//
+//        if(remedyImg != null)handlers.add(new RemedyImgHandler(remedyImg, cur));
+//        if(remedyVideo != null)handlers.add(new RemedyVdoHandler(remedyVideo, cur));
+//
+//        for(FileHandler<Case> handler : handlers){
+//            handler.handleFile();
+//        }
+//
+//        System.out.println("process ok");
+//        System.out.println(cur);
+//        if(cur.nullFieldsExceptId())return ResultUtil.error("未填写任何需要更新的信息");
+//
+////        数据库更新
+//        Long res = caseService.updateCaseById(cur);
+//        if (res == null || res == 0)return ResultUtil.error(null);
+//        else return ResultUtil.success(res);
+//    }
+
     @DeleteMapping
     public Result deleteCaseById(@NotBlank(message = "id不能是空串或只有空格") @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                  @RequestParam("id") String id){
-        caseService.deleteCaseById(id);
-        System.out.println("delete:"+id);
-        return ResultUtil.success();
+        try {
+            caseService.deleteCaseById(id);
+            System.out.println("delete:"+id);
+            return ResultUtil.success();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error("删除失败");
+        }
     }
 
     @GetMapping
