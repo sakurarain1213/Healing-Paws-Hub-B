@@ -3,10 +3,16 @@ package com.example.hou.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.parameters.P;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -16,13 +22,18 @@ import java.util.List;
 @Accessors(chain = true)
 public class Question {
     @Id
+    @Size(min = 24, max = 24, message = "id不合法")
+    @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String id;
+
 
     private String statement;
 
     /**
      * 判断 - 0,1；选择:A,B,C,D(单选/多选)
      */
+    @Size(max = 15, message = "answer不合法")
+    @Pattern(regexp = "^[\\u4E00-\\u9FA501A-Da-d,]+$", message = "answer为0,1如果为判断题，A,B,C,D如果为选择题")
     private String answer;
 
     /**
@@ -35,5 +46,15 @@ public class Question {
      */
     private String detail;
 
+    @Max(100)
     private long score;
+
+    public boolean missingRequiredFields(){
+        return (statement == null || answer == null || type == null || score == 0);
+    }
+
+    public boolean missingAllRequiredFields(){
+        return (statement == null && answer == null && type == null && score == 0);
+
+    }
 }

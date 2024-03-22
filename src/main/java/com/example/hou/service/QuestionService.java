@@ -1,12 +1,16 @@
 package com.example.hou.service;
 
+import com.example.hou.entity.Disease;
 import com.example.hou.entity.Question;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface QuestionService {
+    boolean existErrorDisease(List<String> diseaseList);
     Question createQuestion(Question req);
 
-    Question updateQuestionById(Question req);
+    Long updateQuestionById(Question req);
 
     void deleteQuestionById(String id);
 

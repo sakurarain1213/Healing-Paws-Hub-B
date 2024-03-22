@@ -1,16 +1,23 @@
 package com.example.hou.service.impl;
 
+import com.example.hou.entity.Disease;
 import com.example.hou.entity.Question;
 import com.example.hou.mapper.QuestionRepository;
+import com.example.hou.service.DiseaseService;
 import com.example.hou.service.QuestionService;
 //import org.hibernate.Criteria;
+import com.mongodb.client.result.UpdateResult;
+import org.apache.poi.ss.formula.functions.T;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 //import javax.management.Query;
@@ -24,6 +31,18 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionRepository questionRepository;
     @Autowired
     private MongoTemplate template;
+
+    @Override
+    public boolean existErrorDisease(List<String> diseaseList) {
+        DiseaseService diseaseService;
+        for (String diseaseId : diseaseList) {
+            Query query = new Query(Criteria.where("id").is(diseaseId));
+            long count = template.count(query, Disease.class);
+            if(count <= 0)
+                return true;
+        }
+        return false;
+    }
     @Override
     public Question createQuestion(Question req) {
         Question saved = questionRepository.insert(req);
@@ -31,9 +50,23 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question updateQuestionById(Question req) {
-        Question saved = questionRepository.save(req);
-        return saved;
+    public Long updateQuestionById(Question req) {
+        Update update = new Update();
+        if(req.getType() != null)
+            update.set("type", req.getType());
+        if(req.getAnswer() != null)
+            update.set("answer", req.getAnswer());
+        if(req.getDetail() != null)
+            update.set("detail", req.getDetail());
+        if(req.getStatement() != null)
+            update.set("statement", req.getStatement());
+        update.set("score", req.getScore());
+
+        Query query = new Query(Criteria.where("id").in(req.getId()));
+
+        UpdateResult updateResult = template.updateFirst(query, update, Question.class);
+        System.out.println(updateResult.getModifiedCount());
+        return updateResult.getModifiedCount();
     }
 
     @Override
@@ -55,18 +88,31 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, String diseases) {
-        String[] diseaseList = diseases.split(" ");
+        if(diseases.isEmpty())
+            return null;
+        /*考虑对pageNume和pageSize检查*/
+
         /* 思路：根据diseaseList的病名查到对应病的idList，然后查询 type属性：包含idList 的 question */
-//        Page<Question> page = template.findAll(PageRequest.of(pageNum - 1, pageSize));
+        String[] diseaseList = diseases.split(" ");
         Criteria criteria = Criteria.where("name").in(diseaseList);
-//        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
-        Query query = new Query(criteria)/*.with(pageable)*/;
+        Query query = new Query(criteria);
         List<Disease> diseaseList1 = template.find(query, Disease.class);
-
         // 通过病名查询到的病的idList
-        List<Long> idList = diseaseList1.stream().map(Disease::getId).collect(Collectors.toSet());
+        List<String> idList = diseaseList1.stream().map(Disease::getId).collect(Collectors.toList());
 
-        return null;
+        System.out.println("病id列表: " + idList);
+       /* Criteria criteria1 = Criteria.where("type")
+                .andDocumentStructureMatches(() ->
+                        new Document().append("db.inventory.find", new Document("$all", idList)));*/
+        Criteria criteria1 = Criteria.where("type").all(idList);
+        Query query1 = new Query(criteria1);
+        List<Question> list = template.find(query1, Question.class);
+
+        System.out.println("题目列表: " + list);
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        Page<Question> page = new PageImpl<>(list, pageable, list.size());
+        return page;
     }
 
 }
