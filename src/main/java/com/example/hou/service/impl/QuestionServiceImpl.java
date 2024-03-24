@@ -34,7 +34,6 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public boolean existErrorDisease(List<String> diseaseList) {
-        DiseaseService diseaseService;
         for (String diseaseId : diseaseList) {
             Query query = new Query(Criteria.where("id").is(diseaseId));
             long count = template.count(query, Disease.class);
@@ -50,7 +49,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Long updateQuestionById(Question req) {
+    public Long updateQuestion(Question req) {
         Update update = new Update();
         if(req.getType() != null)
             update.set("type", req.getType());
@@ -60,9 +59,10 @@ public class QuestionServiceImpl implements QuestionService {
             update.set("detail", req.getDetail());
         if(req.getStatement() != null)
             update.set("statement", req.getStatement());
-        update.set("score", req.getScore());
+        if (req.getScore() > 0)
+            update.set("score", req.getScore());
 
-        Query query = new Query(Criteria.where("id").in(req.getId()));
+        Query query = new Query(Criteria.where("id").is(req.getId()));
 
         UpdateResult updateResult = template.updateFirst(query, update, Question.class);
         System.out.println(updateResult.getModifiedCount());

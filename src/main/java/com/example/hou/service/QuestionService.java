@@ -10,7 +10,7 @@ public interface QuestionService {
     boolean existErrorDisease(List<String> diseaseList);
     Question createQuestion(Question req);
 
-    Long updateQuestionById(Question req);
+    Long updateQuestion(Question req);
 
     void deleteQuestionById(String id);
 

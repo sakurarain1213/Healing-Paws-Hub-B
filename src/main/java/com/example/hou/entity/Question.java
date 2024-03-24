@@ -50,11 +50,10 @@ public class Question {
     private long score;
 
     public boolean missingRequiredFields(){
-        return (statement == null || answer == null || type == null || score == 0);
+        return (statement == null || statement.trim().isEmpty() || answer == null || type == null);
     }
 
     public boolean missingAllRequiredFields(){
-        return (statement == null && answer == null && type == null && score == 0);
-
+        return ((statement == null || statement.trim().isEmpty()) && answer == null && type == null);
     }
 }

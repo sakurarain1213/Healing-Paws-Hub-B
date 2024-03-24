@@ -45,13 +45,13 @@ public class QuestionController {
             return ResultUtil.error(0);
 
         System.out.println(req.getId());
-        System.out.println(req.missingRequiredFields());
+//        System.out.println(req.missingRequiredFields());
         if(req.missingAllRequiredFields() && req.getDetail() == null)
             return ResultUtil.error("未填写任何需要更新的信息");
         if(req.getType() != null && questionService.existErrorDisease(req.getType()))
             return ResultUtil.error("病的ID有误");
 
-        Long res = questionService.updateQuestionById(req);
+        Long res = questionService.updateQuestion(req);
         if (res == null || res == 0)
             return ResultUtil.error(null);
         return ResultUtil.success(res);
