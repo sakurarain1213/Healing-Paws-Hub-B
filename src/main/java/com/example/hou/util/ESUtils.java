@@ -1,3 +1,87 @@
+package com.example.hou.util;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.TrackHits;
+import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
+import co.elastic.clients.elasticsearch.indices.GetIndexResponse;
+import co.elastic.clients.transport.endpoints.BooleanResponse;
+import com.alibaba.fastjson.JSON;
+import com.example.hou.config.ElasticSearchConfig;
+import com.example.hou.entity.EsQueryDTO;
+import org.apache.poi.ss.formula.functions.T;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+
+@Component
+public class ESUtils {
+    @Autowired
+    private ElasticsearchClient client;
+
+    /**
+     *  根据关键字分页查询
+     */
+    public List<T> queryByPage(EsQueryDTO dto, Class<T> target) throws Exception {
+        List<T> result = new ArrayList<>();
+        SearchResponse<HashMap> search = client.search(s -> s
+                        .index(dto.getIndexName())
+                        .query(q -> q.term(t -> t
+                                .field(dto.getField())
+                                .value(dto.getWord())
+                        ))
+                        .from(dto.getFrom())
+                        .size(dto.getSize()),
+                HashMap.class);
+
+        List<Hit<HashMap>> hits = search.hits().hits();
+        Iterator<Hit<HashMap>> iterator = hits.iterator();
+        while (iterator.hasNext()){
+            Hit<HashMap> decodeBeanHit = iterator.next();
+            Map<String,Object> docMap = decodeBeanHit.source();
+            String json = JSON.toJSONString(docMap);
+            T obj  = JSON.parseObject(json, target);
+            result.add(obj);
+        }
+        return result;
+    }
+
+    /**
+     * 根据关键字查询记录总数
+     */
+    public long queryCountByPage(EsQueryDTO dto) throws Exception {
+        CountResponse response = client.count(c -> c.index(dto.getIndexName())
+                .query(q -> q.term(
+                        t -> t.field(dto.getField()).value(dto.getWord())
+                ))
+        );
+        return response.count();
+    }
+
+    /**
+     * 根据文档id查询
+     */
+    public T queryDocById(EsQueryDTO dto, Class<T> target) throws Exception{
+        GetResponse<HashMap> response = client.get(s -> s
+                        .index(dto.getIndexName())
+                        .id(dto.getWord()),
+                HashMap.class
+        );
+        HashMap<String, Object> doc = response.source();
+        String jsonDoc = JSON.toJSONString(doc);
+        T res = JSON.parseObject(jsonDoc, target);
+        return res;
+    }
+
+
+
+
+}
 /*
 
 package com.example.hou.util;
