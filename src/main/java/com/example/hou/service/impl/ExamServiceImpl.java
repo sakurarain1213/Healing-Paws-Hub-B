@@ -63,6 +63,8 @@ public class ExamServiceImpl implements ExamService {
             update.set("totalScore", req.getTotalScore());
         if(req.getEndTime() != null)
             update.set("endTime", req.getEndTime());
+        if(req.getType() > 0)
+            update.set("type", req.getType());
 
         if(req.getTotalTime() <= 0)
             return null;

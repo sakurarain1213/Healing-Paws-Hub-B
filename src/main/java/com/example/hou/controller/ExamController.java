@@ -28,6 +28,9 @@ public class ExamController {
         if(req.missingRequiredFields())
             return ResultUtil.error("缺少必须字段");
 
+        if(req.getType() <= 0)
+            return ResultUtil.error("type有误");
+
         long score = examService.totalScore(req.getQuestionList());
         if(score == -1)
             return ResultUtil.error("题目的ID有误");
@@ -52,6 +55,10 @@ public class ExamController {
             return  ResultUtil.error(0);
         if(req.missingAllRequiredFields())
             return ResultUtil.error("未填写任何需要更新的信息");
+
+        if(req.getType() <= 0)
+            return ResultUtil.error("type有误");
+
         if(req.getQuestionList() != null) {
             long score = examService.totalScore(req.getQuestionList());
             if(score == -1)

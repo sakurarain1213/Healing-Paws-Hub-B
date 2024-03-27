@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -54,6 +55,12 @@ public class Exam {
     private Date endTime;
 
     private Long totalScore;
+
+    /**
+     * 所属角色，取值[1,2,3]
+     */
+    @Max(3)
+    private int type;
 
     public boolean missingRequiredFields(){
         return ((examName == null || examName.trim().isEmpty()) || startTime == null
