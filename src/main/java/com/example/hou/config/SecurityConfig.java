@@ -70,6 +70,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 允许登录接口匿名访问
                 .antMatchers("/sysUser/login", "/sysUser/test",
                           "/book/get",
+                        "/images/**",
+                        "/logo/**",
                         "/email/**",
                         "/case/**",
                         "/question/**",
