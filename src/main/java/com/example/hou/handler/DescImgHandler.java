@@ -17,12 +17,6 @@ public class DescImgHandler extends FileHandler<Case> {
     @Override
     public void preHandle() {
         System.out.println("=====CaseDescImgHandler======");
-    }
-
-    @Override
-    public void fillCase(String filename) {
-        cse.setDescriptionImg(filename);
-
         List<Integer> size = new ArrayList<>();
         try {
             BufferedImage buf = ImageIO.read(src.getInputStream());
@@ -34,11 +28,15 @@ public class DescImgHandler extends FileHandler<Case> {
 
         }catch (Exception e){
             e.printStackTrace();
-            throw new RuntimeException("CaseDescImgHandler: read size error");
+            throw new RuntimeException("CaseDescImgHandler: " + e.getMessage());
         }
 
         cse.setDescImgSize(size);
+    }
 
+    @Override
+    public void fillCase(String filename) {
+        cse.setDescriptionImg(filename);
         System.out.println(cse);
     }
 

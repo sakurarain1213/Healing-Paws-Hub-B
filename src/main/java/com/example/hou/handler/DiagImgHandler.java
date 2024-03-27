@@ -16,11 +16,6 @@ public class DiagImgHandler extends FileHandler<Case> {
     @Override
     public void preHandle() {
         System.out.println("=====CaseDiagImgHandler======");
-    }
-
-    @Override
-    public void fillCase(String filename) {
-        cse.setDiagnosisImg(filename);
 
         List<Integer> size = new ArrayList<>();
         try {
@@ -37,7 +32,11 @@ public class DiagImgHandler extends FileHandler<Case> {
         }
 
         cse.setDiagImgSize(size);
+    }
 
+    @Override
+    public void fillCase(String filename) {
+        cse.setDiagnosisImg(filename);
         System.out.println(cse);
     }
 

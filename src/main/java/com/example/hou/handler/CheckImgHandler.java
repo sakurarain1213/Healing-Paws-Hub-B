@@ -8,7 +8,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * 读取图片长宽list需要读取 MultipartFile 的流，在流被消费(文件上传成功后)再读取会失败，必须在preHandle完成读取
+ */
 public class CheckImgHandler extends FileHandler<Case> {
     public CheckImgHandler(MultipartFile src, Case cse){
         super(src, cse);
@@ -17,11 +19,6 @@ public class CheckImgHandler extends FileHandler<Case> {
     @Override
     public void preHandle() {
         System.out.println("=====CaseCheckImgHandler======");
-    }
-
-    @Override
-    public void fillCase(String filename) {
-        cse.setCheckItemImg(filename);
 
         List<Integer> size = new ArrayList<>();
         try {
@@ -38,7 +35,11 @@ public class CheckImgHandler extends FileHandler<Case> {
         }
 
         cse.setCheckImgSize(size);
+    }
 
+    @Override
+    public void fillCase(String filename) {
+        cse.setCheckItemImg(filename);
         System.out.println(cse);
     }
 
