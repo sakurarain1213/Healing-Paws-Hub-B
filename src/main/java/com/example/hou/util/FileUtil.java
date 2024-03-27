@@ -108,7 +108,7 @@ public class FileUtil {
                 }
             }
             */
-            return "/www/wwwroot/mediaFile/" + newFileName;   //成功
+            return GlobalConstant.urlAccessFilePrefix + newFileName;   //成功
         } catch (IOException e) {
             e.printStackTrace();
             //return "文件上传失败";

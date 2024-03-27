@@ -29,6 +29,7 @@ public class Case {
      */
     private String description;
     private String descriptionImg;
+    private List<Integer> descImgSize;
     private String descriptionVideo;
 
     /**
@@ -36,6 +37,7 @@ public class Case {
      */
     private String checkItem;
     private String checkItemImg;
+    private List<Integer> checkImgSize;
     private String checkItemVideo;
 
     /**
@@ -43,6 +45,7 @@ public class Case {
      */
     private String diagnosis;
     private String diagnosisImg;
+    private List<Integer> diagImgSize;
     private String diagnosisVideo;
 
     /**
@@ -50,6 +53,7 @@ public class Case {
      */
     private String remedy;
     private String remedyImg;
+    private List<Integer> remedyImgSize;
     private String remedyVideo;
     /**
      * 病例类型数组
