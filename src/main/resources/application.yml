@@ -62,11 +62,14 @@ spring:
 # mongoDB的远程配置  为了防止扫描攻击 采用账号密码访问   root指定数据库是admin  如果用另外的数据库需要在对应数据库新建user
   data:
     mongodb:
-      host: 150.158.110.63
-      port: 27017
-      authentication-database: admin
-      username: root
-      password: 53oOBExixV4ArY64
+      #      host: 150.158.110.63
+      #      port: 27017
+      #      authentication-database: admin
+      #      username: root
+      #      password: 53oOBExixV4ArY64
+      uri: mongodb://root:53oOBExixV4ArY64@150.158.110.63:27017/?readPreference=primary&replicaSet=myrs
+
+
 
 
   # redis配置  如果不写 自动默认配置   如果服务器或者本地没有redis数据库 需要改动很多源文件
