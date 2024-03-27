@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -70,8 +71,6 @@ public class SecurityUserServiceImpl implements SecurityUserService {
     public Result login(LoginUserParam param) {
         //前端需求  登录字段统一成 account  不要userName
 
-
-
         // 1 获取AuthenticationManager 对象 然后调用 authenticate() 方法
         // UsernamePasswordAuthenticationToken 实现了Authentication 接口
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(param.getAccount(), param.getPassword());
@@ -86,6 +85,21 @@ public class SecurityUserServiceImpl implements SecurityUserService {
         LogUser loginUser = (LogUser) authenticate.getPrincipal();
         String userId = loginUser.getUser().getUserId().toString();
 
+        //先更新user表的最新登录时间
+        int id = loginUser.getUser().getUserId();
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
+        sysuser.setLastLoginTime(new Date());
+
+        UpdateWrapper<SysUser> userUpdateWrapper = new UpdateWrapper<>();
+        userUpdateWrapper.eq("user_id", userId);
+
+        int flag = sysuserMapper.update(sysuser, userUpdateWrapper);
+        if(flag !=1) return ResultUtil.error("更新登录时间失败");
+
+        //再存储登录信息到redis
+
         Map<String, String> payloadMap = new HashMap<>();
         payloadMap.put("userId", userId);
         payloadMap.put("userName", loginUser.getUser().getUserName());
@@ -94,9 +108,8 @@ public class SecurityUserServiceImpl implements SecurityUserService {
         boolean resultRedis = redisUtil.set("login:" + userId, loginUser);
 
         if (!resultRedis) {
-            throw new RuntimeException("redis连接失败引起的登录失败");
+            throw new RuntimeException("redis连接失败导致登录失败");
         }
-
 
         return ResultUtil.success(payloadMap);
     }

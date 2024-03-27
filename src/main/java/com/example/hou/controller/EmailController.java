@@ -2,8 +2,10 @@ package com.example.hou.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.hou.entity.LoginUserParam;
 import com.example.hou.entity.SysUser;
+import com.example.hou.mapper.SysUserMapper;
 import com.example.hou.result.Result;
 import com.example.hou.service.SecurityUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ public class EmailController {
 
 
     @Autowired
+    SysUserMapper sysuserMapper;//用于提前判断用户是否已经存在
+
+    @Autowired
     private SecurityUserService userService;
 
 
@@ -61,12 +66,23 @@ public class EmailController {
      * 测试通过  传账号和密码的json  注意后续统一一下返回格式result
      */
     @PostMapping("/register")
-    public String getCode(@RequestBody String body) throws MessagingException {
+    public Result getCode(@RequestBody String body) throws MessagingException {
         //String email = request.getUserName();//注意前端json的变量名
         //String password = request.getPassword();  避免命名混乱 尝试直接解析json 不利用DTO实体
         JSONObject jsonObject = JSONObject.parseObject(body);
         String email = jsonObject.getString("email");//和前端约定的json格式
         String password = jsonObject.getString("password");
+
+        /*
+        先判断一下用户是否存在  优化性能 减少email开销
+        */
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", email);
+        SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
+        if (sysuser != null) {
+            return new Result(-100, "用户已存在", null);
+        }
+
 
         // 加密密码   注意注册时候的加密方法要和登录时一样 (已经统一)
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -77,8 +93,8 @@ public class EmailController {
 
         // 将令牌和加密后的密码存储到 Redis，并设置过期时间为5分钟   注意先用分割：的string实现 序列化对象为json的方法要参考login
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        ops.set(token, email + ":" + encodedPassword, 5, TimeUnit.MINUTES);
-
+        ops.set("email:"+token, email + ":" + encodedPassword, 5, TimeUnit.MINUTES);
+        //第一个参数email: 模拟的是文件夹结构
         // 创建包含令牌的URL链接  注意具体/子路径和端口号
         String url = "http://"+IP+":8080/email/confirm?token=" + token;
 
@@ -126,10 +142,10 @@ public class EmailController {
                 "    }\n" +
                 "\n" +
                 ".logo {\n" +
-                "        margin: 3em auto;\n" +
-                "        width: 200px;\n" +
-                "        height: 60px;\n" +
-                "    }\n" +
+                "        width: 100px;\n" +
+                "        height: 100px;\n" +
+                "         background-image: url('http://150.158.110.63:8080/logo/logo.svg'); \n" +
+                "    }\n" +     //注意这里放项目logo的在线资源 旧版浏览器不支持显示
                 "\n" +
                 "    h1.email-title {\n" +
                 "        font-size: 26px;\n" +
@@ -194,8 +210,8 @@ public class EmailController {
         String HTMLBody = "<body>\n" +
                 "  <section class=\"email_warp\">\n" +
                 "    <div id=\"reset-password-email\">\n" +
-                "      <div class=\"logo\">\n" +                 //注意这里放项目图片的在线资源  现在先任意
-                "        <img src=\"https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/dcec27cc6ece0eb5bb217e62e6bec104.svg\" alt=\"logo\">\n" +
+                "      <div class=\"logo\">\n" +                 //注意这里放项目logo的在线资源
+                "               \n" +
                 "      </div>\n" +
                 "\n" +
                 "      <h1 class=\"email-title\">\n" +
@@ -254,7 +270,7 @@ public class EmailController {
 
         mailSender.send(message);
 
-        return "发送成功！";
+        return new Result(200,"发送成功！",null);
     }
 
 
@@ -263,7 +279,7 @@ public class EmailController {
     public Result confirm(@RequestParam("token") String token) {
         // 检查令牌是否存在并且未过期
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        String value = ops.get(token);
+        String value = ops.get("email:"+token);//注意模拟目录结构
 
         if (value == null) {
             return new Result(-100, "链接已过期或无效", null);
