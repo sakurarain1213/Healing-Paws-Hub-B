@@ -10,8 +10,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://150.158.110.63:3306/sc?useUnicode=true & characterEncoding=utf-8 & allowPublicKeyRetrieval=true&useSSL=false & serverTimezone=Asia/Shanghai
-    username: root
-    password: 123abc
+    username: newuser123
+    password: password123
     #云服务器要去mysql更新权限
     #服务器与数据库大坑 如果你用编译器连接数据库，定义UTC，MySQL以本地时区进行转换会导致，执行时间比编译器执行时间早8个小时
     #建议用 serverTimezone=Asia/Shanghai   不用UTC
@@ -31,7 +31,7 @@ spring:
   web:
     resources:
       static-locations: file:/www/wwwroot/ , classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
-  #服务器的静态资源访问配置   其实默认放在resources/static下即可  通过ip地址:端口 访问
+  #服务器的静态资源访问配置  logo等 其实默认放在resources/static下即可  通过ip地址:端口 访问
 
   # mongoDB的远程配置  为了防止扫描攻击 采用账号密码访问   root指定数据库是admin  如果用另外的数据库需要在对应数据库新建user
 
@@ -54,7 +54,7 @@ spring:
       host: 150.158.110.63
       port: 9200
       username: elastic   # 强制需要用户名
-      password: Zb6eQvd99MO7=XX=58GI
+      password: bA9SilIS+3huVZJRzsG*
 
 
 

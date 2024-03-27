@@ -86,9 +86,6 @@ public class FileUtil {
             // 如果目录不存在，创建目录  todo  考虑根据文件类型分文件夹
 
 
-
-
-
             File directory = new File("/www/wwwroot/mediaFile");
             if (!directory.exists()) {
                 directory.mkdirs();
