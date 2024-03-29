@@ -30,12 +30,18 @@ public class Exam {
     private String examName;
 
     /**
-     * 存放questionId列表
+     *  未发布状态时，存放questionId列表
      */
-    private List<String> questionList;
+    private List<String> questionIdList;
 
-    /*private List<Question> questionList;
-    private Boolean release;*/
+    /**
+     *  发布状态时，存放question列表
+     */
+    private List<QuestionEntity> questionList;
+    /**
+     *  发布的状态
+     */
+    private Boolean release;
 
     /**
     * 约束约束前端传入的时间类型参数格式和后端响应前端的时间类型格式
@@ -64,11 +70,11 @@ public class Exam {
 
     public boolean missingRequiredFields(){
         return ((examName == null || examName.trim().isEmpty()) || startTime == null
-                || questionList == null || endTime == null);
+                || questionIdList == null || endTime == null);
     }
 
     public boolean missingAllRequiredFields(){
         return ((examName == null || examName.trim().isEmpty()) && startTime == null
-                && questionList == null && endTime == null);
+                && questionIdList == null && endTime == null);
     }
 }

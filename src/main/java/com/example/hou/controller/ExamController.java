@@ -33,7 +33,7 @@ public class ExamController {
         if (req.getType() <= 0)
             return ResultUtil.error("type有误");
 
-        long score = examService.totalScore(req.getQuestionList());
+        long score = examService.totalScore(req.getQuestionIdList());
         if (score == -1)
             return ResultUtil.error("题目的ID有误");
         req.setTotalScore(score);
@@ -61,8 +61,8 @@ public class ExamController {
         if (req.getType() <= 0)
             return ResultUtil.error("type有误");
 
-        if (req.getQuestionList() != null) {
-            long score = examService.totalScore(req.getQuestionList());
+        if (req.getQuestionIdList() != null) {
+            long score = examService.totalScore(req.getQuestionIdList());
             if (score == -1)
                 return ResultUtil.error("题目的ID有误");
             req.setTotalScore(score);

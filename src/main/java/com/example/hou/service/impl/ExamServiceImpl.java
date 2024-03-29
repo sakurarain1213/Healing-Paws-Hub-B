@@ -32,9 +32,9 @@ public class ExamServiceImpl implements ExamService {
      * 返回-1如果questionList的id有误，否则返回其题目的总分
      */
     @Override
-    public long totalScore(List<String> questionList) {
+    public long totalScore(List<String> questionIdList) {
         long score = 0;
-        for(String questionId : questionList){
+        for(String questionId : questionIdList){
             Query query = new Query(Criteria.where("id").is(questionId));
             Question question = template.findOne(query, Question.class);
             if(question == null)
@@ -54,8 +54,8 @@ public class ExamServiceImpl implements ExamService {
         Update update = new Update();
         if(req.getExamName() != null)
             update.set("examName", req.getExamName());
-        if(req.getQuestionList() != null)
-            update.set("questionList", req.getQuestionList());
+        if(req.getQuestionIdList() != null)
+            update.set("questionList", req.getQuestionIdList());
         if(req.getStartTime() != null)
             update.set("startTime", req.getStartTime());
         if(req.getTotalTime() > 0)

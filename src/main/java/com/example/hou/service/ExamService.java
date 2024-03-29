@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface ExamService {
-    long totalScore(List<String> questionList);
+    long totalScore(List<String> questionIdList);
     Exam createExam(Exam req);
     Long updateExam(Exam req);
     void deleteExamById(String id);
