@@ -9,16 +9,17 @@ import com.example.hou.service.QuestionService;
 import com.example.hou.util.ResultUtil;
 import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ExamServiceImpl implements ExamService {
@@ -93,5 +94,29 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public Page<Exam> getExamByPage(Integer pageNum, Integer pageSize) {
         return examRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
+    }
+
+    @Override
+    public Page<Exam> getExamsByTimeOrderWithPagination(Integer pageNum, Integer pageSize) {
+        // 按时间降序排序
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").descending());
+        return examRepository.findAll(pageable);
+    }
+    @Override
+    public Page<Exam> getExamsByNameLikeWithPagination(String examName, Integer pageNum, Integer pageSize) {
+        return examRepository.findByExamNameLike(examName, PageRequest.of(pageNum - 1, pageSize));
+    }
+    @Override
+    public Page<Exam> getExamsByTypeWithPagination(int type, Integer pageNum, Integer pageSize) {
+        return examRepository.findByType(type, PageRequest.of(pageNum - 1, pageSize));
+    }
+    @Override
+    public Page<Exam> getExamsByTimeWithPagination(Date startTime, Date endTime, Integer pageNum, Integer pageSize) {
+        Criteria criteria = Criteria.where("startTime").gte(startTime).and("endTime").lte(endTime);
+        Query query = Query.query(criteria);
+        List<Exam> list = template.find(query, Exam.class);
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        Page<Exam> page = new PageImpl<>(list, pageable, list.size());
+        return page;
     }
 }

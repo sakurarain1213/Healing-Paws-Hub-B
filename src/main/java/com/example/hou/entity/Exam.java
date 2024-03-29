@@ -22,9 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 @Accessors(chain = true)
 public class Exam {
-    /*public static final String DATE_BARS_REGEXP_HOUR_MIN_SS =
-            "^\\d{4}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D*$";
-    @Pattern(regexp = DATE_BARS_REGEXP_HOUR_MIN_SS, message = "时间格式为: xxxx-xx-xx xx:xx:xx")*/
     @Id
     @Size(min = 24, max = 24, message = "id不合法")
     @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
@@ -36,6 +33,9 @@ public class Exam {
      * 存放questionId列表
      */
     private List<String> questionList;
+
+    /*private List<Question> questionList;
+    private Boolean release;*/
 
     /**
     * 约束约束前端传入的时间类型参数格式和后端响应前端的时间类型格式
