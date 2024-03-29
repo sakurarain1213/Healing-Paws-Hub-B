@@ -54,6 +54,6 @@ public class Question {
     }
 
     public boolean missingAllRequiredFields(){
-        return ((statement == null || statement.trim().isEmpty()) && answer == null && type == null);
+        return ((statement == null || statement.trim().isEmpty()) && answer == null && type == null && score <= 0);
     }
 }

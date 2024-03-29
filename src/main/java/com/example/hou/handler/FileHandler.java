@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 添加不同case字段的文件路径
  */
 public abstract class FileHandler<T> {
-    private MultipartFile src;
+    protected MultipartFile src;
 //    protected Case cse;
     protected T cse;
 
@@ -41,9 +41,10 @@ public abstract class FileHandler<T> {
 //        FileUtil.transferFile(src, fullpath);
 
         String filename = FileUtil.fileUpload(src);
+//        String filename = "test.jpg";
         if (filename == null){
             System.out.println("fileUpload error");
-            throw new RuntimeException();
+            throw new RuntimeException("fileUpload error");
         }
 
         fillCase(filename);

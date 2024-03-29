@@ -69,6 +69,12 @@ public class CaseServiceImpl implements CaseService {
 
         if (req.getMdText() != null)upt.set("mdText", req.getMdText());
 
+//        修改图片size list
+        Optional.ofNullable(req.getDescImgSize()).ifPresent(c -> upt.set("descImgSize", c));
+        Optional.ofNullable(req.getCheckImgSize()).ifPresent(c -> upt.set("checkImgSize", c));
+        Optional.ofNullable(req.getDiagImgSize()).ifPresent(c -> upt.set("diagImgSize", c));
+        Optional.ofNullable(req.getRemedyImgSize()).ifPresent(c -> upt.set("remedyImgSize", c));
+
         UpdateResult updateResult = template.updateFirst(query, upt, Case.class);
         // 是否执行成功
 //        System.out.println(updateResult.wasAcknowledged());
