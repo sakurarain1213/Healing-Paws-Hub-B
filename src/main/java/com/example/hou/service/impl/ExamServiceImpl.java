@@ -2,6 +2,7 @@ package com.example.hou.service.impl;
 
 import com.example.hou.entity.Exam;
 import com.example.hou.entity.Question;
+import com.example.hou.entity.QuestionEntity;
 import com.example.hou.mapper.ExamRepository;
 import com.example.hou.mapper.QuestionRepository;
 import com.example.hou.service.ExamService;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -73,17 +75,58 @@ public class ExamServiceImpl implements ExamService {
         long endTime = req.getEndTime().getTime();
         if(addTime > endTime)
             return null;
-
-        Query query = new Query(Criteria.where("id").is(req.getId()));
+        // 只能修改未发布的exam
+        Query query = new Query(Criteria.where("id").is(req.getId()).and("release").is(false));
         UpdateResult updateResult = template.updateFirst(query, update, Exam.class);
         System.out.println(updateResult.getModifiedCount());
         return updateResult.getModifiedCount();
     }
 
+    // TODO
+    @Override
+    public void releaseExamById(String id) {
+        Optional<Exam> res = examRepository.findById(id);
+
+        if(!res.isPresent() || res.get().getRelease()) {
+            return;
+        }
+        System.out.println("release");
+        // 更新release, questionList
+        Exam exam = res.get();
+        List<String> questionIdList = exam.getQuestionIdList();
+        Criteria criteria = Criteria.where("id").in(questionIdList);
+        Query questionQuery = new Query(criteria);
+        List<Question> questionList = template.find(questionQuery, Question.class);
+//        System.out.println(questionList);
+
+        List<QuestionEntity> questionEntityList = new ArrayList<>();
+        for (Question question : questionList) {
+            QuestionEntity questionEntity = new QuestionEntity(question.getStatement(),
+                    question.getAnswer(), question.getDetail(), question.getScore());
+            questionEntityList.add(questionEntity);
+        }
+//        System.out.println(questionEntityList);
+
+
+        Query query = new Query(Criteria.where("release").is(false)
+                .and("id").is(id));
+
+        Update update = new Update();
+        update.set("release", true);
+        update.set("questionIdList", null);
+        update.set("questionList", questionEntityList);
+
+        UpdateResult result = template.updateFirst(query, update, Exam.class);
+        System.out.println(result.getModifiedCount());
+    }
+
+
     @Override
     public void deleteExamById(String id) {
         examRepository.deleteById(id);
     }
+
+
 
     @Override
     public Exam getExamById(String id) {
@@ -94,6 +137,12 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public Page<Exam> getExamByPage(Integer pageNum, Integer pageSize) {
         return examRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
+    }
+
+    // TODO
+    @Override
+    public Page<Exam> getExamsByReleaseWithPagination(boolean release, Integer pageNum, Integer pageSize) {
+        return examRepository.findByRelease(release, PageRequest.of(pageNum - 1, pageSize));
     }
 
     @Override
@@ -117,6 +166,36 @@ public class ExamServiceImpl implements ExamService {
         List<Exam> list = template.find(query, Exam.class);
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
         Page<Exam> page = new PageImpl<>(list, pageable, list.size());
+        return page;
+    }
+
+    @Override
+    public Page<Exam> getExamsByMultiWithPagination(Boolean sortTime,
+                                                    String examName,
+                                                    Integer type,
+                                                    Date startTime,
+                                                    Date endTime,
+                                                    Integer pageNum,
+                                                    Integer pageSize){
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        Criteria criteria = new Criteria();
+
+        // 包装类防止为null时判断出错
+        if(Boolean.TRUE.equals(sortTime))
+            pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").descending());
+        if(examName != null)
+            criteria.and("examName").regex("^.*" + examName + ".*$");
+        if(type != null)
+            criteria.and("type").is(type);
+        if(startTime != null && endTime != null)
+            criteria.and("startTime").gte(startTime).and("endTime").lte(endTime);
+
+        Query query = Query.query(criteria);
+        query.with(pageable);
+        List<Exam> list = template.find(query, Exam.class);
+        Page<Exam> page = new PageImpl<>(list, pageable, list.size());
+
         return page;
     }
 }

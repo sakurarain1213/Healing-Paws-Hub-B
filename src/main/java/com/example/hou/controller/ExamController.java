@@ -45,6 +45,8 @@ public class ExamController {
         if (addTime > endTime)
             return ResultUtil.error("错误：endTime < startTime + totalTime");
 
+
+        req.setRelease(false);
         Exam created = examService.createExam(req);
         if (created == null)
             return ResultUtil.error("maybe time error");
@@ -71,9 +73,20 @@ public class ExamController {
         System.out.println(req.getId());
 
         Long res = examService.updateExam(req);
-        if (res == null || res == 0)
+        if (res == null)
             return ResultUtil.error(null);
+        if (res == 0)
+            return ResultUtil.error("未找到对应exam, 或该exam已发布");
         return ResultUtil.success(res);
+    }
+
+    @PutMapping("/release")
+    public Result releaseExamById(@NotBlank(message = "id不能是空串或只有空格")
+                                  @Size(min = 24, max = 24, message = "id不合法")
+                                  @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+                                  @RequestParam("id") String id) {
+        examService.releaseExamById(id);
+        return ResultUtil.success();
     }
 
     @DeleteMapping
@@ -98,8 +111,8 @@ public class ExamController {
     }
 
     @GetMapping("/page")
-    public Result getExamByPage(@NonNull @RequestParam("pageNum") Integer pageNum,
-                                @NonNull @RequestParam("pageSize") Integer pageSize) {
+    public Result getExamByPage(@RequestParam("pageNum") Integer pageNum,
+                                @RequestParam("pageSize") Integer pageSize) {
         if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
 
         Page<Exam> res = examService.getExamByPage(pageNum, pageSize);
@@ -112,8 +125,8 @@ public class ExamController {
     }
 
     @GetMapping("/page/time_order")
-    public Result getExamsByTimeOrderWithPagination(@NonNull @RequestParam("pageNum") Integer pageNum,
-                                                    @NonNull @RequestParam("pageSize") Integer pageSize) {
+    public Result getExamsByTimeOrderWithPagination(@RequestParam("pageNum") Integer pageNum,
+                                                    @RequestParam("pageSize") Integer pageSize) {
         if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
 
         Page<Exam> res = examService.getExamsByTimeOrderWithPagination(pageNum, pageSize);
@@ -127,8 +140,8 @@ public class ExamController {
 
     @GetMapping("/page/name")
     public Result getExamsByNameLikeWithPagination(@NotBlank @RequestParam("examName") String examName,
-                                                   @NonNull @RequestParam("pageNum") Integer pageNum,
-                                                   @NonNull @RequestParam("pageSize") Integer pageSize) {
+                                                   @RequestParam("pageNum") Integer pageNum,
+                                                   @RequestParam("pageSize") Integer pageSize) {
         if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
         Page<Exam> res = examService.getExamsByNameLikeWithPagination(examName, pageNum, pageSize);
         System.out.println(res.getTotalElements()); //集合中总数
@@ -141,8 +154,8 @@ public class ExamController {
 
     @GetMapping("/page/type")
     public Result getExamsByTypeWithPagination(@RequestParam("type") int type,
-                                               @NonNull @RequestParam("pageNum") Integer pageNum,
-                                               @NonNull @RequestParam("pageSize") Integer pageSize) {
+                                               @RequestParam("pageNum") Integer pageNum,
+                                               @RequestParam("pageSize") Integer pageSize) {
         if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
         if (type <= 0 || type >= 3)
             return ResultUtil.error("type不合法");
@@ -163,13 +176,44 @@ public class ExamController {
                                                @RequestParam("endTime")
                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                                Date endTime,
-                                               @NonNull @RequestParam("pageNum") Integer pageNum,
-                                               @NonNull @RequestParam("pageSize") Integer pageSize) {
+                                               @RequestParam("pageNum") Integer pageNum,
+                                               @RequestParam("pageSize") Integer pageSize) {
         if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
         if (startTime.getTime() > endTime.getTime())
             return ResultUtil.error("日期不合法");
 
         Page<Exam> res = examService.getExamsByTimeWithPagination(startTime, endTime, pageNum, pageSize);
+        System.out.println(res.getTotalElements()); //集合中总数
+        System.out.println(res.getTotalPages()); //按指定分页得到的总页数
+
+        if (res == null)
+            return ResultUtil.error(null);
+        return ResultUtil.success(res.getContent());
+    }
+
+    @GetMapping("/page/multi")
+    public Result getExamsByMultiWithPagination(@RequestParam(value = "sortTime", required = false)
+                                                    Boolean sortTime,
+                                                @RequestParam(value = "examName", required = false)
+                                                String examName,
+                                                @RequestParam(value = "type", required = false)
+                                                Integer type,
+                                                // 设置非必需
+                                                @RequestParam(value = "startTime", required = false)
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                Date startTime,
+                                                @RequestParam(value = "endTime", required = false)
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                Date endTime,
+                                                @NonNull @RequestParam("pageNum") Integer pageNum,
+                                                @NonNull @RequestParam("pageSize") Integer pageSize) {
+        if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
+        if (type != null && (type <= 0 || type >= 3))
+            return ResultUtil.error("type不合法");
+        if (startTime != null && endTime != null && startTime.getTime() > endTime.getTime())
+            return ResultUtil.error("日期不合法");
+
+        Page<Exam> res = examService.getExamsByMultiWithPagination(sortTime, examName, type, startTime, endTime, pageNum, pageSize);
         System.out.println(res.getTotalElements()); //集合中总数
         System.out.println(res.getTotalPages()); //按指定分页得到的总页数
 
