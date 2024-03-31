@@ -1,0 +1,39 @@
+package com.example.hou.entity;
+
+import com.example.hou.validator.AffairCreateConstraint;
+import com.example.hou.validator.AffairCreateGroup;
+import com.example.hou.validator.AffairUpdateConstraint;
+import com.example.hou.validator.AffairUpdateGroup;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import java.util.List;
+
+@Data
+@Document(collection = "affair")
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+public class Affair {
+    @Id
+    @Size(min = 24, max = 24, message = "id不合法")
+    @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+    private String id;
+
+    @Size(max = 200, message = "description不合法")
+    private String description;
+
+    @Size(max = 30, message = "role不合法")
+    @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "role为中文、英文、数字、下划线组合")
+    private String role;
+
+    @AffairCreateConstraint(groups = AffairCreateGroup.class)
+    @AffairUpdateConstraint(groups = AffairUpdateGroup.class)
+    private List<String> affairs;
+}

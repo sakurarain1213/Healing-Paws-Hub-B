@@ -1,30 +1,21 @@
 package com.example.hou.util;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.*;
-import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.core.search.TrackHits;
-import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
-import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
-import co.elastic.clients.elasticsearch.indices.GetIndexResponse;
-import co.elastic.clients.transport.endpoints.BooleanResponse;
 import com.alibaba.fastjson.JSON;
-import com.example.hou.config.ElasticSearchConfig;
 import com.example.hou.entity.EsQueryDTO;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
-public class ESUtils {
+public class ESUtils<T> {
     @Autowired
     private ElasticsearchClient client;
 
-    /**
+    /** 供参考，暂未使用
      *  根据关键字分页查询
      */
     public List<T> queryByPage(EsQueryDTO dto, Class<T> target) throws Exception {
@@ -51,7 +42,7 @@ public class ESUtils {
         return result;
     }
 
-    /**
+    /** 供参考，暂未使用
      * 根据关键字查询记录总数
      */
     public long queryCountByPage(EsQueryDTO dto) throws Exception {
@@ -63,7 +54,7 @@ public class ESUtils {
         return response.count();
     }
 
-    /**
+    /** 供参考，暂未使用
      * 根据文档id查询
      */
     public T queryDocById(EsQueryDTO dto, Class<T> target) throws Exception{
@@ -78,8 +69,20 @@ public class ESUtils {
         return res;
     }
 
+    public List<T> hitToTarget(List<Hit<HashMap>> hits, Class<T> target){
+        List<T> result = new ArrayList<>();
 
+        for(Hit<HashMap> hit : hits){
+            Map<String,Object> docMap = hit.source();
+            docMap.put("id", hit.id());
 
+            String json = JSON.toJSONString(docMap);
+            T doc  =  JSON.parseObject(json, target);
+            result.add(doc);
+        }
+
+        return result;
+    }
 
 }
 /*
