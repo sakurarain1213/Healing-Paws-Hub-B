@@ -30,7 +30,10 @@ mysql+redis+MongoDB
 + 3.14 服务器部署ES 8.9.0  部署kibana可视化 kibana访问地址：http://150.158.110.63:5601  需要写配置类才不影响启动
 + 3.19 ES8配置完成 用户权限管理完成 权限注解可使用  考虑添加springCloud alibaba全家桶 考虑jdk17 考虑docker/k8s 考虑rocketMQ/kafka
 + 3.22 接口Question Exam 基本实现  服务器全端口非中国大陆ip屏蔽  
-+ 3.26 配置monstache同步mongodb到es
++ 3.26 配置monstache同步mongodb到es   数据库被扫描 增强安全性
++ 3.29 Exam新接口和测试 case和disease接口实现 department和item接口 开发affair中 
+
+
 # 延伸阅读
 
 部署：Tencent cloud

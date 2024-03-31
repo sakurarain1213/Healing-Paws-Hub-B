@@ -50,6 +50,8 @@ public class QuestionController {
             return ResultUtil.error("未填写任何需要更新的信息");
         if(req.getType() != null && questionService.existErrorDisease(req.getType()))
             return ResultUtil.error("病的ID有误");
+        if(req.getScore() <= 0)
+            return ResultUtil.error("分数<=0");
 
         Long res = questionService.updateQuestion(req);
         if (res == null || res == 0)
