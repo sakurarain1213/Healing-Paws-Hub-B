@@ -25,7 +25,7 @@ public class AuthExceptionUtil {
    return  ResultUtil.error(" 用户名或者密码输入错误!");
 
   }else if (e instanceof InsufficientAuthenticationException) {
-   return ResultUtil.error(" token有误或没有认证信息，请登录");
+   return ResultUtil.error(" token有误或过期，请登录");
 
   } else if (e instanceof AccountExpiredException) {
    return ResultUtil.error(" 账户过期 请联系管理员");

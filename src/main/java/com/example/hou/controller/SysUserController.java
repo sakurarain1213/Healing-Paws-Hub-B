@@ -46,7 +46,8 @@ public class SysUserController {
 
     /*自定义注册放到了邮箱注册服务 暂时不移到service层写*/
 
-    //TODO 需要在注册的同时去自动赋予普通权限 更改用户表信息  需要标准格式返回
+    //TODO 需要在注册的同时去自动赋予普通权限 更改用户表信息  需要标准格式返回 okk
+    //只是login的密码错误返回需要
     /*自定义登录*/
     @PostMapping("/login")
     public Result login(@RequestBody LoginUserParam param) {

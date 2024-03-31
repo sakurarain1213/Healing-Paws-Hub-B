@@ -9,9 +9,11 @@ import com.example.hou.mapper.SysPermissionMapper;
 import com.example.hou.mapper.SysUserMapper;
 import com.example.hou.mapper.SysUserPermissionRelationMapper;
 import com.example.hou.result.Result;
+import com.example.hou.util.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -36,6 +38,12 @@ public class ESTest {
     SysPermissionMapper permissionMapper;
 
 
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Test
     public void createIndex() throws IOException {
 
