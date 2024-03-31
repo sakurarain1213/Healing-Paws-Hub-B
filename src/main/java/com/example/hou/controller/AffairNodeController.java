@@ -32,6 +32,7 @@ public class AffairNodeController {
     public Result createAffairNode(@NonNull @ModelAttribute @Valid AffairNodeCreateVo createVo){
         AffairNode affairNode = new AffairNode();
         affairNode.setContent(createVo.getContent());
+        affairNode.setName(createVo.getName());
 
         List<FileHandler<AffairNode>> handlers = new ArrayList<>();
         if (createVo.getContentImg() != null)handlers.add(new AffairNodeImgHandler(createVo.getContentImg(), affairNode));
@@ -66,7 +67,8 @@ public class AffairNodeController {
         AffairNode affairNode = new AffairNode();
 
         affairNode.setId(updateVo.getId())
-                .setContent(updateVo.getContent());
+                .setContent(updateVo.getContent())
+                .setName(updateVo.getName());
 
         List<FileHandler<AffairNode>> handlers = new ArrayList<>();
         if (updateVo.getContentImg() != null)handlers.add(new AffairNodeImgHandler(updateVo.getContentImg(), affairNode));

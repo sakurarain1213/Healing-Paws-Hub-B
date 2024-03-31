@@ -1,5 +1,6 @@
 package com.example.hou.service.impl;
 
+import com.example.hou.entity.Affair;
 import com.example.hou.entity.AffairNode;
 import com.example.hou.mapper.AffairNodeRepository;
 import com.example.hou.service.AffairNodeService;
@@ -32,6 +33,16 @@ public class AffairNodeServiceImpl implements AffairNodeService {
     @Override
     public void deleteById(String id) {
         affairNodeRepository.deleteById(id);
+
+//        删除affair.affairs (list)中与当前id相同的元素
+        Query query = new Query();
+        query.addCriteria(Criteria.where("affairs").is(id));
+
+        Update update = new Update();
+        update.pull("affairs", id);
+
+        UpdateResult updateResult = mongoTemplate.updateMulti(query, update, Affair.class);
+        System.out.println("updateResult.getModifiedCount: " + updateResult.getModifiedCount());
     }
 
     @Override
@@ -40,6 +51,7 @@ public class AffairNodeServiceImpl implements AffairNodeService {
         query.addCriteria(Criteria.where("id").is(affairNode.getId()));
 
         Update upt = new Update();
+        Optional.ofNullable(affairNode.getName()).ifPresent(c -> upt.set("name", c));
         Optional.ofNullable(affairNode.getContent()).ifPresent(c -> upt.set("content", c));
         Optional.ofNullable(affairNode.getContentImg()).ifPresent(c -> upt.set("contentImg", c));
         Optional.ofNullable(affairNode.getContentVideo()).ifPresent(c -> upt.set("contentVideo", c));

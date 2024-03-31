@@ -20,6 +20,8 @@ public class AffairNodeUpdateVo {
     @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String id;
 
+    private String name;
+
     @Size(max = 200, message = "content不合法")
     private String content;
     private MultipartFile contentImg;

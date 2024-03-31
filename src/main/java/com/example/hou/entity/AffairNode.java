@@ -15,6 +15,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class AffairNode {
     @Id
     private String id;
+
+    private String name;
     private String content;
     private String contentImg;
     private String contentVideo;

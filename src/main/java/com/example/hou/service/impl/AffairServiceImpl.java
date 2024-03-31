@@ -91,6 +91,7 @@ public class AffairServiceImpl implements AffairService {
         List<String> permissions = user.getPermissions();
         if (permissions == null || permissions.size() == 0)return null;
 
+//        TODO 未确定role，测试用admin
 //        String userRole = permissions.get(0);
         String userRole = "admin";
         System.out.println("userRole: " + userRole);
@@ -221,7 +222,7 @@ public class AffairServiceImpl implements AffairService {
 
             int fillNum = count - candidates.size();
             System.out.println("fillNum: " + fillNum);
-//            List<String> excludeIds = candidates.stream().map(Affair::getId).collect(Collectors.toList());
+            List<String> excludeIds = candidates.stream().map(Affair::getId).collect(Collectors.toList());
 //            excludeIds.stream().forEach(System.out::println);
 
             SearchResponse<HashMap> fillResp = esClient.search(s -> s
@@ -229,7 +230,7 @@ public class AffairServiceImpl implements AffairService {
                             .query(q -> q
                                 .bool(b -> b
                                     .mustNot(
-                                            m -> m.ids(e -> e.values(usefulIds))
+                                            m -> m.ids(e -> e.values(excludeIds))
                                     )
                                     .must(m -> m.term(t -> t.field("role").value(userRole)))
                                 )
