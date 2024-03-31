@@ -1,6 +1,7 @@
 package com.example.hou.service.impl;
 
 import com.example.hou.entity.Disease;
+import com.example.hou.entity.Exam;
 import com.example.hou.entity.Question;
 import com.example.hou.mapper.QuestionRepository;
 import com.example.hou.service.DiseaseService;
@@ -71,7 +72,28 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void deleteQuestionById(String id) {
+        Question question = getQuestionById(id);
         questionRepository.deleteById(id);
+
+        // 如果exam是未发布状态，从exam的questionIdList, 删除id, 并修改exam的总分
+        Query query = new Query(Criteria.where("release").is(false)
+                .and("questionIdList").is(id));
+
+
+
+        Update update = new Update();
+        // 从questionIdList找到id,并删除
+        update.pull("questionIdList", id);
+        // 修改exam的总分
+        update.inc("totalScore", -question.getScore());
+        UpdateResult updateResult = template.updateMulti(query, update, Exam.class);
+
+        // 匹配到的文档数量
+        System.out.println(updateResult.getMatchedCount());
+        // 实际被修改的文档数量
+        System.out.println(updateResult.getModifiedCount());
+        // 更新操作是否被确认
+        System.out.println(updateResult.wasAcknowledged());
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.hou.mapper;
 
 import com.example.hou.entity.Exam;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -13,4 +14,5 @@ public interface ExamRepository extends MongoRepository<Exam, String> {
     // 具体的实现会由Spring Data JPA自动完成
     Page<Exam> findByExamNameLike(String name, Pageable pageable);
     Page<Exam> findByType(int type, Pageable pageable);
+    Page<Exam> findByRelease(boolean release, Pageable pageable);
 }

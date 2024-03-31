@@ -7,13 +7,15 @@ import java.util.Date;
 import java.util.List;
 
 public interface ExamService {
-    long totalScore(List<String> questionList);
+    long totalScore(List<String> questionIdList);
     Exam createExam(Exam req);
     Long updateExam(Exam req);
+    void releaseExamById(String id);
     void deleteExamById(String id);
     Exam getExamById(String id);
     Page<Exam> getExamByPage(Integer pageNum, Integer pageSize);
 
+    Page<Exam> getExamsByReleaseWithPagination(boolean release, Integer pageNum, Integer pageSize);
     Page<Exam> getExamsByTimeOrderWithPagination(Integer pageNum, Integer pageSize);
 
     Page<Exam> getExamsByNameLikeWithPagination(String examName, Integer pageNum, Integer pageSize);
@@ -21,4 +23,12 @@ public interface ExamService {
     Page<Exam> getExamsByTypeWithPagination(int type, Integer pageNum, Integer pageSize);
 
     Page<Exam> getExamsByTimeWithPagination(Date startTime, Date endTime, Integer pageNum, Integer pageSize);
+
+    Page<Exam> getExamsByMultiWithPagination(Boolean sortTime,
+                                             String examName,
+                                             Integer type,
+                                             Date startTime,
+                                             Date endTime,
+                                             Integer pageNum,
+                                             Integer pageSize);
 }
