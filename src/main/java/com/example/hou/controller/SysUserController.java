@@ -3,11 +3,9 @@ package com.example.hou.controller;
 import com.example.hou.entity.LoginUserParam;
 import com.example.hou.result.Result;
 import com.example.hou.service.SecurityUserService;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 //每个匿名能访问的接口都要 在security的config里允许访问！！！！   一般就是登录
@@ -65,7 +63,10 @@ public class SysUserController {
         return logService.update(param);
     }
 
-
+    @PostMapping("/setPermission")
+    public Result setPermission(@NonNull @RequestParam("permission")String p ) {
+        return logService.setUserPermission(p);
+    }
 
 
 }

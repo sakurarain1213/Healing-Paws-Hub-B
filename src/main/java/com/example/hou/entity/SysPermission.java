@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @TableName("sys_permission")
 public class SysPermission implements Serializable {
-    @TableId(value = "permission_id", type = IdType.ID_WORKER)
+    @TableId(value = "permission_id", type =IdType.AUTO)  //id=int类自增主键问题debug
     private Integer permissionId;
 
     @TableField("permission_code")

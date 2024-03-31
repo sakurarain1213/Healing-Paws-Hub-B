@@ -2,11 +2,10 @@ package com.example.hou.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.example.hou.entity.LogUser;
-import com.example.hou.entity.LoginUserParam;
-import com.example.hou.entity.SysUser;
-import com.example.hou.entity.UserInfo;
+import com.example.hou.entity.*;
+import com.example.hou.mapper.SysPermissionMapper;
 import com.example.hou.mapper.SysUserMapper;
+import com.example.hou.mapper.SysUserPermissionRelationMapper;
 import com.example.hou.mapper.UserInfoMapper;
 import com.example.hou.result.Result;
 import com.example.hou.service.SecurityUserService;
@@ -37,6 +36,12 @@ import java.util.Objects;
 public class SecurityUserServiceImpl implements SecurityUserService {
     @Autowired
     SysUserMapper sysuserMapper;   //自己加的 为了update  可能越权
+
+    @Autowired
+    SysUserPermissionRelationMapper relationMapper;
+
+    @Autowired
+    SysPermissionMapper permissionMapper;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -173,6 +178,43 @@ public class SecurityUserServiceImpl implements SecurityUserService {
         }
         return new Result(-100, "未登录或用户不存在", null);
     }
+
+
+    //注意传的permission是中文的name  不是sys:user
+    @Override
+    public Result setUserPermission(String permission){
+        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LogUser loginUser = (LogUser) authentication.getPrincipal();
+
+        if (loginUser != null && loginUser.getUser() != null) {
+            int userId = loginUser.getUser().getUserId();
+
+            //先删已有权限
+            QueryWrapper<SysUserPermissionRelation> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", userId);
+            relationMapper.delete(queryWrapper);
+
+            // 再查新权限id  注意权限名和数据库一致
+            QueryWrapper<SysPermission> permissionWrapper = new QueryWrapper<>();
+            permissionWrapper.eq("permission_name", permission);
+            SysPermission sp = permissionMapper.selectOne(permissionWrapper);
+
+            if (sp == null)   return new Result(-100, "对应权限不存在", null);
+
+            SysUserPermissionRelation relation = new SysUserPermissionRelation();
+            relation.setUserId(userId);
+            relation.setPermissionId(sp.getPermissionId());
+            int res=relationMapper.insert(relation);
+
+            if (res >0)  return new Result(200, "权限更新成功", null);
+            else return new Result(-100, "权限更新失败", null);
+
+        }
+        return new Result(-100, "未登录或用户不存在", null);
+
+    }
+
+
 
 
 }
