@@ -9,6 +9,7 @@ import com.example.hou.mapper.SysUserPermissionRelationMapper;
 import com.example.hou.mapper.UserInfoMapper;
 import com.example.hou.result.Result;
 import com.example.hou.service.SecurityUserService;
+import com.example.hou.util.FileUtil;
 import com.example.hou.util.JwtUtils;
 import com.example.hou.util.RedisUtil;
 import com.example.hou.util.ResultUtil;
@@ -21,11 +22,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.example.hou.util.FileUtil.fileUpload;
 
 /**
  * @program: Runner
@@ -227,7 +231,44 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
     }
 
+    @Override
+    public Result updateAvatar(MultipartFile avatarFile){
 
+        UsernamePasswordAuthenticationToken authentication =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LogUser loginUser = (LogUser) authentication.getPrincipal();
+
+        //检查用户是否存在
+        if (loginUser != null && loginUser.getUser() != null) {
+            int userId = loginUser.getUser().getUserId();
+
+            String url= FileUtil.fileUpload(avatarFile);  //利用文件工具类方法实现
+            if(url==null) return new Result(-100, "头像上传失败,请检查文件大小和后缀", null);
+            //已经保存好头像 并生成url
+            //先根据id找到原始url对应的头像地址 删除文件本身  （可以先不做）
+            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", userId);
+            SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
+
+            if (sysuser.getAvatar() != null && !sysuser.getAvatar().isEmpty()) {
+                 FileUtil.deleteFile(sysuser.getAvatar()); //文件工具类的删除逻辑
+            }
+
+            //再用新url覆盖avatar字段值
+            sysuser.setAvatar(url);
+            int flag = sysuserMapper.updateById(sysuser);
+
+            if (flag == 1) {
+                return new Result(200, "头像更新成功", url);
+            } else {
+                // 用户未找到或未登录
+                return new Result(-100, "头像更新失败", null);
+            }
+        }
+        return new Result(-100, "未登录或用户不存在", null);
+
+
+    }
 
 
 }

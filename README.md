@@ -33,7 +33,7 @@ mysql+redis+MongoDB
 + 3.26 配置monstache同步mongodb到es   数据库被扫描 增强安全性
 + 3.29 Exam新接口和测试 case和disease接口实现 department和item接口 开发affair中 
 + 3.31 权限选择接口完成 权限命名统一 登录规范返回 部署版
-
++ 4.1  文件工具类删除方法 个人信息与头像方法 部署版
 # 延伸阅读
 
 部署：Tencent cloud

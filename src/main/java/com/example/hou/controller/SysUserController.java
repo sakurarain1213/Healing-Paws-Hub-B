@@ -6,6 +6,7 @@ import com.example.hou.service.SecurityUserService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 //每个匿名能访问的接口都要 在security的config里允许访问！！！！   一般就是登录
@@ -67,6 +68,11 @@ public class SysUserController {
     @PostMapping("/setPermission")
     public Result setPermission(@NonNull @RequestParam("permission")String p ) {
         return logService.setUserPermission(p);
+    }
+
+    @PostMapping("/setAvatar")
+    public Result setAvatar(@NonNull @RequestParam("avatar") MultipartFile ava ) {
+        return logService.updateAvatar(ava);
     }
 
 

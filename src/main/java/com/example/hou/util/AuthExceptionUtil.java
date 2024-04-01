@@ -22,19 +22,19 @@ public class AuthExceptionUtil {
    return ResultUtil.error("账户被锁定，请联系管理员!");
 
   } else if (e instanceof CredentialsExpiredException) {
-   return  ResultUtil.error(" 用户名或者密码输入错误!");
+   return  ResultUtil.error("用户名或者密码输入错误!");
 
   }else if (e instanceof InsufficientAuthenticationException) {
-   return ResultUtil.error(" token有误或过期，请登录");
+   return ResultUtil.error("token有误或过期，请登录");
 
   } else if (e instanceof AccountExpiredException) {
-   return ResultUtil.error(" 账户过期 请联系管理员");
+   return ResultUtil.error("账户过期 请联系管理员");
 
   } else if (e instanceof DisabledException) {
-   return ResultUtil.error(" 账户被禁用，请联系管理员!");
+   return ResultUtil.error("账户被禁用，请联系管理员!");
 
   } else if (e instanceof BadCredentialsException) {
-   return ResultUtil.error(" 用户名或者密码输入错误!");
+   return ResultUtil.error("用户名或者密码输入错误!");
 
   }else if (e instanceof AuthenticationServiceException) {
    return ResultUtil.error("认证失败，请重试!");

@@ -61,4 +61,9 @@ public class SysUser implements Serializable {
     //修改时间
     private Date updateTime;
 
+    @TableField("avatar")
+    // 头像URL属性  http地址
+    private String avatar;
+
+
 }
