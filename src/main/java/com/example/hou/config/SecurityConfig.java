@@ -78,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/case/**",
                         "/disease/**",
                         "/exam/**",
-                        "/examrecord/**",
+//                        "/examrecord/**",
                         "/affairnode/**"
 //                        "/affair/**"
                       ).anonymous()
