@@ -82,7 +82,6 @@ public class ExamServiceImpl implements ExamService {
         return updateResult.getModifiedCount();
     }
 
-    // TODO
     @Override
     public void releaseExamById(String id) {
         Optional<Exam> res = examRepository.findById(id);
@@ -139,7 +138,6 @@ public class ExamServiceImpl implements ExamService {
         return examRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
     }
 
-    // TODO
     @Override
     public Page<Exam> getExamsByReleaseWithPagination(boolean release, Integer pageNum, Integer pageSize) {
         return examRepository.findByRelease(release, PageRequest.of(pageNum - 1, pageSize));
