@@ -20,4 +20,6 @@ public interface AffairService {
     List<AffairNode> getAllNodesByAffairid(String affairId);
 
     List<Affair> getRecommendAffairs(LogUser user, Integer count);
+
+    List<Affair> getFuzzyMatchedAffairs(String input, Integer pageNum, Integer pageSize);
 }

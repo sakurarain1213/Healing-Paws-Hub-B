@@ -26,6 +26,9 @@ public class Affair {
     @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String id;
 
+    @Size(max = 200, message = "name不合法")
+    private String name;
+
     @Size(max = 200, message = "description不合法")
     private String description;
 
@@ -36,4 +39,8 @@ public class Affair {
     @AffairCreateConstraint(groups = AffairCreateGroup.class)
     @AffairUpdateConstraint(groups = AffairUpdateGroup.class)
     private List<String> affairs;
+
+    public boolean nullFieldsExceptId(){
+        return name == null && description == null && role == null && affairs == null;
+    }
 }

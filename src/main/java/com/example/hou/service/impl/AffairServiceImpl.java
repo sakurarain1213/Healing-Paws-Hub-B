@@ -61,6 +61,7 @@ public class AffairServiceImpl implements AffairService {
 
         Update upt = new Update();
         Optional.ofNullable(affair.getRole()).ifPresent(c -> upt.set("role", c));
+        Optional.ofNullable(affair.getName()).ifPresent(c -> upt.set("name", c));
         Optional.ofNullable(affair.getDescription()).ifPresent(c -> upt.set("description", c));
         Optional.ofNullable(affair.getAffairs()).ifPresent(c -> upt.set("affairs", c));
 
@@ -281,6 +282,41 @@ public class AffairServiceImpl implements AffairService {
             return null;
 //            throw new RuntimeException("getRecommendAffairs: " + e.getMessage());
         }
+
+    }
+
+    @Override
+    public List<Affair> getFuzzyMatchedAffairs(String input, Integer pageNum, Integer pageSize) {
+        try {
+            SearchResponse<HashMap> resp = esClient.search(s -> s
+                .index("test.affair")
+                .query(q -> q.bool(
+                    b -> b.should(
+                        h -> h.fuzzy(
+                            f -> f.field("description")
+                                  .value(input)
+                                  .fuzziness("1")
+                        )
+                    ).should(
+                        h -> h.fuzzy(
+                            f -> f.field("name")
+                                    .value(input)
+                                    .fuzziness("1")
+                        )
+                    ))
+                )
+                .from(pageNum)
+                .size(pageSize)
+            , HashMap.class);
+
+            return esAffairUtils.hitToTarget(resp.hits().hits(), Affair.class);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+
 
     }
 
