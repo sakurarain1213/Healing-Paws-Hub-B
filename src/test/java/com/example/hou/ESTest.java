@@ -1,9 +1,21 @@
 package com.example.hou;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.hou.entity.LogUser;
+import com.example.hou.entity.SysPermission;
+import com.example.hou.entity.SysUserPermissionRelation;
+import com.example.hou.mapper.SysPermissionMapper;
+import com.example.hou.mapper.SysUserMapper;
+import com.example.hou.mapper.SysUserPermissionRelationMapper;
+import com.example.hou.result.Result;
+import com.example.hou.util.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 
@@ -16,11 +28,65 @@ import java.io.IOException;
 @SpringBootTest
 public class ESTest {
 
+    @Autowired
+    SysUserMapper sysuserMapper;   //自己加的 为了update  可能越权
+
+    @Autowired
+    SysUserPermissionRelationMapper relationMapper;
+
+    @Autowired
+    SysPermissionMapper permissionMapper;
+
+
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Test
     public void createIndex() throws IOException {
 
 
     }
+
+
+    @Test
+    public void setPermission() throws IOException {
+        String permission="实习生2";
+
+                int userId = 4;
+
+                //先删已有权限
+                QueryWrapper<SysUserPermissionRelation> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("user_id", userId);
+                relationMapper.delete(queryWrapper);
+
+                // 再查新权限id  注意权限名和数据库一致
+                QueryWrapper<SysPermission> permissionWrapper = new QueryWrapper<>();
+                permissionWrapper.eq("permission_name", permission);
+                SysPermission sp = permissionMapper.selectOne(permissionWrapper);
+
+                if (sp == null) {
+                    System.out.println("对应权限不存在");return;
+                }
+
+                SysUserPermissionRelation relation = new SysUserPermissionRelation();
+                relation.setUserId(userId);
+                relation.setPermissionId(sp.getPermissionId());
+                int res=relationMapper.insert(relation);
+
+                if (res >0)  System.out.println("ok");
+                else  System.out.println("fail");
+
+
+        System.out.println("用户不存在");
+
+        }
+
+
+
+
 }
 
 

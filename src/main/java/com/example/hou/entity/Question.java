@@ -33,7 +33,7 @@ public class Question {
      * 判断 - T,F；选择:A,B,C,D(单选)//多选暂时不考虑
      */
     @Size(max = 15, message = "answer不合法")
-    @Pattern(regexp = "^[\\u4E00-\\u9FA5TFA-Da-d]$", message = "answer为0,1如果为判断题，A,B,C,D如果为选择题")
+    @Pattern(regexp = "^[TFA-Da-d]$", message = "answer为0,1如果为判断题，A,B,C,D如果为选择题")
     private String answer;
 
     /**

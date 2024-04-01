@@ -2,29 +2,34 @@ package com.example.hou.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.example.hou.entity.LogUser;
-import com.example.hou.entity.LoginUserParam;
-import com.example.hou.entity.SysUser;
-import com.example.hou.entity.UserInfo;
+import com.example.hou.entity.*;
+import com.example.hou.mapper.SysPermissionMapper;
 import com.example.hou.mapper.SysUserMapper;
+import com.example.hou.mapper.SysUserPermissionRelationMapper;
 import com.example.hou.mapper.UserInfoMapper;
 import com.example.hou.result.Result;
 import com.example.hou.service.SecurityUserService;
+import com.example.hou.util.FileUtil;
 import com.example.hou.util.JwtUtils;
 import com.example.hou.util.RedisUtil;
 import com.example.hou.util.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.example.hou.util.FileUtil.fileUpload;
 
 /**
  * @program: Runner
@@ -37,6 +42,12 @@ import java.util.Objects;
 public class SecurityUserServiceImpl implements SecurityUserService {
     @Autowired
     SysUserMapper sysuserMapper;   //自己加的 为了update  可能越权
+
+    @Autowired
+    SysUserPermissionRelationMapper relationMapper;
+
+    @Autowired
+    SysPermissionMapper permissionMapper;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -70,48 +81,59 @@ public class SecurityUserServiceImpl implements SecurityUserService {
     @Override
     public Result login(LoginUserParam param) {
         //前端需求  登录字段统一成 account  不要userName
+        try {
+            // 1 获取AuthenticationManager 对象 然后调用 authenticate() 方法
+            // UsernamePasswordAuthenticationToken 实现了Authentication 接口
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(param.getAccount(), param.getPassword());
+            Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 
-        // 1 获取AuthenticationManager 对象 然后调用 authenticate() 方法
-        // UsernamePasswordAuthenticationToken 实现了Authentication 接口
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(param.getAccount(), param.getPassword());
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+            //2 认证没通过 提示认证失败
+            if (Objects.isNull(authenticate)) {
+                throw new RuntimeException("认证失败用户信息不存在");
+            }
+            //认证通过 使用userid 生成jwt token令牌
+            LogUser loginUser = (LogUser) authenticate.getPrincipal();
+            String userId = loginUser.getUser().getUserId().toString();
 
-        //2 认证没通过 提示认证失败
-        if (Objects.isNull(authenticate)) {
-            throw new RuntimeException("认证失败用户信息不存在");
+            //先更新user表的最新登录时间
+            int id = loginUser.getUser().getUserId();
+            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", userId);
+            SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
+            sysuser.setLastLoginTime(new Date());
+
+            UpdateWrapper<SysUser> userUpdateWrapper = new UpdateWrapper<>();
+            userUpdateWrapper.eq("user_id", userId);
+
+            int flag = sysuserMapper.update(sysuser, userUpdateWrapper);
+            if(flag !=1) return ResultUtil.error("更新登录时间失败");
+
+            //再存储登录信息到redis
+
+            Map<String, String> payloadMap = new HashMap<>();
+            payloadMap.put("userId", userId);
+            payloadMap.put("userName", loginUser.getUser().getUserName());
+            payloadMap.put("token", JwtUtils.generateToken(payloadMap));
+
+            boolean resultRedis = redisUtil.set("login:" + userId, loginUser);
+
+            if (!resultRedis) {
+                throw new RuntimeException("redis连接失败导致登录失败");
+            }
+
+            return ResultUtil.success(payloadMap);
+        //--------------------------------------------------------------------
+        } catch (BadCredentialsException e) {
+            // 密码错误，直接返回错误信息
+            return ResultUtil.error("密码错误");
+        } catch (AuthenticationException e) {
+            // 其他认证异常，返回通用认证失败信息
+            return ResultUtil.error("认证失败，用户不存在");
+        } catch (Exception e) {
+            // 其他异常，可以根据需要处理或抛出
+            throw new RuntimeException("认证过程中发生未知错误,见后端控制台输出", e);
         }
 
-        //认证通过 使用userid 生成jwt token令牌
-        LogUser loginUser = (LogUser) authenticate.getPrincipal();
-        String userId = loginUser.getUser().getUserId().toString();
-
-        //先更新user表的最新登录时间
-        int id = loginUser.getUser().getUserId();
-        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
-        SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
-        sysuser.setLastLoginTime(new Date());
-
-        UpdateWrapper<SysUser> userUpdateWrapper = new UpdateWrapper<>();
-        userUpdateWrapper.eq("user_id", userId);
-
-        int flag = sysuserMapper.update(sysuser, userUpdateWrapper);
-        if(flag !=1) return ResultUtil.error("更新登录时间失败");
-
-        //再存储登录信息到redis
-
-        Map<String, String> payloadMap = new HashMap<>();
-        payloadMap.put("userId", userId);
-        payloadMap.put("userName", loginUser.getUser().getUserName());
-        payloadMap.put("token", JwtUtils.generateToken(payloadMap));
-
-        boolean resultRedis = redisUtil.set("login:" + userId, loginUser);
-
-        if (!resultRedis) {
-            throw new RuntimeException("redis连接失败导致登录失败");
-        }
-
-        return ResultUtil.success(payloadMap);
     }
 
     @Override
@@ -172,6 +194,80 @@ public class SecurityUserServiceImpl implements SecurityUserService {
             }
         }
         return new Result(-100, "未登录或用户不存在", null);
+    }
+
+
+    //注意传的permission是中文的name  不是sys:user
+    @Override
+    public Result setUserPermission(String permission){
+        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LogUser loginUser = (LogUser) authentication.getPrincipal();
+
+        if (loginUser != null && loginUser.getUser() != null) {
+            int userId = loginUser.getUser().getUserId();
+
+            //先删已有权限
+            QueryWrapper<SysUserPermissionRelation> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", userId);
+            relationMapper.delete(queryWrapper);
+
+            // 再查新权限id  注意权限名和数据库一致
+            QueryWrapper<SysPermission> permissionWrapper = new QueryWrapper<>();
+            permissionWrapper.eq("permission_name", permission);
+            SysPermission sp = permissionMapper.selectOne(permissionWrapper);
+
+            if (sp == null)   return new Result(-100, "对应权限不存在", null);
+
+            SysUserPermissionRelation relation = new SysUserPermissionRelation();
+            relation.setUserId(userId);
+            relation.setPermissionId(sp.getPermissionId());
+            int res=relationMapper.insert(relation);
+
+            if (res >0)  return new Result(200, "权限更新成功", null);
+            else return new Result(-100, "权限更新失败", null);
+
+        }
+        return new Result(-100, "未登录或用户不存在", null);
+
+    }
+
+    @Override
+    public Result updateAvatar(MultipartFile avatarFile){
+
+        UsernamePasswordAuthenticationToken authentication =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LogUser loginUser = (LogUser) authentication.getPrincipal();
+
+        //检查用户是否存在
+        if (loginUser != null && loginUser.getUser() != null) {
+            int userId = loginUser.getUser().getUserId();
+
+            String url= FileUtil.fileUpload(avatarFile);  //利用文件工具类方法实现
+            if(url==null) return new Result(-100, "头像上传失败,请检查文件大小和后缀", null);
+            //已经保存好头像 并生成url
+            //先根据id找到原始url对应的头像地址 删除文件本身  （可以先不做）
+            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", userId);
+            SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
+
+            if (sysuser.getAvatar() != null && !sysuser.getAvatar().isEmpty()) {
+                 FileUtil.deleteFile(sysuser.getAvatar()); //文件工具类的删除逻辑
+            }
+
+            //再用新url覆盖avatar字段值
+            sysuser.setAvatar(url);
+            int flag = sysuserMapper.updateById(sysuser);
+
+            if (flag == 1) {
+                return new Result(200, "头像更新成功", url);
+            } else {
+                // 用户未找到或未登录
+                return new Result(-100, "头像更新失败", null);
+            }
+        }
+        return new Result(-100, "未登录或用户不存在", null);
+
+
     }
 
 

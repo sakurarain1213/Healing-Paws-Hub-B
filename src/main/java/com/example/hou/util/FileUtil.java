@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -119,7 +120,29 @@ public class FileUtil {
 
     }
 
+    public static String deleteFile(String url) {
+        //url是http格式的  例如http://150.158.110.63:8080/images/123.png  现在要提取出文件名123.png 然后拼接文件夹路径实现删除
+        String fileName = url.substring(url.lastIndexOf("/") + 1);
+        // 构建文件完整路径
+        File file = new File("/www/wwwroot/mediaFile/" + fileName);
+        // 检查文件是否存在
+        if (file.exists()) {
+            // 删除文件
+            boolean isDeleted = file.delete();
+            if (isDeleted) {
+                System.out.println("文件 " + fileName + " 删除成功"); return "ok";
+            } else {
+                System.out.println("文件 " + fileName + " 删除失败"); return null;
+            }
+        } else {
+            System.out.println("文件 " + fileName + " 不存在");return null;
+        }
+    }
+
+}
+
+
 //    TODO 传String， 返回multipartfile
 
 
-}
+
