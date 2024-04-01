@@ -3,6 +3,7 @@ package com.example.hou.service;
 import com.example.hou.entity.LoginUserParam;
 import com.example.hou.entity.SysUser;
 import com.example.hou.result.Result;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @program: Runner
@@ -20,5 +21,11 @@ public interface SecurityUserService {
     Result logOut();
 
     Result update(LoginUserParam user);
+
+    //token和用户信息由前端提供  只需要permission的名字作为参数
+    Result setUserPermission(String permission);
+
+    //上传头像方法  前端要求单独写接口
+    Result updateAvatar(MultipartFile avatarFile);
 
 }

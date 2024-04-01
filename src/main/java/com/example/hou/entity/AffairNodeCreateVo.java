@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Accessors(chain = true)
 public class AffairNodeCreateVo {
+    private String name;
     @Size(max = 200, message = "content不合法")
     private String content;
     private MultipartFile contentImg;
