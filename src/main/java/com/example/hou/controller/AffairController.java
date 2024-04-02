@@ -33,7 +33,8 @@ public class AffairController {
     @PostMapping
     @Validated(AffairCreateGroup.class)
     public Result createAffair(@NonNull @Valid @RequestBody Affair affair){
-        if (affair.getDescription() == null ||
+        if (affair.getName() == null ||
+            affair.getDescription() == null ||
             affair.getRole() == null ||
             affair.getAffairs() == null) return  ResultUtil.error("缺少必需参数");
 
@@ -60,6 +61,7 @@ public class AffairController {
     @Validated(AffairUpdateGroup.class)
     public Result updateById(@NonNull @Valid @RequestBody Affair affair){
         if (affair.getId() == null)return ResultUtil.error("缺少必需参数");
+        if(affair.nullFieldsExceptId())return ResultUtil.error("未填写任何需要更新的信息");
 
         long res = affairService.updateById(affair);
         if (res <= 0)return ResultUtil.error(null);
@@ -109,12 +111,39 @@ public class AffairController {
         System.out.println("userId: " + userId);
         System.out.println("count: "+count);
 
+//        System.out.println(loginUser);
+//        System.out.println(loginUser.getPermissions());
+//        return ResultUtil.success(loginUser);
+
         List<Affair> recommendAffairs = affairService.getRecommendAffairs(loginUser, count);
         if (recommendAffairs == null)return ResultUtil.error(null);
 
         recommendAffairs.stream().forEach(System.out::println);
         return ResultUtil.success(recommendAffairs);
     }
+
+
+    /**
+     * 模糊搜索匹配 name、description
+     */
+    @GetMapping("/fuzzy")
+    public Result getFuzzyMatchedAffairs(@NotBlank @Size(max = 100, message = "input不合法")
+                                         @RequestParam("input") String input){
+        int pageNum = 0, pageSize = 10;
+        List<Affair> affairs = affairService.getFuzzyMatchedAffairs(input, pageNum, pageSize);
+        System.out.println(affairs);
+        if (affairs == null)return ResultUtil.error(null);
+        System.out.println(affairs.size());
+        return ResultUtil.success(affairs);
+
+    }
+
+
+
+
+
+
+
 
 
 

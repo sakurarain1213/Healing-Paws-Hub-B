@@ -56,6 +56,7 @@ public class AffairRecordController {
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
 
         List<AffairRecord> records = affairRecordService.getByLateSortedPage(pageNum, pageSize);
+        if (records == null)return ResultUtil.error(null);
         return ResultUtil.success(records);
     }
 

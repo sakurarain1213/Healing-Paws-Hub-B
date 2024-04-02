@@ -5,9 +5,12 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Like;
 import co.elastic.clients.elasticsearch.core.CountResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.hou.entity.*;
 import com.example.hou.mapper.AffairNodeRepository;
 import com.example.hou.mapper.AffairRepository;
+import com.example.hou.mapper.SysPermissionMapper;
+import com.example.hou.mapper.SysUserPermissionRelationMapper;
 import com.example.hou.service.AffairService;
 import com.example.hou.util.ESUtils;
 import com.mongodb.client.result.UpdateResult;
@@ -43,6 +46,12 @@ public class AffairServiceImpl implements AffairService {
     @Autowired
     private ESUtils<AffairRecord> esAffairRecordUtils;
 
+    @Autowired
+    SysUserPermissionRelationMapper relationMapper;
+
+    @Autowired
+    SysPermissionMapper permissionMapper;
+
 
     @Override
     public Affair createAffair(Affair affair) {
@@ -61,6 +70,7 @@ public class AffairServiceImpl implements AffairService {
 
         Update upt = new Update();
         Optional.ofNullable(affair.getRole()).ifPresent(c -> upt.set("role", c));
+        Optional.ofNullable(affair.getName()).ifPresent(c -> upt.set("name", c));
         Optional.ofNullable(affair.getDescription()).ifPresent(c -> upt.set("description", c));
         Optional.ofNullable(affair.getAffairs()).ifPresent(c -> upt.set("affairs", c));
 
@@ -88,19 +98,34 @@ public class AffairServiceImpl implements AffairService {
     public List<Affair> getRecommendAffairs(LogUser user, Integer count) {
         Integer userId = user.getUser().getUserId();
 //        Integer userId = 1;
-        List<String> permissions = user.getPermissions();
-        if (permissions == null || permissions.size() == 0)return null;
+//        List<String> permissions = user.getPermissions();
+//        if (permissions == null || permissions.size() == 0)return null;
 
-//        TODO 未确定role，测试用admin
+//        TODO 未确定role
 //        String userRole = permissions.get(0);
-        String userRole = "admin";
+        QueryWrapper<SysUserPermissionRelation> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId);
+        SysUserPermissionRelation permissionRelation = relationMapper.selectOne(wrapper);
+        if (permissionRelation == null)return null;
+        Integer pId = permissionRelation.getPermissionId();
+        if (pId == null)return null;
+
+        QueryWrapper<SysPermission> permissionQueryWrapper = new QueryWrapper<>();
+        permissionQueryWrapper.eq("permission_id", pId);
+        SysPermission sysPermission = permissionMapper.selectOne(permissionQueryWrapper);
+        if (sysPermission == null)return null;
+
+        String userRole = sysPermission.getPermissionCode();
+        if (userRole == null)return null;
+
+//        String userRole = "admin";
         System.out.println("userRole: " + userRole);
 
         try {
             CountResponse totalTarAffairResp = esClient.count(s -> s
                     .index("test.affair")
-                    .query(q -> q.term(
-                            t -> t.field("role").value(userRole)
+                    .query(q -> q.match(
+                            t -> t.field("role").query(userRole)
                     ))
             );
 
@@ -112,8 +137,8 @@ public class AffairServiceImpl implements AffairService {
 
                 SearchResponse<HashMap> totalResp = esClient.search(s -> s
                                 .index("test.affair")
-                                .query(q -> q.term(
-                                        t -> t.field("role").value(userRole)
+                                .query(q -> q.match(
+                                        t -> t.field("role").query(userRole)
                                 ))
                                 .from(0)
                                 .size((int)totalAffairCnt)
@@ -140,8 +165,8 @@ public class AffairServiceImpl implements AffairService {
 
                 SearchResponse<HashMap> search = esClient.search(s -> s
                         .index("test.affair")
-                        .query(q -> q.term(
-                                t -> t.field("role").value(userRole)
+                        .query(q -> q.match(
+                                t -> t.field("role").query(userRole)
                         ))
                         .from(0)
                         .size(count),
@@ -200,7 +225,7 @@ public class AffairServiceImpl implements AffairService {
                                                         .maxQueryTerms(12)
                                         )
                                     ).must(
-                                        m -> m.term(t -> t.field("role").value(userRole))
+                                        m -> m.match(t -> t.field("role").query(userRole))
                                     )
                             ))
 //                            .query(q -> q.moreLikeThis(
@@ -232,7 +257,7 @@ public class AffairServiceImpl implements AffairService {
                                     .mustNot(
                                             m -> m.ids(e -> e.values(excludeIds))
                                     )
-                                    .must(m -> m.term(t -> t.field("role").value(userRole)))
+                                    .must(m -> m.match(t -> t.field("role").query(userRole)))
                                 )
                             )
                             .from(0)
@@ -281,6 +306,41 @@ public class AffairServiceImpl implements AffairService {
             return null;
 //            throw new RuntimeException("getRecommendAffairs: " + e.getMessage());
         }
+
+    }
+
+    @Override
+    public List<Affair> getFuzzyMatchedAffairs(String input, Integer pageNum, Integer pageSize) {
+        try {
+            SearchResponse<HashMap> resp = esClient.search(s -> s
+                .index("test.affair")
+                .query(q -> q.bool(
+                    b -> b.should(
+                        h -> h.fuzzy(
+                            f -> f.field("description")
+                                  .value(input)
+                                  .fuzziness("1")
+                        )
+                    ).should(
+                        h -> h.fuzzy(
+                            f -> f.field("name")
+                                    .value(input)
+                                    .fuzziness("1")
+                        )
+                    ))
+                )
+                .from(pageNum)
+                .size(pageSize)
+            , HashMap.class);
+
+            return esAffairUtils.hitToTarget(resp.hits().hits(), Affair.class);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+
 
     }
 

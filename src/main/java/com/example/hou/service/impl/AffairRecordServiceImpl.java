@@ -40,6 +40,7 @@ public class AffairRecordServiceImpl implements AffairRecordService {
 
         List<AffairNode> nodes = (List<AffairNode>) affairNodeRepository.findAllById(affair.getAffairs());
         AffairDTO affairDTO = new AffairDTO().setId(affair.getId())
+                .setName(affair.getName())
                 .setDescription(affair.getDescription())
                 .setRole(affair.getRole())
                 .setAffairs(nodes);

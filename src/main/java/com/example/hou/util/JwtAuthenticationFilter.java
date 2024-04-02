@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws BusinessException, ServletException, IOException {
 
-        // 关键实现    获取Headers上的token，我命名为token
+        // 关键实现    获取Headers上的token，个人命名为token   也可以是常见的Authorization等等
         String token = request.getHeader("token");
 
         //System.out.println("doFilterInternal:已经生成token:::"+token);

@@ -22,6 +22,6 @@ public class AffairNode {
     private String contentVideo;
 
     public boolean nullFieldsExceptId(){
-        return content == null && contentImg == null && contentVideo == null;
+        return name == null && content == null && contentImg == null && contentVideo == null;
     }
 }
