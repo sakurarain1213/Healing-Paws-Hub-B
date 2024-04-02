@@ -65,9 +65,18 @@ public class QuestionController {
                                          @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                          @RequestParam("id")
                                          String id){
-        questionService.deleteQuestionById(id);
-        System.out.println("delete by id: " + id);
-        return ResultUtil.success();
+        try {
+            boolean judge = questionService.deleteQuestionById(id);
+            if(!judge){
+                System.out.println("删除Question失败，id: " + id + " 不存在");
+                return ResultUtil.error("id不存在");
+            }
+            System.out.println("删除Question成功：" + id);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.error(null);
+        }
     }
 
     @GetMapping

@@ -85,8 +85,19 @@ public class ExamController {
                                   @Size(min = 24, max = 24, message = "id不合法")
                                   @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                   @RequestParam("id") String id) {
-        examService.releaseExamById(id);
-        return ResultUtil.success();
+
+        try {
+            boolean judge = examService.releaseExamById(id);
+            if(!judge){
+                System.out.println("发布exam失败");
+                return ResultUtil.error("id不存在或考试已发布");
+            }
+            System.out.println("删除Exam成功：" + id);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.error(null);
+        }
     }
 
     @DeleteMapping
@@ -94,8 +105,18 @@ public class ExamController {
                                  @Size(min = 24, max = 24, message = "id不合法")
                                  @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                  @RequestParam("id") String id) {
-        examService.deleteExamById(id);
-        return ResultUtil.success();
+        try {
+            boolean judge = examService.deleteExamById(id);
+            if(!judge){
+                System.out.println("删除Exam失败，id: " + id + " 不存在");
+                return ResultUtil.error("id不存在");
+            }
+            System.out.println("删除Exam成功：" + id);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.error(null);
+        }
     }
 
     @GetMapping

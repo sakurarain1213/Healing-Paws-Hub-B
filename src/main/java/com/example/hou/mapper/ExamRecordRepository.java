@@ -7,4 +7,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ExamRecordRepository extends MongoRepository<ExamRecord, String> {
     Page<ExamRecord> findByUserId(long userId, Pageable pageable);
+
+    long countById(String id);
 }

@@ -69,6 +69,7 @@ public class ExamRecordController {
             i++;
         }
         req.setUserId(userId)
+                .setExamName(exam.getExamName())
                 .setScore(score)
                 .setTime(new Date());
 
@@ -83,8 +84,18 @@ public class ExamRecordController {
                                  @Size(min = 24, max = 24, message = "id不合法")
                                  @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                  @RequestParam("id") String id) {
-        examRecordService.deleteExamRecordById(id);
-        return ResultUtil.success();
+        try {
+            boolean judge = examRecordService.deleteExamRecordById(id);
+            if(!judge){
+                System.out.println("删除ExamRecord失败，id: " + id + " 不存在");
+                return ResultUtil.error("id不存在");
+            }
+            System.out.println("删除ExamRecord成功：" + id);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.error(null);
+        }
     }
 
     @GetMapping("/page")

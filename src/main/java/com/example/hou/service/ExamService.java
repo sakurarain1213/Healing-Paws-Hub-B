@@ -10,8 +10,8 @@ public interface ExamService {
     long totalScore(List<String> questionIdList);
     Exam createExam(Exam req);
     Long updateExam(Exam req);
-    void releaseExamById(String id);
-    void deleteExamById(String id);
+    boolean releaseExamById(String id);
+    boolean deleteExamById(String id);
     Exam getExamById(String id);
     Page<Exam> getExamByPage(Integer pageNum, Integer pageSize);
 

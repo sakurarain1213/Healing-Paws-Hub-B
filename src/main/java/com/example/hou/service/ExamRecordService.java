@@ -10,6 +10,6 @@ public interface ExamRecordService {
     Page<ExamRecord> getExamRecordByTimeOrderWithPagination(Integer pageNum, Integer pageSize);
 
     Page<ExamRecord> getExamRecordsByUserIdWithPagination(long userId, Integer pageNum, Integer pageSize);
-    void deleteExamRecordById(String id);
+    boolean deleteExamRecordById(String id);
 
 }

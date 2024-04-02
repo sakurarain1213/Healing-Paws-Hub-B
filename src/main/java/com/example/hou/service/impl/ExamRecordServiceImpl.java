@@ -25,13 +25,15 @@ public class ExamRecordServiceImpl implements ExamRecordService {
 
     @Override
     public ExamRecord createExamRecord(ExamRecord req) {
-
         return examRecordRepository.insert(req);
     }
 
     @Override
-    public void deleteExamRecordById(String id) {
+    public boolean deleteExamRecordById(String id) {
+        if(examRecordRepository.countById(id) == 0)
+            return false;
         examRecordRepository.deleteById(id);
+        return true;
     }
 
     @Override

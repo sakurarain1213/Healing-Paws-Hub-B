@@ -15,4 +15,5 @@ public interface ExamRepository extends MongoRepository<Exam, String> {
     Page<Exam> findByExamNameLike(String name, Pageable pageable);
     Page<Exam> findByType(int type, Pageable pageable);
     Page<Exam> findByRelease(boolean release, Pageable pageable);
+    long countById(String id);
 }

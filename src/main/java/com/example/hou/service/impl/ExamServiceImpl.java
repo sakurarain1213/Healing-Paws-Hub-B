@@ -83,11 +83,11 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public void releaseExamById(String id) {
+    public boolean releaseExamById(String id) {
         Optional<Exam> res = examRepository.findById(id);
 
         if(!res.isPresent() || res.get().getRelease()) {
-            return;
+            return false;
         }
         System.out.println("release");
         // 更新release, questionList
@@ -104,11 +104,9 @@ public class ExamServiceImpl implements ExamService {
                     question.getAnswer(), question.getDetail(), question.getScore());
             questionEntityList.add(questionEntity);
         }
-//        System.out.println(questionEntityList);
 
-
-        Query query = new Query(Criteria.where("release").is(false)
-                .and("id").is(id));
+        Query query = new Query(Criteria.where("id").is(id).
+                and("release").is(false));
 
         Update update = new Update();
         update.set("release", true);
@@ -117,12 +115,16 @@ public class ExamServiceImpl implements ExamService {
 
         UpdateResult result = template.updateFirst(query, update, Exam.class);
         System.out.println(result.getModifiedCount());
+        return true;
     }
 
 
     @Override
-    public void deleteExamById(String id) {
+    public boolean deleteExamById(String id) {
+        if(examRepository.countById(id) == 0)
+            return false;
         examRepository.deleteById(id);
+        return true;
     }
 
 
