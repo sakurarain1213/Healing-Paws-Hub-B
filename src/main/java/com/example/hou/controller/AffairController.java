@@ -111,6 +111,10 @@ public class AffairController {
         System.out.println("userId: " + userId);
         System.out.println("count: "+count);
 
+//        System.out.println(loginUser);
+//        System.out.println(loginUser.getPermissions());
+//        return ResultUtil.success(loginUser);
+
         List<Affair> recommendAffairs = affairService.getRecommendAffairs(loginUser, count);
         if (recommendAffairs == null)return ResultUtil.error(null);
 
