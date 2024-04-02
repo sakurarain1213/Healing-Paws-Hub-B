@@ -1,5 +1,7 @@
 package com.example.hou.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.hou.entity.*;
@@ -14,6 +16,7 @@ import com.example.hou.util.JwtUtils;
 import com.example.hou.util.RedisUtil;
 import com.example.hou.util.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,10 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.example.hou.util.FileUtil.fileUpload;
 
@@ -54,6 +54,12 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;//用于更新缓存的权限
+
+    private static final String USER_PREFIX = "login:";
 
 
     @Override
@@ -218,6 +224,30 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
             if (sp == null)   return new Result(-100, "对应权限不存在", null);
 
+            //注意redis缓存里的permission要改
+            //把HouApplicationTest的redis方法移动到这里即可
+                // 1.从Redis获取用户数据
+            String userKey = USER_PREFIX + userId;
+            String userJson = redisTemplate.opsForValue().get(userKey);
+            //System.out.println(userJson);
+                //{"@type":"com.example.hou.entity.LogUser","accountNonExpired":true,"accountNonLocked":true,"credentialsNonExpired":true,"enabled":true,"password":"$2a$10$zpIj12VJUwVQAHAFJHjaaOwDl9ZkzYb21oA7a6s.Q6AN9PC7BX4Ka","permissions":["sys:queryUser"],"user":{"account":"w1625154105@163.com","accountNotExpired":true,"accountNotLocked":true,"avatar":"http://150.158.110.63:8080/images/678be954-d1a8-45b0-879b-b514653b44a1_2024-04-01-20-28-01_123.png","createTime":1710226628000,"credentialsNotExpired":true,"enabled":true,"lastLoginTime":1711976695000,"password":"$2a$10$zpIj12VJUwVQAHAFJHjaaOwDl9ZkzYb21oA7a6s.Q6AN9PC7BX4Ka","updateTime":1710226628000,"userId":3}}
+            if (userJson == null) {
+                throw new RuntimeException("User not found in Redis for ID: " + userId);
+            }
+                // 2.反序列化用户对象
+                LogUser user = JSON.parseObject(userJson,LogUser.class);
+                List<String> newPermissions = new ArrayList<>(); // 创建一个新的ArrayList实例
+                newPermissions.add(sp.getPermissionCode());//redis存的是permission的英文码
+                user.setPermissions(newPermissions);
+                // 4.序列化更新后的用户对象
+                String updatedUserJson = JSON.toJSONString(user, SerializerFeature.WriteClassName);
+                // 5.将更新后的用户数据存回Redis
+                redisTemplate.opsForValue().set(userKey, updatedUserJson);
+                // 处理异常，例如序列化和反序列化错误
+                // throw new RuntimeException("Error updating user permissions 未找到用户 token缓存过期", e);
+
+
+            //插入新的关系到数据库
             SysUserPermissionRelation relation = new SysUserPermissionRelation();
             relation.setUserId(userId);
             relation.setPermissionId(sp.getPermissionId());
@@ -251,7 +281,7 @@ public class SecurityUserServiceImpl implements SecurityUserService {
             SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
 
             if (sysuser.getAvatar() != null && !sysuser.getAvatar().isEmpty()) {
-                 FileUtil.deleteFile(sysuser.getAvatar()); //文件工具类的删除逻辑
+                 FileUtil.deleteFile(sysuser.getAvatar()); //文件工具类删除逻辑
             }
 
             //再用新url覆盖avatar字段值
