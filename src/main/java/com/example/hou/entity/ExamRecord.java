@@ -33,6 +33,8 @@ public class ExamRecord {
     @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String examId;
 
+    private String examName;
+
     /**
      * 用户对试卷所有题目的作答列表
      */

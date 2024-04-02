@@ -12,7 +12,7 @@ public interface QuestionService {
 
     Long updateQuestion(Question req);
 
-    void deleteQuestionById(String id);
+    boolean deleteQuestionById(String id);
 
     Question getQuestionById(String id);
 

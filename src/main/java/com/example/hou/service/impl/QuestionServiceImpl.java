@@ -71,8 +71,10 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void deleteQuestionById(String id) {
+    public boolean deleteQuestionById(String id) {
         Question question = getQuestionById(id);
+        if(question == null)
+            return false;
         questionRepository.deleteById(id);
 
         // 如果exam是未发布状态，从exam的questionIdList, 删除id, 并修改exam的总分
@@ -94,6 +96,7 @@ public class QuestionServiceImpl implements QuestionService {
         System.out.println(updateResult.getModifiedCount());
         // 更新操作是否被确认
         System.out.println(updateResult.wasAcknowledged());
+        return true;
     }
 
     @Override
