@@ -64,12 +64,13 @@ public class AffairRecordController {
     public Result deleteById(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                              @RequestParam("id") String id){
         try {
-            affairRecordService.deleteById(id);
+            int flag = affairRecordService.deleteById(id);
+            if (flag < 0) return ResultUtil.error("id不存在");
             System.out.println("delete:" + id);
             return ResultUtil.success(id);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultUtil.error(null);
+            return ResultUtil.error("删除异常");
         }
     }
 

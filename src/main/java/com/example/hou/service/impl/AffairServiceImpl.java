@@ -59,8 +59,11 @@ public class AffairServiceImpl implements AffairService {
     }
 
     @Override
-    public void deleteById(String id) {
+    public int deleteById(String id) {
+        Affair cur = affairRepository.findById(id).orElse(null);
+        if(cur == null)return -1;
         affairRepository.deleteById(id);
+        return 0;
     }
 
     @Override

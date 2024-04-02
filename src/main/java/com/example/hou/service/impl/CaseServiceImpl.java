@@ -91,8 +91,11 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public void deleteCaseById(String id) {
+    public int deleteCaseById(String id) {
+        Case cur = caseRepository.findById(id).orElse(null);
+        if(cur == null)return -1;
         caseRepository.deleteById(id);
+        return 0;
     }
 
     @Override

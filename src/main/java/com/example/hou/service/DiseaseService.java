@@ -12,7 +12,7 @@ public interface DiseaseService {
 
     Disease findByName(String name);
 
-    void deleteById(String id);
+    int deleteById(String id);
 
     long updateById(Disease disease);
 

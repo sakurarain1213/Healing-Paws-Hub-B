@@ -11,7 +11,7 @@ public interface CaseService {
 
     Long updateCaseById(Case req);
 
-    void deleteCaseById(String id);
+    int deleteCaseById(String id);
 
     Case getCaseById(String id);
 

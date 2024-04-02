@@ -31,7 +31,7 @@ public class DiseaseController {
 
         Disease created = diseaseService.createDisease(disease);
         System.out.println(created.getId());
-        if(created == null)return ResultUtil.error(null);
+        if(created.getId() == null)return ResultUtil.error(null);
         return ResultUtil.success(created);
     }
 
@@ -39,7 +39,8 @@ public class DiseaseController {
     public Result deleteById(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                              @RequestParam("id") String id){
         try {
-            diseaseService.deleteById(id);
+            int flag = diseaseService.deleteById(id);
+            if (flag < 0)return ResultUtil.error("id不存在");
             System.out.println("delete:"+id);
             return ResultUtil.success();
         }catch (Exception e){
