@@ -22,25 +22,29 @@ import java.util.List;
 @Accessors(chain = true)
 public class Affair {
     @Id
-    @Size(min = 24, max = 24, message = "id不合法")
-    @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+//    @Size(min = 24, max = 24, message = "id不合法")
+//    @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String id;
 
-    @Size(max = 200, message = "name不合法")
+//    @Size(max = 200, message = "name不合法")
     private String name;
 
-    @Size(max = 200, message = "description不合法")
+//    @Size(max = 200, message = "description不合法")
     private String description;
 
-    @Size(max = 30, message = "role不合法")
-    @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "role为中文、英文、数字、下划线组合")
+    private String pic;
+    private List<Integer> picSize;
+
+
+//    @Size(max = 30, message = "role不合法")
+//    @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "role为中文、英文、数字、下划线组合")
     private String role;
 
-    @AffairCreateConstraint(groups = AffairCreateGroup.class)
-    @AffairUpdateConstraint(groups = AffairUpdateGroup.class)
+//    @AffairCreateConstraint(groups = AffairCreateGroup.class)
+//    @AffairUpdateConstraint(groups = AffairUpdateGroup.class)
     private List<String> affairs;
 
     public boolean nullFieldsExceptId(){
-        return name == null && description == null && role == null && affairs == null;
+        return name == null && description == null && pic == null && role == null && affairs == null;
     }
 }

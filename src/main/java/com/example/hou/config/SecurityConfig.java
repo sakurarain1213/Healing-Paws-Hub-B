@@ -73,13 +73,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/images/**",
                         "/logo/**",
                         "/email/**",
-                        "/case/**",
+//                        "/case/**",
                         "/question/**",
-                        "/case/**",
-                        "/disease/**",
-                        "/exam/**",
+//                        "/case/**",
+//                        "/disease/**",
+                        "/exam/**"
 //                        "/examrecord/**",
-                        "/affairnode/**"
+//                        "/affairnode/**"
 //                        "/affair/**"
                       ).anonymous()
 //                开发中所有可访问

@@ -28,7 +28,8 @@ public class GlobalExceptionHandler {
     public Result exceptionHandler(Exception e) {
         log.error("Exception全局异常：{}",e);
         Result result = new Result();
-        result.setMsg(e.getMessage()+e.getCause());
+        result.setCode(-100);
+        result.setMsg(e.getMessage());
         return result;
     }
 
