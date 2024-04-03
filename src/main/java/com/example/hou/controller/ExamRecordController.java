@@ -104,8 +104,11 @@ public class ExamRecordController {
         if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
 
         Page<ExamRecord> res = examRecordService.getExamRecordByTimeOrderWithPagination(pageNum, pageSize);
-        System.out.println(res.getTotalElements()); //集合中总数
-        System.out.println(res.getTotalPages()); //按指定分页得到的总页数
+        System.out.println(res.getTotalElements()); //集合总条数
+        System.out.println(res.getTotalPages()); //总页数
+        System.out.println(res.getNumber()); //当前页数，页数从0开始
+        System.out.println(res.getSize()); //每页记录条数
+//        System.out.println(res.getContent()); //当前页记录列表
 
         if (res == null)
             return ResultUtil.error(null);
