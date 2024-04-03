@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class Affair {
+public class Affair implements FavoriteInfo{
     @Id
 //    @Size(min = 24, max = 24, message = "id不合法")
 //    @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
