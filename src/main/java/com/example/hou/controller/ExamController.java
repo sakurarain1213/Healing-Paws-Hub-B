@@ -30,12 +30,13 @@ public class ExamController {
         if (req.missingRequiredFields())
             return ResultUtil.error("缺少必须字段");
 
-        if (req.getType() <= 0)
-            return ResultUtil.error("type有误");
+        /*if (req.getType() <= 0)
+            return ResultUtil.error("type有误");*/
 
         long score = examService.totalScore(req.getQuestionIdList());
         if (score == -1)
             return ResultUtil.error("题目的ID有误");
+        // 设置totalScore
         req.setTotalScore(score);
 
         if (req.getTotalTime() <= 0)
@@ -45,8 +46,9 @@ public class ExamController {
         if (addTime > endTime)
             return ResultUtil.error("错误：endTime < startTime + totalTime");
 
-
+        // 设置exam为未发布状态
         req.setRelease(false);
+
         Exam created = examService.createExam(req);
         if (created == null)
             return ResultUtil.error("maybe time error");
@@ -56,13 +58,14 @@ public class ExamController {
     @PutMapping
     public Result updateExamById(@RequestBody @NonNull @Valid Exam req) {
         if (req.getId() == null)
-            return ResultUtil.error(0);
+            return ResultUtil.error(null);
         if (req.missingAllRequiredFields())
             return ResultUtil.error("未填写任何需要更新的信息");
 
-        if (req.getType() <= 0)
-            return ResultUtil.error("type有误");
+        /*if (req.getType() != null && req.getType() <= 0)
+            return ResultUtil.error("type有误");*/
 
+        // 更新questionIdList，则更新totalScore
         if (req.getQuestionIdList() != null) {
             long score = examService.totalScore(req.getQuestionIdList());
             if (score == -1)
@@ -74,9 +77,9 @@ public class ExamController {
 
         Long res = examService.updateExam(req);
         if (res == null)
-            return ResultUtil.error(null);
+            return ResultUtil.error("id不存在, 或startTime + totalTime > endTime");
         if (res == 0)
-            return ResultUtil.error("未找到对应exam, 或该exam已发布");
+            return ResultUtil.error("该exam已发布");
         return ResultUtil.success(res);
     }
 
@@ -92,7 +95,7 @@ public class ExamController {
                 System.out.println("发布exam失败");
                 return ResultUtil.error("id不存在或考试已发布");
             }
-            System.out.println("删除Exam成功：" + id);
+            System.out.println("发布Exam成功：" + id);
             return ResultUtil.success();
         } catch (Exception e) {
             e.printStackTrace();

@@ -30,12 +30,12 @@ public class Exam {
     private String examName;
 
     /**
-     *  未发布状态时，存放questionId列表
+     *  仅未发布状态时，存放questionId列表
      */
     private List<String> questionIdList;
 
     /**
-     *  发布状态时，存放question列表
+     *  仅发布状态时，存放question列表
      */
     private List<QuestionEntity> questionList;
     /**
@@ -66,15 +66,22 @@ public class Exam {
      * 所属角色，取值[1,2,3]
      */
     @Max(3)
-    private int type;
+    @Min(1)
+    private Integer type;
 
     public boolean missingRequiredFields(){
-        return ((examName == null || examName.trim().isEmpty()) || startTime == null
-                || questionIdList == null || endTime == null);
+        return ((examName == null || examName.trim().isEmpty()) || questionIdList == null
+                || startTime == null || totalTime == null
+                || endTime == null || type == null);
     }
 
+    /**
+     * 判断更新exam时，是否有更新的字段
+     * @return true如果有更新的字段; false如果全部字段为null
+     */
     public boolean missingAllRequiredFields(){
-        return ((examName == null || examName.trim().isEmpty()) && startTime == null
-                && questionIdList == null && endTime == null);
+        return ((examName == null || examName.trim().isEmpty()) && questionIdList == null
+                && startTime == null && totalTime == null
+                && endTime == null && type == null);
     }
 }

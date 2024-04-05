@@ -53,32 +53,46 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public Long updateExam(Exam req) {
+        Optional<Exam> opt = examRepository.findById(req.getId());
+        if (!opt.isPresent()) {
+            return null;
+        }
+        Exam exam = opt.get();
+
         Update update = new Update();
         if(req.getExamName() != null)
             update.set("examName", req.getExamName());
         if(req.getQuestionIdList() != null)
             update.set("questionList", req.getQuestionIdList());
-        if(req.getStartTime() != null)
+
+        if(req.getStartTime() != null) {
             update.set("startTime", req.getStartTime());
-        if(req.getTotalTime() > 0)
+            exam.setStartTime(req.getStartTime());
+        }
+        if(req.getTotalTime() != null) {
             update.set("totalTime", req.getTotalTime());
-        if(req.getTotalScore() >= 0)
-            update.set("totalScore", req.getTotalScore());
-        if(req.getEndTime() != null)
+            exam.setTotalTime(req.getTotalTime());
+        }
+        if(req.getEndTime() != null) {
             update.set("endTime", req.getEndTime());
-        if(req.getType() > 0)
+            exam.setEndTime(req.getEndTime());
+        }
+        if(req.getTotalScore() != null)
+            update.set("totalScore", req.getTotalScore());
+        if(req.getType() != null)
             update.set("type", req.getType());
 
-        if(req.getTotalTime() <= 0)
-            return null;
-        long addTime = req.getStartTime().getTime() + req.getTotalTime() * 60 * 1000;
-        long endTime = req.getEndTime().getTime();
+        // 判断更新之后，时间约束是否满足
+        long addTime = exam.getStartTime().getTime() + exam.getTotalTime() * 60 * 1000;
+        long endTime = exam.getEndTime().getTime();
         if(addTime > endTime)
             return null;
+
         // 只能修改未发布的exam
         Query query = new Query(Criteria.where("id").is(req.getId()).and("release").is(false));
         UpdateResult updateResult = template.updateFirst(query, update, Exam.class);
         System.out.println(updateResult.getModifiedCount());
+
         return updateResult.getModifiedCount();
     }
 
