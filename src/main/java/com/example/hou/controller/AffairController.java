@@ -1,6 +1,8 @@
 package com.example.hou.controller;
 
 import com.example.hou.entity.*;
+import com.example.hou.handler.AffairPicHandler;
+import com.example.hou.handler.FileHandler;
 import com.example.hou.result.Result;
 import com.example.hou.service.AffairService;
 import com.example.hou.util.ResultUtil;
@@ -31,12 +33,24 @@ public class AffairController {
     private AffairService affairService;
 
     @PostMapping
-    @Validated(AffairCreateGroup.class)
-    public Result createAffair(@NonNull @Valid @RequestBody Affair affair){
-        if (affair.getName() == null ||
-            affair.getDescription() == null ||
-            affair.getRole() == null ||
-            affair.getAffairs() == null) return  ResultUtil.error("缺少必需参数");
+//    @Validated(AffairCreateGroup.class)
+    public Result createAffair(@NonNull @Valid @ModelAttribute AffairCreateVo createVo){
+        if (createVo.getName() == null ||
+            createVo.getDescription() == null ||
+            createVo.getPic() == null ||
+            createVo.getRole() == null ||
+            createVo.getAffairs() == null) return  ResultUtil.error("缺少必需参数");
+
+        Affair affair = new Affair();
+        affair.setName(createVo.getName())
+                .setDescription(createVo.getDescription())
+                .setRole(createVo.getRole())
+                .setAffairs(createVo.getAffairs());
+
+        FileHandler<Affair> handler = new AffairPicHandler(createVo.getPic(), affair);
+        handler.handleFile();
+
+        System.out.println(affair);
 
         Affair created = affairService.createAffair(affair);
         System.out.println(created.getId());
@@ -48,19 +62,32 @@ public class AffairController {
     public Result deleteById(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                              @RequestParam("id") String id){
         try {
-            affairService.deleteById(id);
+            int flag = affairService.deleteById(id);
+            if (flag < 0) ResultUtil.error("id不存在");
             System.out.println(id);
             return ResultUtil.success(id);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultUtil.error(null);
+            return ResultUtil.error("删除异常");
         }
     }
 
     @PutMapping
-    @Validated(AffairUpdateGroup.class)
-    public Result updateById(@NonNull @Valid @RequestBody Affair affair){
-        if (affair.getId() == null)return ResultUtil.error("缺少必需参数");
+//    @Validated(AffairUpdateGroup.class)
+    public Result updateById(@NonNull @Valid @ModelAttribute AffairUpdateVo updateVo){
+        Affair affair = new Affair();
+        affair.setId(updateVo.getId())
+                .setName(updateVo.getName())
+                .setDescription(updateVo.getDescription())
+                .setRole(updateVo.getRole())
+                .setAffairs(updateVo.getAffairs());
+
+        FileHandler<Affair> handler = null;
+        if (updateVo.getPic() != null) handler = new AffairPicHandler(updateVo.getPic(), affair);
+        handler.handleFile();
+
+        System.out.println(affair);
+
         if(affair.nullFieldsExceptId())return ResultUtil.error("未填写任何需要更新的信息");
 
         long res = affairService.updateById(affair);

@@ -31,7 +31,10 @@ public class AffairNodeServiceImpl implements AffairNodeService {
     }
 
     @Override
-    public void deleteById(String id) {
+    public int deleteById(String id) {
+        AffairNode cur = affairNodeRepository.findById(id).orElse(null);
+        if(cur == null)return -1;
+
         affairNodeRepository.deleteById(id);
 
 //        删除affair.affairs (list)中与当前id相同的元素
@@ -43,6 +46,8 @@ public class AffairNodeServiceImpl implements AffairNodeService {
 
         UpdateResult updateResult = mongoTemplate.updateMulti(query, update, Affair.class);
         System.out.println("updateResult.getModifiedCount: " + updateResult.getModifiedCount());
+
+        return 0;
     }
 
     @Override

@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class AffairNode {
+public class AffairNode implements FavoriteInfo{
     @Id
     private String id;
 

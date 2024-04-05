@@ -430,12 +430,13 @@ public class CaseController {
     public Result deleteCaseById(@NotBlank(message = "id不能是空串或只有空格") @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                  @RequestParam("id") String id){
         try {
-            caseService.deleteCaseById(id);
+            int flag = caseService.deleteCaseById(id);
+            if(flag < 0)return ResultUtil.error("id不存在");
             System.out.println("delete:"+id);
             return ResultUtil.success();
         }catch (Exception e){
             e.printStackTrace();
-            return ResultUtil.error("删除失败");
+            return ResultUtil.error("删除异常");
         }
     }
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -49,7 +50,11 @@ public class DiseaseServiceImpl implements DiseaseService {
     }
 
     @Override
-    public void deleteById(String id) {
+    public int deleteById(String id) {
+        Optional<Disease> found = diseaseRepository.findById(id);
+        Disease cur = found.orElse(null);
+        if (cur == null)return -1;
+
         diseaseRepository.deleteById(id);
 
         System.out.println("update=========");
@@ -66,6 +71,7 @@ public class DiseaseServiceImpl implements DiseaseService {
         System.out.println(updateResult.getMatchedCount());
         System.out.println(updateResult.getModifiedCount());
         System.out.println(updateResult.wasAcknowledged());
+        return 0;
     }
 
     @Override

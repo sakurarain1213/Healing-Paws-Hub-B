@@ -7,7 +7,7 @@ public interface AffairNodeService {
 
     AffairNode createAffairNode(AffairNode affairNode);
 
-    void deleteById(String id);
+    int deleteById(String id);
 
     long updateById(AffairNode affairNode);
 
