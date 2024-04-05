@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/question")
 @Validated
 public class QuestionController {
+    // 当标注的属性是接口时，其实注入的是这个接口的实现类， 如果这个接口有多个实现类，只使用@Autowired就会报错
     @Autowired
     private QuestionService questionService;
 
