@@ -32,8 +32,8 @@ public class QuestionController {
             return ResultUtil.error("缺少必须字段");
         if(questionService.existErrorDisease(req.getType()))
             return ResultUtil.error("病的ID有误");
-        if(req.getScore() <= 0)
-            return ResultUtil.error("分数<=0");
+        /*if(req.getScore() <= 0)
+            return ResultUtil.error("分数<=0");*/
 
         Question created = questionService.createQuestion(req);
         if(created == null)
@@ -47,12 +47,12 @@ public class QuestionController {
 
         System.out.println(req.getId());
 //        System.out.println(req.missingRequiredFields());
-        if(req.missingAllRequiredFields() && req.getDetail() == null)
+        if(req.missingAllRequiredFields())
             return ResultUtil.error("未填写任何需要更新的信息");
         if(req.getType() != null && questionService.existErrorDisease(req.getType()))
             return ResultUtil.error("病的ID有误");
-        if(req.getScore() <= 0)
-            return ResultUtil.error("分数<=0");
+        /*if(req.getScore() <= 0)
+            return ResultUtil.error("分数<=0");*/
 
         Long res = questionService.updateQuestion(req);
         if (res == null || res == 0)
@@ -97,13 +97,15 @@ public class QuestionController {
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
 
         Page<Question> res = questionService.getQuestionByPage(pageNum, pageSize);
+
+        if(res == null)return ResultUtil.error(null);
+
         System.out.println(res.getTotalElements()); //集合中总数
         System.out.println("=========");
         System.out.println(res.getContent());
         System.out.println("=========");
         System.out.println(res.getTotalPages()); //按指定分页得到的总页数
 
-        if(res == null)return ResultUtil.error(null);
         return ResultUtil.success(res.getContent());
     }
 
@@ -114,13 +116,15 @@ public class QuestionController {
                                          @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9 ]+$", message = "diseases为中文、英文、空格组合") String diseases, @NonNull @RequestParam Integer pageNum, @NonNull @RequestParam Integer pageSize) {
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
         Page<Question> res = questionService.getQuestionByGroup(pageNum, pageSize, diseases);
+
+        if (res == null) return ResultUtil.error(null);
+
         System.out.println("集合中总数：" + res.getTotalElements()); //集合中总数
         System.out.println("=========");
         System.out.println(res.getContent());
         System.out.println("=========");
         System.out.println("指定分页中总数：" + res.getTotalPages()); //按指定分页得到的总页数
 
-        if (res == null) return ResultUtil.error(null);
         return ResultUtil.success(res.getContent());
     }
 }

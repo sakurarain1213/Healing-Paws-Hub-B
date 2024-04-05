@@ -18,7 +18,7 @@ import java.util.List;
 @Data/*生成getter和setter*/
 @NoArgsConstructor/*无参构造器*/
 @AllArgsConstructor/*全参构造器*/
-@Accessors(chain = true)
+@Accessors(chain = true)/*链式*/
 public class QuestionEntity {
     private String statement;
 
@@ -26,5 +26,5 @@ public class QuestionEntity {
 
     private String detail;
 
-    private long score;
+    private Long score;
 }

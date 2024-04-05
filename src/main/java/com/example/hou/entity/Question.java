@@ -47,13 +47,16 @@ public class Question {
     private String detail;
 
     @Max(100)
-    private long score;
+    @Min(1)
+    private Long score;
 
     public boolean missingRequiredFields(){
-        return (statement == null || statement.trim().isEmpty() || answer == null || type == null);
+        return (statement == null || statement.trim().isEmpty() || answer == null
+                || type == null || score == null);
     }
 
     public boolean missingAllRequiredFields(){
-        return ((statement == null || statement.trim().isEmpty()) && answer == null && type == null && score <= 0);
+        return ((statement == null || statement.trim().isEmpty()) && answer == null
+                && type == null && detail == null && score == null);
     }
 }

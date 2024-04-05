@@ -45,8 +45,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
     @Override
     public Question createQuestion(Question req) {
-        Question saved = questionRepository.insert(req);
-        return saved;
+        return questionRepository.insert(req);
     }
 
     @Override
@@ -60,13 +59,13 @@ public class QuestionServiceImpl implements QuestionService {
             update.set("detail", req.getDetail());
         if(req.getStatement() != null)
             update.set("statement", req.getStatement());
-        if (req.getScore() > 0)
+        if (req.getScore() != null)
             update.set("score", req.getScore());
 
         Query query = new Query(Criteria.where("id").is(req.getId()));
 
         UpdateResult updateResult = template.updateFirst(query, update, Question.class);
-        System.out.println(updateResult.getModifiedCount());
+        System.out.println("更新个数：" + updateResult.getModifiedCount());
         return updateResult.getModifiedCount();
     }
 
@@ -96,6 +95,7 @@ public class QuestionServiceImpl implements QuestionService {
         System.out.println(updateResult.getModifiedCount());
         // 更新操作是否被确认
         System.out.println(updateResult.wasAcknowledged());
+
         return true;
     }
 
@@ -107,8 +107,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Page<Question> getQuestionByPage(Integer pageNum, Integer pageSize) {
-        Page<Question> page = questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
-        return page;
+        return questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
     }
 
     @Override
@@ -118,12 +117,14 @@ public class QuestionServiceImpl implements QuestionService {
         /*考虑对pageNume和pageSize检查*/
 
         /* 思路：根据diseaseList的病名查到对应病的idList，然后查询 type属性：包含idList 的 question */
-        String[] diseaseList = diseases.split(" ");
-        Criteria criteria = Criteria.where("name").in(diseaseList);
+        String[] diseaseNames = diseases.split(" ");
+
+        Criteria criteria = Criteria.where("name").in(diseaseNames);
         Query query = new Query(criteria);
-        List<Disease> diseaseList1 = template.find(query, Disease.class);
+        List<Disease> diseaseList = template.find(query, Disease.class);
+
         // 通过病名查询到的病的idList
-        List<String> idList = diseaseList1.stream().map(Disease::getId).collect(Collectors.toList());
+        List<String> idList = diseaseList.stream().map(Disease::getId).collect(Collectors.toList());
 
         System.out.println("病id列表: " + idList);
        /* Criteria criteria1 = Criteria.where("type")

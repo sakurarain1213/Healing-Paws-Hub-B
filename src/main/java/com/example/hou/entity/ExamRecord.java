@@ -25,7 +25,7 @@ public class ExamRecord {
     @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String id;
 
-    private long userId;
+    private Long userId;
     /**
      * exam(必须为已发布状态)的id
      */
@@ -42,7 +42,7 @@ public class ExamRecord {
     /**
      * 得分
      */
-    private long score;
+    private Long score;
     /**
      * 添加时的时间
      */

@@ -68,7 +68,7 @@ public class ExamRecordController {
                 score += question.getScore();
             i++;
         }
-        req.setUserId(userId)
+        req.setUserId(Long.valueOf(userId))
                 .setExamName(exam.getExamName())
                 .setScore(score)
                 .setTime(new Date());
@@ -132,11 +132,13 @@ public class ExamRecordController {
         if (userId == null)return ResultUtil.error("未登录");
 
         Page<ExamRecord> res = examRecordService.getExamRecordsByUserIdWithPagination(userId, pageNum, pageSize);
-        System.out.println(res.getTotalElements()); //集合中总数
-        System.out.println(res.getTotalPages()); //按指定分页得到的总页数
 
         if (res == null)
             return ResultUtil.error(null);
+
+        System.out.println(res.getTotalElements()); //集合中总数
+        System.out.println(res.getTotalPages()); //按指定分页得到的总页数
+
         return ResultUtil.success(res.getContent());
     }
 }
