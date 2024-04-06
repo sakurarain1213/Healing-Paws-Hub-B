@@ -20,7 +20,10 @@ public interface SecurityUserService {
 
     Result logOut();
 
+    //重写此方法
     Result update(LoginUserParam user);
+
+
 
     //token和用户信息由前端提供  只需要permission的名字作为参数
     Result setUserPermission(String permission);

@@ -52,6 +52,14 @@ public class UserInfoController {
     UserInfoService userInfoService;
     //添加@ResponseBody注解将返回的数据自动转化为json, @RequestBody将接收的数据转化为json
     @RequestMapping("/login")
+
+
+    /*
+   失去类型安全但是可以自由接收body里不是param的请求字段的方法
+    @RequestBody Map<String, Object> data) {
+    String name = (String) data.get("name");
+
+     */
 //@ResponseBody//重点debug区域  即只能在params不能在body传递json的问题  这一行无所谓
     //下面把requestbody删除 则至少用params可以 这个符合简单教程
    public Result login(@RequestBody UserInfo userInfo) {

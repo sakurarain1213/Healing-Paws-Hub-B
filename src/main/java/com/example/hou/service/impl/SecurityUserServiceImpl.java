@@ -1,6 +1,7 @@
 package com.example.hou.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -83,6 +84,7 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
 
 
+    //要求同时返回权限
 
     @Override
     public Result login(LoginUserParam param) {
@@ -106,6 +108,12 @@ public class SecurityUserServiceImpl implements SecurityUserService {
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("user_id", userId);
             SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
+
+
+            //有一个判断第一次登录的逻辑  todo  去检查email注册的时候不能加login time
+            String isNew="";
+            if(sysuser.getLastLoginTime()==null) isNew="NEW!用户第一次登录标记.";
+
             sysuser.setLastLoginTime(new Date());
 
             UpdateWrapper<SysUser> userUpdateWrapper = new UpdateWrapper<>();
@@ -119,7 +127,14 @@ public class SecurityUserServiceImpl implements SecurityUserService {
             Map<String, String> payloadMap = new HashMap<>();
             payloadMap.put("userId", userId);
             payloadMap.put("userName", loginUser.getUser().getUserName());
-            payloadMap.put("token", JwtUtils.generateToken(payloadMap));
+
+            //要求返回permission 但是要List转String 用join连接  逗号分隔
+            List<String> permissions = loginUser.getPermissions();
+            String permissionsString = String.join(",", permissions);
+            payloadMap.put("permission", permissionsString);
+
+            payloadMap.put("token",  JwtUtils.generateToken(payloadMap)); //在这里无状态地设置过期时间
+
 
             boolean resultRedis = redisUtil.set("login:" + userId, loginUser);
 
@@ -127,7 +142,7 @@ public class SecurityUserServiceImpl implements SecurityUserService {
                 throw new RuntimeException("redis连接失败导致登录失败");
             }
 
-            return ResultUtil.success(payloadMap);
+            return new Result(200,isNew+"Success",payloadMap);
         //--------------------------------------------------------------------
         } catch (BadCredentialsException e) {
             // 密码错误，直接返回错误信息
@@ -155,6 +170,7 @@ public class SecurityUserServiceImpl implements SecurityUserService {
     }
 
 
+    //修改基本信息 包括密码  todo  DB的更新time属性需要刷新
     @Override
     public Result update(LoginUserParam user) {
 
@@ -168,21 +184,61 @@ public class SecurityUserServiceImpl implements SecurityUserService {
             int userId = loginUser.getUser().getUserId();
 
             // 执行用户信息更新的逻辑
-            // 这里的updateUserInfo需要根据自己的逻辑实现   用一下  mp
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("user_id", userId);
             SysUser sysuser = sysuserMapper.selectOne(queryWrapper);
 
 
-            //修改内容
-            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-            String encode = bCryptPasswordEncoder.encode(user.getPassword());
+            //redis要同步修改---------------------------------------以下
+            // Redis的头像信息也需要更新
+            String userKey = USER_PREFIX + userId;
+            String userJson = redisTemplate.opsForValue().get(userKey);
+            if (userJson == null) {
+                throw new RuntimeException("User not found in Redis for ID: " + userId);
+            }
+            // 反序列化用户对象
+            LogUser loguser = JSON.parseObject(userJson,LogUser.class);
+            //注意 logUser里面的user的avatar才是需要改的属性  要两层
+            SysUser temp=loguser.getUser();
+            //redis要同步修改---------------------------------------以上
 
-            //System.out.println(user.getUserName()+">?????");
-            // 创建一个SysUser 实体对象来保存要更新的值
-            sysuser.setUserName(user.getUserName());
-            sysuser.setPassword(encode);
-            //查询条件
+
+            // 检查是否有account字段需要更新
+            if (user.getAccount() != null && !user.getAccount().isEmpty()) {
+                sysuser.setAccount(user.getAccount());
+                //redis同步
+                temp.setAccount(user.getAccount());
+            }
+
+            // 检查是否有username字段需要更新
+            if (user.getUserName() != null && !user.getUserName().isEmpty()) {
+                sysuser.setUserName(user.getUserName());
+                //redis同步
+                temp.setUserName(user.getUserName());
+                //考虑为什么外层没有username
+            }
+
+            //检查是否有密码要改
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+                String encode = bCryptPasswordEncoder.encode(user.getPassword());
+                sysuser.setPassword(encode);
+
+                //redis同步
+                temp.setPassword(encode);
+                //考虑为什么外层没有password
+            }
+
+            //redis要同步修改---------------------------------------以下
+            loguser.setUser(temp);
+            // 序列化更新后的用户对象
+            String updatedUserJson = JSON.toJSONString(loguser, SerializerFeature.WriteClassName);
+            // 将更新后的用户数据存回Redis
+            redisTemplate.opsForValue().set(userKey, updatedUserJson);
+            //redis要同步修改---------------------------------------以上
+
+
+            //数据库的更新
             UpdateWrapper<SysUser> userUpdateWrapper = new UpdateWrapper<>();
             userUpdateWrapper.eq("user_id", userId);
 
@@ -201,6 +257,7 @@ public class SecurityUserServiceImpl implements SecurityUserService {
         }
         return new Result(-100, "未登录或用户不存在", null);
     }
+
 
 
     //注意传的permission是中文的name  不是sys:user
@@ -284,7 +341,27 @@ public class SecurityUserServiceImpl implements SecurityUserService {
                  FileUtil.deleteFile(sysuser.getAvatar()); //文件工具类删除逻辑
             }
 
-            //再用新url覆盖avatar字段值
+
+            // Redis的头像信息也需要更新
+            String userKey = USER_PREFIX + userId;
+            String userJson = redisTemplate.opsForValue().get(userKey);
+            if (userJson == null) {
+                throw new RuntimeException("User not found in Redis for ID: " + userId);
+            }
+            // 反序列化用户对象
+            LogUser loguser = JSON.parseObject(userJson,LogUser.class);
+            //注意 logUser里面的user的avatar才是需要改的属性  要两层
+            SysUser temp=loguser.getUser();
+            temp.setAvatar(url);
+            loguser.setUser(temp);
+            // 序列化更新后的用户对象
+            String updatedUserJson = JSON.toJSONString(loguser, SerializerFeature.WriteClassName);
+            // 将更新后的用户数据存回Redis
+            redisTemplate.opsForValue().set(userKey, updatedUserJson);
+
+
+
+            //数据库里 再用新url覆盖avatar字段值
             sysuser.setAvatar(url);
             int flag = sysuserMapper.updateById(sysuser);
 
