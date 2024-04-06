@@ -35,6 +35,8 @@ mysql+redis+MongoDB
 + 3.31 权限选择接口完成 权限命名统一 登录规范返回 部署版
 + 4.1 文件工具类删除方法 个人信息与头像方法 部署版
 + 4.2 affair permission的redis同步 
++ 4.3 user可更新  首次login检查
++ 4.6 favorite收藏功能 token刷新时效暂略 department item高性能多字段模糊查询发布
 # 延伸阅读
 
 部署：Tencent cloud

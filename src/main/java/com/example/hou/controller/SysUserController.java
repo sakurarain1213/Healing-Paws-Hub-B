@@ -72,15 +72,12 @@ public class SysUserController {
         return logService.logOut();
     }
 
-    //暂时不用这个接口 拆分出update逻辑
-    /*
+
+    //可以同时更新三者  可以传任意个属性
     @PostMapping("/update")
-    public Result up(@RequestBody LoginUserParam param) {
+    public Result updateAccountUsernamePassword(@RequestBody LoginUserParam param) {
         return logService.update(param);
     }
-    */
-
-
 
 
 

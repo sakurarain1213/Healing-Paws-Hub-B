@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+
+//todo   需要  添加部门连接属性   在删除部门的时候删除连接属性（查询开销大）
+
 public interface DepartmentService {
     Department createDepartment(Department req);
 

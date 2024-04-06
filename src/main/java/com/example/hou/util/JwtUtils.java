@@ -40,26 +40,20 @@ public class JwtUtils {
      */
 
     public static String generateToken(Map<String, String> payloadMap) {
-
         HashMap headers = new HashMap();
-
         JWTCreator.Builder builder = JWT.create();
-
         //定义jwt过期时间
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.SECOND, amount);
-
         //payload
         payloadMap.forEach((k, v) ->{
             builder.withClaim(k, v);
         });
-
         // 生成token
         String token = builder.withHeader(headers)//header
                 //.withClaim("second",amount)//jwt的过期周期/秒，可以用于jwt快过期的时候自动刷新
                 .withExpiresAt(instance.getTime())//指定令牌的过期时间
                 .sign(Algorithm.HMAC256(secretKey));//签名
-
         return token;
     }
 
@@ -102,5 +96,16 @@ public class JwtUtils {
 
         return JWT.require(Algorithm.HMAC256(secretKey)).build().verify(token).getClaims();
     }*/
+
+    //每次访问都会刷新token时效的实现：暂略
+    //由于token生成时自动附带时间的随机 所以同一个token string只能有唯一过期时间不能原地更新
+    //结合本简单项目的最好的方法是每个接口申请新token  以便刷新  但是需要前后端约定 改动大
+
+    //商业化项目的实现是双Token（Access_Token,Refresh_Token）无感刷新
+    //Access_Token未过期时，发送网络请求携带Access_Token即可
+    //Access_Token过期后，前端携带Refresh_Token调用A接口得到新的Access_Token,把新的Access_Token替换旧的Access_Token存储起来。
+
+
+
 }
 

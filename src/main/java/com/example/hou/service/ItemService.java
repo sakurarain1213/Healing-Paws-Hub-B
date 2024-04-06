@@ -21,10 +21,10 @@ public interface ItemService {
     // 可以按需添加其他与物品相关的业务方法
     // 例如，如果物品与库存、价格或销售记录等相关，可以添加以下方法：
 
-    // 更新库存
+    // nope
     void updateItemStock(String itemId, Integer stock);
 
-    // 更新价格
+    // nope
     void updateItemPrice(String itemId, Double price);
 
 

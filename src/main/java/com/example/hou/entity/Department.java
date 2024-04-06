@@ -7,6 +7,8 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -23,8 +25,12 @@ import java.util.List;
 public class Department {
 
     @Id
+    @NotNull(message = "ID must not be null")
     private String id;
 
+    //用于controller层的valid注解限制
+    @NotNull(message = "Name must not be null")
+    @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
     /**
      * 部门名称
      */
@@ -38,37 +44,16 @@ public class Department {
     /**
      * 邻接关系
      */
-    //private String connect;todo 部门不多 考虑直接存id的list 利于查询   后续可以考虑存edge类  空间复杂度E
+    //private String connect;todo 部门不多 考虑直接存id的list 利于查询   后续可以考虑存edge类的数据表  空间复杂度E
 
     private List<String> connectID;
     /**
      * 职员列表
      */
-    private List<Staff> staff; // 假设Staff是另一个实体类，用于描述部门中的职员信息
+    private List<Staff> staffList; // Staff描述部门中的职员
 
     // staff只是静态内部类  直接耦合定义
-    public class Staff {
 
-        /**
-         * 职员ID
-         */
-        private String id;
-
-        /**
-         * 姓名
-         */
-        private String name;
-
-        /**
-         * 职务
-         */
-        private String position;
-        /**
-         * 电话
-         */
-        private String phone;
-        //。。。。。
-    }
 
 
 }

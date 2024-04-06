@@ -1,6 +1,8 @@
 package com.example.hou.service.impl;
 
+import com.example.hou.entity.Case;
 import com.example.hou.entity.Department;
+import com.example.hou.entity.Staff;
 import com.example.hou.mapper.DepartmentRepository;
 import com.example.hou.service.DepartmentService;
 import com.mongodb.connection.ConnectionId;
@@ -11,14 +13,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * @program: Healing-Paws-Hub-B
  * @description:
- * @author:                todo  整个类方法需要修改
+ * @author:
  * @create: 2024-03-29 10:49
  */
 @Service
@@ -30,6 +35,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    //ok
     @Override
     public Department createDepartment(Department department) {
         return departmentRepository.save(department);
@@ -37,11 +43,37 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public String updateDepartmentById(Department department) {
-        return departmentRepository.save(department).getId();
+        // 检查department是否包含id属性
+        if (department.getId() == null) {
+            throw new IllegalArgumentException("Department ID must not be null.");
+        }
+
+        // 尝试从数据库中获取具有相同id的department
+        Optional<Department> existingDepartment = departmentRepository.findById(department.getId());
+
+        // 如果找不到具有该id的department，返回错误
+        if (!existingDepartment.isPresent()) {
+            throw new IllegalArgumentException("Department with ID " + department.getId() + " does not exist.");
+        }
+
+        // 如果找到了，就更新department并保存
+        Department updatedDepartment = departmentRepository.save(department);
+
+        // 返回更新后的department的id
+        return updatedDepartment.getId();
     }
 
     @Override
     public void deleteDepartmentById(String id) {
+
+        // 尝试从数据库中获取具有相同id的department
+        Optional<Department> existingDepartment = departmentRepository.findById(id);
+
+        // 如果找不到具有该id的department，返回错误
+        if (!existingDepartment.isPresent()) {
+            throw new IllegalArgumentException("Department with ID " + id + " does not exist.");
+        }
+
         departmentRepository.deleteById(id);
     }
 
@@ -58,18 +90,43 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<Department> getDepartmentByCombinedName(Integer pageNum, Integer pageSize, String searchName) {
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
-        Criteria criteria = new Criteria("name").regex(searchName, "i"); // 使用正则表达式进行模糊查询，不区分大小写
-        Query query = new Query(criteria).with(pageable);
-        return mongoTemplate.find(query, Department.class);
+        // 使用正则表达式进行模糊查询
+        Pattern pattern = Pattern.compile(".*" + Pattern.quote(searchName) + ".*", Pattern.CASE_INSENSITIVE);
+
+        // 创建对departmentName和introduction字段的模糊匹配条件
+        Criteria departmentNameCriteria = Criteria.where("departmentName").regex(pattern);
+        Criteria introductionCriteria = Criteria.where("introduction").regex(pattern);
+        Criteria staffNameCriteria = Criteria.where("staffList.name").regex(pattern);
+        Criteria staffPositionCriteria = Criteria.where("staffList.position").regex(pattern);
+        Criteria staffPhoneCriteria = Criteria.where("staffList.phone").regex(pattern);
+        //还要别的字段可以直接新建 Criteria然后在下面一行的orOperator参数里塞即可。
+
+        // 使用orOperator创建一个逻辑或条件
+        Criteria orCriteria = new Criteria().orOperator(departmentNameCriteria,
+                introductionCriteria,
+                staffNameCriteria,
+                staffPositionCriteria,
+                staffPhoneCriteria
+
+        );
+
+        // 构建查询并添加分页逻辑
+        Query query = new Query(orCriteria);
+        query.skip((pageNum - 1) * pageSize).limit(pageSize);
+
+        List<Department> departments = mongoTemplate.find(query, Department.class);
+        //departments.stream().forEach(System.out::println);
+
+        return departments;
     }
+
 
     // TODO: 根据需求添加修改员工和连接等功能的实现
     // 例如，修改员工可以是一个方法，它接收部门ID和员工列表，然后更新对应部门的员工
     // 修改连接可能涉及到与其他系统或服务的交互，具体实现会依赖于这些系统的API或协议
 
-    // 示例：修改部门下的员工列表
-    public void updateDepartmentStaff(String departmentId, List<Department.Staff> newStaffList) {
+    // 示例：修改部门的员工列表
+    public void updateDepartmentStaff(String departmentId, List<Staff> newStaffList) {
         // 获取部门实体
         Department department = getDepartmentById(departmentId);
         if (department != null) {

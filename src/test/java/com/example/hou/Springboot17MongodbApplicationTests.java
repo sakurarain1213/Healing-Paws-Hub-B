@@ -1,11 +1,19 @@
 package com.example.hou;
 
 import com.example.hou.entity.Book;
+import com.example.hou.entity.Department;
+import com.example.hou.entity.Item;
+import com.example.hou.entity.Staff;
+import com.example.hou.mapper.DepartmentRepository;
+import com.example.hou.mapper.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,8 +31,14 @@ MongoRepository 提供了一套高级别的抽象 常见功能写法简单
 
 @SpringBootTest
 class Springboot17MongodbApplicationTests {
-    @Autowired //固定写法
+    @Autowired //更灵活
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     @Test
     void contextLoads() {
@@ -42,5 +56,36 @@ class Springboot17MongodbApplicationTests {
     }
    //测试
 
+
+    @Test
+    void department(){
+        /*测试通过   可以指定DB和collection保存  自己查
+        Department d=new Department();
+        d.setDepartmentName("急诊");
+        d.setIntroduction("医院常见科室");
+
+        List<String> connectIdList = new ArrayList<>();
+        connectIdList.add("6610be93c9ffb85f45991f5e");
+        d.setConnectID(connectIdList);
+
+        List<Staff> ls = new ArrayList<>();
+        Staff sb=new Staff("2","iraina","prime doc","13388880000");
+        ls.add(sb);
+
+        d.setStaffList(ls);
+
+
+        departmentRepository.save(d);
+        */
+    }
+
+    @Test
+    void item(){
+        /*测试通过
+        Item i=new Item("1","knife","intro",
+                "used for cut",12.34,"6610be93c9ffb85f45991f5e","normal");
+        itemRepository.save(i);
+        */
+    }
 
 }
