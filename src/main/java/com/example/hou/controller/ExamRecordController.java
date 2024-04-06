@@ -85,10 +85,21 @@ public class ExamRecordController {
                                  @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                  @RequestParam("id") String id) {
         try {
-            boolean judge = examRecordService.deleteExamRecordById(id);
+            //        获取当前登录user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (!authentication.isAuthenticated())return ResultUtil.error("未登录");
+
+            LogUser loginUser = (LogUser) authentication.getPrincipal();
+            Integer userId = Optional.ofNullable(loginUser)
+                    .map(LogUser::getUser)
+                    .map(SysUser::getUserId)
+                    .orElse(null);
+            if (userId == null)return ResultUtil.error("未登录");
+
+            boolean judge = examRecordService.deleteExamRecordById(id, userId);
             if(!judge){
                 System.out.println("删除ExamRecord失败，id: " + id + " 不存在");
-                return ResultUtil.error("id不存在");
+                return ResultUtil.error("此记录不存在");
             }
             System.out.println("删除ExamRecord成功：" + id);
             return ResultUtil.success();

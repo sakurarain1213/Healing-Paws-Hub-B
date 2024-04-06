@@ -29,10 +29,10 @@ public class ExamRecordServiceImpl implements ExamRecordService {
     }
 
     @Override
-    public boolean deleteExamRecordById(String id) {
-        if(examRecordRepository.countById(id) == 0)
+    public boolean deleteExamRecordById(String id, Integer userId) {
+        if(examRecordRepository.countByIdAndUserId(id, Long.valueOf(userId)) == 0)
             return false;
-        examRecordRepository.deleteById(id);
+        examRecordRepository.deleteByIdAndUserId(id, Long.valueOf(userId));
         return true;
     }
 
