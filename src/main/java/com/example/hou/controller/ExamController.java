@@ -84,18 +84,18 @@ public class ExamController {
     }
 
     @PutMapping("/release")
-    public Result releaseExamById(@NotBlank(message = "id不能是空串或只有空格")
+    public Result releaseExamById(/*@NotBlank(message = "id不能是空串或只有空格")
                                   @Size(min = 24, max = 24, message = "id不合法")
                                   @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
-                                  @RequestParam("id") String id) {
-
+                                  @RequestParam("id") String id*/
+            @RequestBody @NonNull @Valid Exam req) {
         try {
-            boolean judge = examService.releaseExamById(id);
+            boolean judge = examService.releaseExamById(req.getId());
             if(!judge){
                 System.out.println("发布exam失败");
                 return ResultUtil.error("id不存在或考试已发布");
             }
-            System.out.println("发布Exam成功：" + id);
+            System.out.println("发布Exam成功：" + req.getId());
             return ResultUtil.success();
         } catch (Exception e) {
             e.printStackTrace();
