@@ -433,7 +433,7 @@ public class CaseController {
             int flag = caseService.deleteCaseById(id);
             if(flag < 0)return ResultUtil.error("id不存在");
             System.out.println("delete:"+id);
-            return ResultUtil.success();
+            return ResultUtil.success(id);
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtil.error("删除异常");

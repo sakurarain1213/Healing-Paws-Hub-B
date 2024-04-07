@@ -42,7 +42,7 @@ public class DiseaseController {
             int flag = diseaseService.deleteById(id);
             if (flag < 0)return ResultUtil.error("id不存在");
             System.out.println("delete:"+id);
-            return ResultUtil.success();
+            return ResultUtil.success(id);
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtil.error("删除异常");
@@ -53,6 +53,13 @@ public class DiseaseController {
     public Result updateById(@NonNull @RequestBody @Valid Disease disease){
         if(disease.getId() == null)return ResultUtil.error("缺少必需参数");
         if(disease.getName() == null && disease.getType() == null)return ResultUtil.error("未填写任何需要更新的信息");
+
+        if(disease.getName() != null){
+            Disease exist = diseaseService.findByName(disease.getName());
+            if (exist != null)return ResultUtil.error("已存在该病名");
+        }
+
+
         long res = diseaseService.updateById(disease);
         if (res <= 0)return ResultUtil.error(null);
         return ResultUtil.success(res);
