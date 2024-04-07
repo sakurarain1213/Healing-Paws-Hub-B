@@ -112,9 +112,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, String diseases) {
-        if(diseases.isEmpty())
-            return null;
-        /*考虑对pageNume和pageSize检查*/
+        if(diseases == null || diseases.isEmpty())
+            return questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
 
         /* 思路：根据diseaseList的病名查到对应病的idList，然后查询 type属性：包含idList 的 question */
         String[] diseaseNames = diseases.split(" ");

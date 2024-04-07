@@ -111,10 +111,13 @@ public class QuestionController {
 
 
     @GetMapping("/group")
-    public Result getQuestionByGroup(@NotBlank
-                                         @RequestParam("diseases")
-                                         @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9 ]+$", message = "diseases为中文、英文、空格组合") String diseases, @NonNull @RequestParam Integer pageNum, @NonNull @RequestParam Integer pageSize) {
+    public Result getQuestionByGroup(@RequestParam(value = "diseases", required = false)
+                                         @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9 ]+$", message = "diseases为中文、英文、空格组合")
+                                         String diseases,
+                                     @NonNull @RequestParam Integer pageNum,
+                                     @NonNull @RequestParam Integer pageSize) {
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
+
         Page<Question> res = questionService.getQuestionByGroup(pageNum, pageSize, diseases);
 
         if (res == null) return ResultUtil.error(null);

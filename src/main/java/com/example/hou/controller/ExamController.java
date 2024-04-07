@@ -122,6 +122,7 @@ public class ExamController {
         }
     }
 
+    @Deprecated
     @GetMapping
     public Result getExamById(@NotBlank(message = "id不能是空串或只有空格")
                               @Size(min = 24, max = 24, message = "id不合法")
@@ -134,6 +135,7 @@ public class ExamController {
         return ResultUtil.success(res);
     }
 
+    @Deprecated
     @GetMapping("/page")
     public Result getExamByPage(@RequestParam("pageNum") Integer pageNum,
                                 @RequestParam("pageSize") Integer pageSize) {
@@ -148,6 +150,7 @@ public class ExamController {
         return ResultUtil.success(res.getContent());
     }
 
+    @Deprecated
     @GetMapping("/page/time_order")
     public Result getExamsByTimeOrderWithPagination(@RequestParam("pageNum") Integer pageNum,
                                                     @RequestParam("pageSize") Integer pageSize) {
@@ -162,6 +165,7 @@ public class ExamController {
         return ResultUtil.success(res.getContent());
     }
 
+    @Deprecated
     @GetMapping("/page/name")
     public Result getExamsByNameLikeWithPagination(@NotBlank @RequestParam("examName") String examName,
                                                    @RequestParam("pageNum") Integer pageNum,
@@ -176,6 +180,7 @@ public class ExamController {
         return ResultUtil.success(res.getContent());
     }
 
+    @Deprecated
     @GetMapping("/page/type")
     public Result getExamsByTypeWithPagination(@RequestParam("type") int type,
                                                @RequestParam("pageNum") Integer pageNum,
@@ -193,6 +198,7 @@ public class ExamController {
         return ResultUtil.success(res.getContent());
     }
 
+    @Deprecated
     @GetMapping("/page/time")
     public Result getExamsByTimeWithPagination(@RequestParam("startTime")
                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
