@@ -22,4 +22,7 @@ public interface AffairService {
     List<Affair> getRecommendAffairs(LogUser user, Integer count);
 
     List<Affair> getFuzzyMatchedAffairs(String input, Integer pageNum, Integer pageSize);
+
+    Affair addNodeToAffair(String affairId, String nodeId);
+
 }

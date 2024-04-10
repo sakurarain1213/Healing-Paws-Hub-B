@@ -57,20 +57,20 @@ public class DiseaseServiceImpl implements DiseaseService {
 
         diseaseRepository.deleteById(id);
 
-        System.out.println("update=========");
-
-//        从含有指定id元素的question的id列表 删除id
-        Query query = new Query();
-        query.addCriteria(Criteria.where("type").is(id));
-
-        Update update = new Update();
-        update.pull("type", id);
-
-        UpdateResult updateResult = template.updateMulti(query, update, Question.class);
-
-        System.out.println(updateResult.getMatchedCount());
-        System.out.println(updateResult.getModifiedCount());
-        System.out.println(updateResult.wasAcknowledged());
+//        System.out.println("update=========");
+//
+////        从含有指定id元素的question的id列表 删除id
+//        Query query = new Query();
+//        query.addCriteria(Criteria.where("type").is(id));
+//
+//        Update update = new Update();
+//        update.pull("type", id);
+//
+//        UpdateResult updateResult = template.updateMulti(query, update, Question.class);
+//
+//        System.out.println(updateResult.getMatchedCount());
+//        System.out.println(updateResult.getModifiedCount());
+//        System.out.println(updateResult.wasAcknowledged());
         return 0;
     }
 

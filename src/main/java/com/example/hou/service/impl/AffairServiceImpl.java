@@ -349,5 +349,28 @@ public class AffairServiceImpl implements AffairService {
 
     }
 
+    @Override
+    public Affair addNodeToAffair(String affairId, String nodeId) {
+        Affair affair = affairRepository.findById(affairId).orElse(null);
+        if (affair == null) return null;
+
+        AffairNode affairNode = affairNodeRepository.findById(nodeId).orElse(null);
+        if (affairNode == null)return null;
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(affairId));
+
+        Update update = new Update();
+        update.push("affairs", nodeId);
+
+        UpdateResult updateResult = mongoTemplate.updateFirst(query, update, Affair.class);
+        System.out.println(updateResult.getModifiedCount());
+
+        List<String> affairs = affair.getAffairs();
+        affairs.add(nodeId);
+
+        return affair;
+    }
+
 
 }
