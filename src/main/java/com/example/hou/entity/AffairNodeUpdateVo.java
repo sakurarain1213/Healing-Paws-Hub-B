@@ -22,7 +22,7 @@ public class AffairNodeUpdateVo {
 
     private String name;
 
-    @Size(max = 200, message = "content不合法")
+    @Size(max = 65535, message = "content不合法") //长度限制
     private String content;
     private MultipartFile contentImg;
     private MultipartFile contentVideo;
