@@ -3,6 +3,7 @@ package com.example.hou.service;
 import com.example.hou.entity.Affair;
 import com.example.hou.entity.AffairNode;
 import com.example.hou.entity.LogUser;
+import com.example.hou.result.Result;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -23,6 +24,6 @@ public interface AffairService {
 
     List<Affair> getFuzzyMatchedAffairs(String input, Integer pageNum, Integer pageSize);
 
-    Affair addNodeToAffair(String affairId, String nodeId);
+    Result addNodeToAffair(String affairId, String nodeId);
 
 }

@@ -165,13 +165,12 @@ public class AffairController {
 
     }
 
-    @PostMapping("/affair/node")
-    public Result addNodeToAffair(@NonNull AddNodeVo input){
-        Affair affair = affairService.addNodeToAffair(input.getAffairId(), input.getNodeId());
-        if (affair == null)return ResultUtil.error("affairId或nodeId不合法");
+    @PostMapping("/node")
+    public Result addNodeToAffair(@NonNull @Valid @RequestBody AddNodeVo input){
+        System.out.println(input.getAffairId());
+        System.out.println(input.getNodeId());
 
-        System.out.println(affair);
-        return ResultUtil.success(affair);
+        return affairService.addNodeToAffair(input.getAffairId(), input.getNodeId());
     }
 
 

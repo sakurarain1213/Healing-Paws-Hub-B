@@ -11,8 +11,10 @@ import com.example.hou.mapper.AffairNodeRepository;
 import com.example.hou.mapper.AffairRepository;
 import com.example.hou.mapper.SysPermissionMapper;
 import com.example.hou.mapper.SysUserPermissionRelationMapper;
+import com.example.hou.result.Result;
 import com.example.hou.service.AffairService;
 import com.example.hou.util.ESUtils;
+import com.example.hou.util.ResultUtil;
 import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -350,12 +352,24 @@ public class AffairServiceImpl implements AffairService {
     }
 
     @Override
-    public Affair addNodeToAffair(String affairId, String nodeId) {
+    public Result addNodeToAffair(String affairId, String nodeId) {
         Affair affair = affairRepository.findById(affairId).orElse(null);
-        if (affair == null) return null;
+        if (affair == null) {
+            System.out.println("affairId invalid");
+            return ResultUtil.error("affairId不合法");
+        }
 
         AffairNode affairNode = affairNodeRepository.findById(nodeId).orElse(null);
-        if (affairNode == null)return null;
+        if (affairNode == null){
+            System.out.println("nodeId invalid");
+            return ResultUtil.error("nodeId不合法");
+        }
+
+        List<String> affairs = affair.getAffairs();
+
+//        判断nodeId是否已经添加在affairs
+        Set<String> set = affairs.stream().collect(Collectors.toSet());
+        if (set.contains(nodeId))return ResultUtil.error("nodeId已存在");
 
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(affairId));
@@ -366,10 +380,9 @@ public class AffairServiceImpl implements AffairService {
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, Affair.class);
         System.out.println(updateResult.getModifiedCount());
 
-        List<String> affairs = affair.getAffairs();
         affairs.add(nodeId);
 
-        return affair;
+        return ResultUtil.success(affair);
     }
 
 
