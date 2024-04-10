@@ -385,5 +385,22 @@ public class AffairServiceImpl implements AffairService {
         return ResultUtil.success(affair);
     }
 
+    @Override
+    public boolean validateAffairs(List<String> affairs) {
+//        affairNodeRepository.existsById()
+        List<AffairNode> nodes = (List<AffairNode>) affairNodeRepository.findAllById(affairs);
+        for (AffairNode node : nodes){
+            System.out.println(node);
+            if(node == null)return false;
+        }
+
+        return true;
+
+//        affairNodeRepository.existsById()
+//        Query query = new Query();
+//        query.addCriteria(Criteria.where("id"))
+//        mongoTemplate.exists()
+    }
+
 
 }

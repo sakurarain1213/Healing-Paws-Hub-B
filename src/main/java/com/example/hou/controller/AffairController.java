@@ -43,6 +43,9 @@ public class AffairController {
             createVo.getRole() == null ||
             createVo.getAffairs() == null) return  ResultUtil.error("缺少必需参数");
 
+        boolean flag = affairService.validateAffairs(createVo.getAffairs());
+        if (!flag) return ResultUtil.error("affairs存在不合法id");
+
         Affair affair = new Affair();
         affair.setName(createVo.getName())
                 .setDescription(createVo.getDescription())

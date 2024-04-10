@@ -26,4 +26,6 @@ public interface AffairService {
 
     Result addNodeToAffair(String affairId, String nodeId);
 
+    boolean validateAffairs(List<String> affairs);
+
 }
