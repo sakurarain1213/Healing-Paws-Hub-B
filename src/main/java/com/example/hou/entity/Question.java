@@ -37,7 +37,7 @@ public class Question {
     private String answer;
 
     /**
-     * 所属病Disease列表
+     * 所属病Disease的name列表
      */
     private List<String> type;
 

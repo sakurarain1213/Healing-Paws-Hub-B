@@ -35,8 +35,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public boolean existErrorDisease(List<String> diseaseList) {
-        for (String diseaseId : diseaseList) {
-            Query query = new Query(Criteria.where("id").is(diseaseId));
+        for (String diseaseName : diseaseList) {
+            Query query = new Query(Criteria.where("name").is(diseaseName));
             long count = template.count(query, Disease.class);
             if(count <= 0)
                 return true;
@@ -111,11 +111,29 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, List<String> diseases) {
+        if(diseases == null || diseases.isEmpty())
+            return questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
+
+        Criteria criteria = Criteria.where("type").all(diseases);
+        Query query = new Query(criteria);
+        List<Question> list = template.find(query, Question.class);
+
+        System.out.println("题目列表: " + list);
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        Page<Question> page = new PageImpl<>(list, pageable, list.size());
+        return page;
+    }
+
+}
+
+    /*@Override
     public Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, String diseases) {
         if(diseases == null || diseases.isEmpty())
             return questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
 
-        /* 思路：根据diseaseList的病名查到对应病的idList，然后查询 type属性：包含idList 的 question */
+        *//* 思路：根据diseaseList的病名查到对应病的idList，然后查询 type属性：包含idList 的 question *//*
         String[] diseaseNames = diseases.split(" ");
 
         Criteria criteria = Criteria.where("name").in(diseaseNames);
@@ -126,9 +144,9 @@ public class QuestionServiceImpl implements QuestionService {
         List<String> idList = diseaseList.stream().map(Disease::getId).collect(Collectors.toList());
 
         System.out.println("病id列表: " + idList);
-       /* Criteria criteria1 = Criteria.where("type")
+       *//* Criteria criteria1 = Criteria.where("type")
                 .andDocumentStructureMatches(() ->
-                        new Document().append("db.inventory.find", new Document("$all", idList)));*/
+                        new Document().append("db.inventory.find", new Document("$all", idList)));*//*
         Criteria criteria1 = Criteria.where("type").all(idList);
         Query query1 = new Query(criteria1);
         List<Question> list = template.find(query1, Question.class);
@@ -140,4 +158,4 @@ public class QuestionServiceImpl implements QuestionService {
         return page;
     }
 
-}
+}*/

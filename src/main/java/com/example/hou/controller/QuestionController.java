@@ -31,7 +31,7 @@ public class QuestionController {
         if(req.missingRequiredFields())
             return ResultUtil.error("缺少必须字段");
         if(questionService.existErrorDisease(req.getType()))
-            return ResultUtil.error("病的ID有误");
+            return ResultUtil.error("病的Name有误");
         /*if(req.getScore() <= 0)
             return ResultUtil.error("分数<=0");*/
 
@@ -50,7 +50,7 @@ public class QuestionController {
         if(req.missingAllRequiredFields())
             return ResultUtil.error("未填写任何需要更新的信息");
         if(req.getType() != null && questionService.existErrorDisease(req.getType()))
-            return ResultUtil.error("病的ID有误");
+            return ResultUtil.error("病的Name有误");
         /*if(req.getScore() <= 0)
             return ResultUtil.error("分数<=0");*/
 
@@ -109,8 +109,29 @@ public class QuestionController {
         return ResultUtil.success(res.getContent());
     }
 
-
     @GetMapping("/group")
+    public Result getQuestionByGroup(@RequestParam(value = "diseases", required = false)
+                                     List<String> diseases,
+                                     @NonNull @RequestParam Integer pageNum,
+                                     @NonNull @RequestParam Integer pageSize) {
+        if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
+        if(diseases != null && questionService.existErrorDisease(diseases))
+            return ResultUtil.error("病的Name有误,请检查是否有空格");
+
+        Page<Question> res = questionService.getQuestionByGroup(pageNum, pageSize, diseases);
+
+        if (res == null) return ResultUtil.error(null);
+
+        System.out.println("集合中总数：" + res.getTotalElements()); //集合中总数
+        System.out.println("=========");
+        System.out.println(res.getContent());
+        System.out.println("=========");
+        System.out.println("指定分页中总数：" + res.getTotalPages()); //按指定分页得到的总页数
+
+        return ResultUtil.success(res.getContent());
+    }
+
+    /*@GetMapping("/group")
     public Result getQuestionByGroup(@RequestParam(value = "diseases", required = false)
                                          @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9 ]+$", message = "diseases为中文、英文、空格组合")
                                          String diseases,
@@ -129,5 +150,5 @@ public class QuestionController {
         System.out.println("指定分页中总数：" + res.getTotalPages()); //按指定分页得到的总页数
 
         return ResultUtil.success(res.getContent());
-    }
+    }*/
 }
