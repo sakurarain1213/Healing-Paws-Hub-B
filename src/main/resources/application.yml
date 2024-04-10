@@ -78,7 +78,7 @@ spring:
     host: 150.158.110.63
     # 在同机器上连接同机器的redis  建议写成localhost
     port: 6379
-    password: redis    # 自定义密码
+    password: kXNj66TYV2zYnKOTaKXL8nGDWW22OEQd    # 自定义密码
     # 连接池最大连接数（使用负值表示没有限制）
     lettuce:
       pool:

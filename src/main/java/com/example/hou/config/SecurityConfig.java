@@ -73,9 +73,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/images/**",
                         "/logo/**",
                         "/email/**",
-//                        "/case/**",
-//                        "/disease/**",
-//                        "/affairnode/**",
+                    //    "/case/**",
+                     //  "/disease/**",
+                     //   "/affairnode/**",
 //                        "/affair/**"
                         "/question/**",
                         "/exam/**"
