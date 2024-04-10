@@ -37,13 +37,21 @@ mysql+redis+MongoDB
 + 4.2 affair permission的redis同步 
 + 4.3 user可更新  首次login检查
 + 4.6 favorite收藏功能 token刷新时效暂略 department item高性能多字段模糊查询发布
++ 4.9 redis每分钟自动清除缓存（包括token）的问题 考虑绑定ip为127.0.0.1本地访问和改密和换版本  部署flask微服务支持GPT调用 百度千帆appBuilder   item和depart支持按id查  item的usage存md的源码  
 
-默认头像问题   item和depart按id查的问题    item的usage存md的源码  
-redis每分钟自动清除缓存（包括token）的问题 考虑绑定ip为127.0.0.1本地访问和改密和换版本
-GPT考虑百度千帆的appbuilder和要求python请求  尝试flask微服务
-添加收藏次数的查询
+
+默认头像问题      
+
+文件系统 需要一张上传文件的记录 用id查所有文件的url 以便删除和复用
+
+
+考虑已学习的记录表 类比收藏
+添加已学习和学习次数的查询（等价 只是不能取消）  推荐算法可以安装收藏次数和学习次数来推荐
+添加收藏次数的查询（等价）
+
 item需要根据List<Affair> getRecommendAffairs类比 添加一个推荐接口
 
+question的list要求传disease的name而不是id
 
 # 延伸阅读
 
