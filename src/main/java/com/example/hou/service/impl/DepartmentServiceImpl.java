@@ -14,7 +14,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -125,17 +128,31 @@ public class DepartmentServiceImpl implements DepartmentService {
     // 例如，修改员工可以是一个方法，它接收部门ID和员工列表，然后更新对应部门的员工
     // 修改连接可能涉及到与其他系统或服务的交互，具体实现会依赖于这些系统的API或协议
 
-    // 示例：修改部门的员工列表
-    public void updateDepartmentStaff(String departmentId, List<Staff> newStaffList) {
-        // 获取部门实体
-        Department department = getDepartmentById(departmentId);
-        if (department != null) {
-            // 更新员工列表，这里假设Department实体有一个员工列表的属性
-            //department.setStaffList(newStaffList);
-            // 保存更新后的部门
-            departmentRepository.save(department);
-        } else {
-            // 处理部门不存在的逻辑
+    //  修改部门的员工列表  并未使用
+    public ResponseEntity<Department> updateDepartmentStaff(String departmentId, List<Staff> newStaffList) {
+        // 检查部门ID和新的员工列表是否为空
+        if (departmentId.trim().isEmpty() || newStaffList == null || newStaffList.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        try {
+            // 获取部门实体
+            Department department = getDepartmentById(departmentId);
+            if (department != null) {
+                // 更新员工列表
+                department.setStaffList(newStaffList);
+                // 保存更新后的部门
+                Department updatedDepartment = departmentRepository.save(department);
+                return ResponseEntity.ok(updatedDepartment);
+            } else {
+                // 部门不存在
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            // 处理异常，例如记录日志等
+            // 根据实际情况决定是否需要抛出异常或者返回错误信息
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
         }
     }
 
