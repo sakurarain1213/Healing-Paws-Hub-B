@@ -18,5 +18,5 @@ public interface QuestionService {
 
     Page<Question> getQuestionByPage(Integer pageNum, Integer pageSize);
 
-    Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, String diseases);
+    Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, List<String> diseases);
 }

@@ -53,6 +53,7 @@ public class Exam {
      * 以分钟为单位
      */
     @Max(180)
+    @Min(1)
     private Long totalTime;
     /**
      * 结束时间>=开始时间+结束时间
