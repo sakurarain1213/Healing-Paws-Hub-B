@@ -44,7 +44,7 @@ public class AffairController {
             createVo.getAffairs() == null) return  ResultUtil.error("缺少必需参数");
 
         boolean flag = affairService.validateAffairs(createVo.getAffairs());
-        if (!flag) return ResultUtil.error("affairs存在不合法id");
+        if (!flag) return ResultUtil.error("affairs存在无效id");
 
         Affair affair = new Affair();
         affair.setName(createVo.getName())
@@ -80,6 +80,11 @@ public class AffairController {
     @PutMapping
 //    @Validated(AffairUpdateGroup.class)
     public Result updateById(@NonNull @Valid @ModelAttribute AffairUpdateVo updateVo){
+        if (updateVo.getAffairs() != null){
+            boolean flag = affairService.validateAffairs(updateVo.getAffairs());
+            if (!flag) return ResultUtil.error("affairs存在无效id");
+        }
+
         Affair affair = new Affair();
         affair.setId(updateVo.getId())
                 .setName(updateVo.getName())
@@ -87,9 +92,11 @@ public class AffairController {
                 .setRole(updateVo.getRole())
                 .setAffairs(updateVo.getAffairs());
 
-        FileHandler<Affair> handler = null;
-        if (updateVo.getPic() != null) handler = new AffairPicHandler(updateVo.getPic(), affair);
-        handler.handleFile();
+
+        if (updateVo.getPic() != null) {
+            FileHandler<Affair> handler = new AffairPicHandler(updateVo.getPic(), affair);
+            handler.handleFile();
+        }
 
         System.out.println(affair);
 
