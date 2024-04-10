@@ -8,12 +8,14 @@ import com.example.hou.handler.AffairNodeVdoHandler;
 import com.example.hou.handler.FileHandler;
 import com.example.hou.result.Result;
 import com.example.hou.service.AffairNodeService;
+import com.example.hou.util.FileUtil;
 import com.example.hou.util.ResultUtil;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -107,6 +109,27 @@ public class AffairNodeController {
         System.out.println(page.getContent());
         return ResultUtil.success(page.getContent());
     }
+
+    /**
+     * 上传图片文件
+     */
+    @PostMapping("/upload")
+    public Result uploadMultipartFile(@NonNull @RequestParam("upload") MultipartFile file){
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.lastIndexOf(".") == -1){
+            return ResultUtil.error("文件不合法");
+        }
+
+       try {
+           String url = FileUtil.fileUpload(file);
+           return ResultUtil.success(url);
+       }catch (Exception e){
+           e.printStackTrace();
+           return ResultUtil.error("文件上传失败");
+       }
+
+    }
+
 
 
 

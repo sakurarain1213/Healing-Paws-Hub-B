@@ -5,6 +5,7 @@ import com.example.hou.handler.AffairPicHandler;
 import com.example.hou.handler.FileHandler;
 import com.example.hou.result.Result;
 import com.example.hou.service.AffairService;
+import com.example.hou.util.FileUtil;
 import com.example.hou.util.ResultUtil;
 import com.example.hou.validator.AffairCreateGroup;
 import com.example.hou.validator.AffairUpdateGroup;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -173,6 +175,25 @@ public class AffairController {
         return affairService.addNodeToAffair(input.getAffairId(), input.getNodeId());
     }
 
+    /**
+     * 上传图片文件
+     */
+    @PostMapping("/upload")
+    public Result uploadMultipartFile(@NonNull @RequestParam("upload") MultipartFile file){
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.lastIndexOf(".") == -1){
+            return ResultUtil.error("文件不合法");
+        }
+
+        try {
+            String url = FileUtil.fileUpload(file);
+            return ResultUtil.success(url);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error("文件上传失败");
+        }
+
+    }
 
 
 
