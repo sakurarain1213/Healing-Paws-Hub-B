@@ -15,6 +15,27 @@ public class ESUtils<T> {
     @Autowired
     private ElasticsearchClient client;
 
+
+    /**
+     *  模糊搜索api
+     */
+    public List<T> fuzzyQueryByPage(String indexName, String text, List<String> fields,
+                                    Integer pageNum, Integer pageSize,
+                                    Class<T> target) throws Exception{
+
+        SearchResponse<HashMap> response = client.search(s -> s
+                .index(indexName)
+                .query(q -> q
+                        .multiMatch(m -> m
+                                .query(text).fields(fields)
+                        )
+                )
+                .from(pageNum)
+                .size(pageSize), HashMap.class);
+
+        return hitToTarget(response.hits().hits(), target);
+    }
+
     /** 供参考，暂未使用
      *  根据关键字分页查询
      */

@@ -319,28 +319,32 @@ public class AffairServiceImpl implements AffairService {
     @Override
     public List<Affair> getFuzzyMatchedAffairs(String input, Integer pageNum, Integer pageSize) {
         try {
-            SearchResponse<HashMap> resp = esClient.search(s -> s
-                .index("test.affair")
-                .query(q -> q.bool(
-                    b -> b.should(
-                        h -> h.fuzzy(
-                            f -> f.field("description")
-                                  .value(input)
-                                  .fuzziness("1")
-                        )
-                    ).should(
-                        h -> h.fuzzy(
-                            f -> f.field("name")
-                                    .value(input)
-                                    .fuzziness("1")
-                        )
-                    ))
-                )
-                .from(pageNum)
-                .size(pageSize)
-            , HashMap.class);
+            List<String> fields = new ArrayList<>();
+            fields.add("name");
+            fields.add("description");
 
-            return esAffairUtils.hitToTarget(resp.hits().hits(), Affair.class);
+            return esAffairUtils.fuzzyQueryByPage("test.affair", input, fields, pageNum, pageSize, Affair.class);
+//            SearchResponse<HashMap> resp = esClient.search(s -> s
+//                .index("test.affair")
+//                .query(q -> q.bool(
+//                    b -> b.should(
+//                        h -> h.fuzzy(
+//                            f -> f.field("description")
+//                                  .value(input)
+//                                  .fuzziness("1")
+//                        )
+//                    ).should(
+//                        h -> h.fuzzy(
+//                            f -> f.field("name")
+//                                    .value(input)
+//                                    .fuzziness("1")
+//                        )
+//                    ))
+//                )
+//                .from(pageNum)
+//                .size(pageSize)
+//            , HashMap.class);
+//            return esAffairUtils.hitToTarget(resp.hits().hits(), Affair.class);
 
         }catch (Exception e){
             e.printStackTrace();
