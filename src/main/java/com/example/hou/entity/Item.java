@@ -33,6 +33,10 @@ public class Item {
      */
     private String introduction;
 
+
+    private String pic;//加一个图片字段
+
+
     /**
      * 用途
      */

@@ -3,6 +3,7 @@ package com.example.hou.controller;
 import com.example.hou.entity.Department;
 import com.example.hou.result.Result;
 import com.example.hou.service.DepartmentService;
+import com.example.hou.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
@@ -33,21 +35,36 @@ public class DepartmentController {
 
     // 创建部门
     @PostMapping
-    public Result createDepartment(@Validated @RequestBody Department department) {
+    public Result createDepartment(@Validated @RequestPart Department department, @RequestPart(value = "pic", required = false) MultipartFile pic) {
+        //考虑直接在控制层判断文件
+        String url = "";//默认物品文件
+        if (pic != null && !pic.isEmpty()) {
+            url= FileUtil.fileUpload(pic);
+        }
+        department.setPic(url);
         Department createdDepartment = departmentService.createDepartment(department);
         // 框架默认的返回体
         //return ResponseEntity.created(URI.create("/department/" + createdDepartment.getId())).body(createdDepartment);
-        if(createdDepartment==null) return new Result(-100,"error", "DepartmentName参数必要");
+        if(createdDepartment==null) return new Result(-100,"error", "DepartmentName参数必要,或文件传输失败");
         else return new Result(200,"success",createdDepartment);
     }
 
 
-    // 更新部门（通过ID）
+    // 更新部门（通过ID）    文件也要改
     @PutMapping
-    public Result updateDepartmentById( @RequestBody Department department) {
+    public Result updateDepartmentById(@Validated @RequestPart Department department, @RequestPart(value = "pic", required = false) MultipartFile pic) {
         try {
             // 设置ID，确保ID被正确设置
             if(department.getId()==null ||department.getId()=="") return new Result(-100, "error", "缺少id字段") ;
+
+            //文件部分
+            String url = department.getPic();//默认物品文件
+            if (pic != null && !pic.isEmpty()) {
+                url= FileUtil.fileUpload(pic);
+            }
+            department.setPic(url);
+
+
             // 调用服务层方法更新部门
             String updatedId = departmentService.updateDepartmentById(department);
             // 验证返回的ID是否与传入的ID匹配，并返回结果
@@ -81,9 +98,9 @@ public class DepartmentController {
 
     // 根据ID获取部门
     @GetMapping("/{id}")
-    public ResponseEntity<Department> getDepartmentById(@PathVariable String id) {
+    public Result getDepartmentById(@PathVariable String id) {
         Department department = departmentService.getDepartmentById(id);
-        return ResponseEntity.ok().body(department);
+        return new Result(200, "success", department) ;
     }
 
     // 分页获取部门列表

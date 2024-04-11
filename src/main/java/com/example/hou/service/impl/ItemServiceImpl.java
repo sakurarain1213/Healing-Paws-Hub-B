@@ -2,7 +2,9 @@ package com.example.hou.service.impl;
 
 import com.example.hou.entity.Item;
 import com.example.hou.mapper.ItemRepository;
+import com.example.hou.result.Result;
 import com.example.hou.service.ItemService;
+import com.example.hou.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +34,14 @@ public class ItemServiceImpl implements ItemService {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public Item createItem(Item item) {
+    public Item createItem(Item item, MultipartFile pic) {
+        //如果传pic  就存到文件夹 ，返回url
+        String url="";//考虑设置成默认值
+        if (pic != null && !pic.isEmpty()){
+            url= FileUtil.fileUpload(pic);  //利用文件工具类方法实现
+            if(url==null) return null;//上传失败
+        }
+        item.setPic(url);
         return itemRepository.save(item);   //save= 无id的insert+和有id的update
     }
 

@@ -302,6 +302,9 @@ public class EmailController {
             newUser.setCreateTime(new Date());
             newUser.setUpdateTime(new Date());
 
+            //默认头像问题  自带一个默认头像文件的URL 文件要提前传到文件夹
+            newUser.setAvatar("http://150.158.110.63:8080/images/default_avatar.png");
+
             return userService.createUser(newUser);
             /*
             // 完成用户注册

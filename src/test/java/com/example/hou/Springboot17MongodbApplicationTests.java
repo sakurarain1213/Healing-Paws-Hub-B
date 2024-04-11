@@ -1,11 +1,11 @@
 package com.example.hou;
 
-import com.example.hou.entity.Book;
-import com.example.hou.entity.Department;
-import com.example.hou.entity.Item;
-import com.example.hou.entity.Staff;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.example.hou.entity.*;
 import com.example.hou.mapper.DepartmentRepository;
 import com.example.hou.mapper.ItemRepository;
+import com.example.hou.util.ESUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -87,5 +89,41 @@ class Springboot17MongodbApplicationTests {
         itemRepository.save(i);
         */
     }
+
+
+    @Autowired
+    private ESUtils<Affair> esAffairUtils;
+    @Autowired
+    private ElasticsearchClient esClient;
+    //针对affair实现类的模糊功能测试
+    @Test
+    void ES______fuzzySearch() throws IOException {
+
+        String input="一二";
+        Integer pageNum=0;
+        Integer pageSize=10;
+        SearchResponse<HashMap> resp = esClient.search(s -> s
+                        .index("test.affair")
+                        .query(q -> q.bool(
+                                b -> b.should(
+                                        h -> h.fuzzy(
+                                                f -> f.field("description")
+                                                        .value(input)
+                                                        .fuzziness("2")
+                                        )
+                                ).should(
+                                        h -> h.fuzzy(
+                                                f -> f.field("name")
+                                                        .value(input)
+                                                        .fuzziness("2")
+                                        )
+                                ))
+                        )
+                        .from(pageNum)
+                        .size(pageSize)
+                , HashMap.class);
+        System.out.println(esAffairUtils.hitToTarget(resp.hits().hits(), Affair.class));
+
+            }
 
 }
