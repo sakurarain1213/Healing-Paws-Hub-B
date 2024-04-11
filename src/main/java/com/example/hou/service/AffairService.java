@@ -12,6 +12,8 @@ public interface AffairService {
 
     Affair createAffair(Affair affair);
 
+    Affair getById(String id);
+
     int deleteById(String id);
 
     long updateById(Affair affair);

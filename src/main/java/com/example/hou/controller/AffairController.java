@@ -12,6 +12,7 @@ import com.example.hou.validator.AffairUpdateGroup;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -107,6 +108,13 @@ public class AffairController {
         return ResultUtil.success(res);
     }
 
+    //新接口 getByID
+    @GetMapping("/{id}")
+    public ResponseEntity<Affair> getAffairById(@PathVariable String id) {
+        Affair affair = affairService.getById(id);
+        return ResponseEntity.ok().body(affair);
+    }
+
 
     @GetMapping
     public Result getByPage(@NonNull @RequestParam("pageNum") Integer pageNum,
@@ -118,6 +126,9 @@ public class AffairController {
         System.out.println(page.getContent());
         return ResultUtil.success(page.getContent());
     }
+
+    //添加方法 根据id返回单个事务
+
 
     @GetMapping("/subs")
     public Result getAllNodesByAffairid(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
