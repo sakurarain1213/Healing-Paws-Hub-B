@@ -110,9 +110,10 @@ public class AffairController {
 
     //新接口 getByID
     @GetMapping("/{id}")
-    public ResponseEntity<Affair> getAffairById(@PathVariable String id) {
+    public Result getAffairById(@PathVariable String id) {
         Affair affair = affairService.getById(id);
-        return ResponseEntity.ok().body(affair);
+        if(affair!=null)return new Result(200,"success",affair);
+        else return new Result(-100,"error","获取失败 见控制台日志");
     }
 
 

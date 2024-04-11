@@ -356,8 +356,6 @@ public class AffairServiceImpl implements AffairService {
             return null;
         }
 
-
-
     }
 
     @Override

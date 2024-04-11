@@ -1,13 +1,16 @@
 package com.example.hou.controller;
 
+import com.example.hou.entity.Department;
 import com.example.hou.entity.Item;
 import com.example.hou.result.Result;
 import com.example.hou.service.ItemService;
+import com.example.hou.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.net.URI;
@@ -30,46 +33,54 @@ public class ItemController {
 
     // 创建项目
     @PostMapping
-    public ResponseEntity<Result> createItem(@Validated @RequestBody Item item) {
-        Item createdItem = itemService.createItem(item);
+    public Result createItem(@Validated @RequestPart Item item, @RequestPart(value = "pic", required = false) MultipartFile pic) {
+        Item createdItem = itemService.createItem(item,pic);
         if (createdItem == null) {
-            return ResponseEntity.badRequest().body(new Result(-100, "error", "创建项目失败"));
+            return new Result(-100, "error", "上传文件有误导致上传失败");
         }
         //Result可以嵌入response的体
-        return ResponseEntity.created(URI.create("/item/" + createdItem.getId())).body(new Result(200, "success", createdItem));
+        return new Result(200, "success", createdItem);
     }
 
-    // 更新项目（通过ID）
+    // 更新项目（通过ID）  注意也要改文件
     @PutMapping
-    public ResponseEntity<Result> updateItemById(@RequestBody Item item) {
+    public Result updateItemById(@Validated @RequestPart Item item, @RequestPart(value = "pic", required = false) MultipartFile pic) {
         try {
             // 确保ID被正确设置
             if (item.getId() == null) {
-                return ResponseEntity.badRequest().body(new Result(-100, "error", "缺少id字段"));
+                return new Result(-100, "error", "缺少id字段");
             }
+
+            //文件部分
+            String url=item.getPic();
+            if (pic != null && !pic.isEmpty()) {
+                url= FileUtil.fileUpload(pic);
+            }
+            item.setPic(url);
+
             // 调用服务层方法更新项目
             String updatedId = itemService.updateItemById(item);
             // 验证返回的ID是否与传入的ID匹配，并返回结果
             if (Objects.equals(updatedId, String.valueOf(item.getId()))) {
-                return ResponseEntity.ok(new Result(200, "success", "更新成功"));
+                return new Result(200, "success", "更新成功");
             } else {
-                return ResponseEntity.badRequest().body(new Result(-100, "error", "更新后的ID与传入的ID不匹配"));
+                return new Result(-100, "error", "更新后的ID与传入的ID不匹配");
             }
         } catch (Exception e) {
             // 捕获异常，并返回错误响应
-            return ResponseEntity.internalServerError().body(new Result(-100, "error", "更新项目时发生错误"));
+            return new Result(-100, "error", "更新项目时发生错误");
         }
     }
 
     // 删除项目（通过ID）
     @DeleteMapping("/{id}")
-    public ResponseEntity<Result> deleteItemById(@PathVariable @NotNull String id) {
+    public Result deleteItemById(@PathVariable @NotNull String id) {
         try {
             itemService.deleteItemById(id);
-            return ResponseEntity.ok(new Result(200, "success", "删除成功"));
+            return new Result(200, "success", "删除成功");
         } catch (Exception e) {
             // 捕获异常，并返回错误响应
-            return ResponseEntity.internalServerError().body(new Result(-100, "error", "item的ID不存在或数据库错误"));
+            return new Result(-100, "error", "item的ID不存在或数据库错误");
         }
     }
 
@@ -78,9 +89,9 @@ public class ItemController {
 
     // 根据ID获取商品
     @GetMapping("/{id}")
-    public ResponseEntity<Item> getItemById(@PathVariable String id) {
+    public Result getItemById(@PathVariable String id) {
         Item item = itemService.getItemById(id);
-        return ResponseEntity.ok().body(item);
+        return new Result(200, "success", item);
     }
 
     // 分页获取商品列表
@@ -93,11 +104,11 @@ public class ItemController {
 
     // 根据商品名称组合查询商品（这里需要定义具体的查询逻辑）
     @GetMapping("/search")
-    public ResponseEntity<List<Item>> getItemByCombinedName(@RequestParam(defaultValue = "1") Integer pageNum,
+    public Result getItemByCombinedName(@RequestParam(defaultValue = "1") Integer pageNum,
                                                             @RequestParam(defaultValue = "5") Integer pageSize,
                                                             @RequestParam("name") String searchName) {
         List<Item> items = itemService.getItemByCombinedName(pageNum, pageSize, searchName); // 假设服务层有这个方法
-        return ResponseEntity.ok(items);
+        return new Result(200,"success",items);
     }
 
 
