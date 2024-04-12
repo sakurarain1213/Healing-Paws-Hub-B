@@ -109,13 +109,13 @@ public class AffairNodeController {
         if(page == null)return ResultUtil.error(null);
         System.out.println(page.getContent());
 
-//        PageSupport<AffairNode> respPage = new PageSupport<>();
-//        respPage.setData(page.getContent())
-//                .setTotalPages(page.getTotalPages());
-//
-//        return ResultUtil.success(respPage);
+        PageSupport<AffairNode> respPage = new PageSupport<>();
+        respPage.setListData(page.getContent())
+                .setTotalPages(page.getTotalPages());
 
-        return ResultUtil.success(page.getContent());
+        return ResultUtil.success(respPage);
+
+//        return ResultUtil.success(page.getContent());
     }
 
     /**

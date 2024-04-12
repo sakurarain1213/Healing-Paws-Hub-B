@@ -18,17 +18,17 @@ public class PageSupport<T> {
     /**
      * 当前页码, 页码从0开始
      */
-    private int currPageNum;
+//    private int currPageNum;
 
     /**
      * 分页显示条数
      */
-    private int pageSize;
+//    private int pageSize;
 
     /**
      * 总条数
      */
-    private long totalCount;
+//    private long totalCount;
 
     /**
      * 总页数
@@ -38,13 +38,13 @@ public class PageSupport<T> {
     /**
      * 分页数据
      */
-    private List<T> data;
+    private List<T> listData;
 
     PageSupport (Page<T> page){
-        data = page.getContent();
-        currPageNum = page.getNumber();
-        pageSize = page.getSize();
+        listData = page.getContent();
+//        currPageNum = page.getNumber();
+//        pageSize = page.getSize();
         totalPages = page.getTotalPages();
-        totalCount = page.getTotalElements();
+//        totalCount = page.getTotalElements();
     }
 }
