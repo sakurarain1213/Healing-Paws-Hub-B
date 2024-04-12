@@ -1,6 +1,7 @@
 package com.example.hou.controller;
 
 import com.example.hou.entity.Case;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.entity.Question;
 import com.example.hou.result.Result;
 import com.example.hou.service.QuestionService;
@@ -100,13 +101,10 @@ public class QuestionController {
 
         if(res == null)return ResultUtil.error(null);
 
-        System.out.println(res.getTotalElements()); //集合中总数
-        System.out.println("=========");
-        System.out.println(res.getContent());
-        System.out.println("=========");
-        System.out.println(res.getTotalPages()); //按指定分页得到的总页数
+        System.out.println("总页数：" + res.getTotalPages()); //按指定分页得到的总页数
 
-        return ResultUtil.success(res.getContent());
+        PageSupport<Question> pageSupport = new PageSupport<>(res);
+        return ResultUtil.success(pageSupport);
     }
 
     @GetMapping("/group")
@@ -122,13 +120,10 @@ public class QuestionController {
 
         if (res == null) return ResultUtil.error(null);
 
-        System.out.println("集合中总数：" + res.getTotalElements()); //集合中总数
-        System.out.println("=========");
-        System.out.println(res.getContent());
-        System.out.println("=========");
-        System.out.println("指定分页中总数：" + res.getTotalPages()); //按指定分页得到的总页数
+        System.out.println("总页数：" + res.getTotalPages()); //按指定分页得到的总页数
 
-        return ResultUtil.success(res.getContent());
+        PageSupport<Question> pageSupport = new PageSupport<>(res);
+        return ResultUtil.success(pageSupport);
     }
 
     /*@GetMapping("/group")
