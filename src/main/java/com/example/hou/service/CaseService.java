@@ -19,4 +19,6 @@ public interface CaseService {
 
     List<Case> getCaseByCombinedName(Integer pageNum, Integer pageSize, String diseases);
 
+    long getCaseByCombinedNameCount(Integer pageNum, Integer pageSize, String diseases);
+
 }

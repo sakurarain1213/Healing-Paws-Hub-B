@@ -40,7 +40,7 @@ public class PageSupport<T> {
      */
     private List<T> listData;
 
-    PageSupport (Page<T> page){
+    public PageSupport (Page<T> page){
         listData = page.getContent();
 //        currPageNum = page.getNumber();
 //        pageSize = page.getSize();

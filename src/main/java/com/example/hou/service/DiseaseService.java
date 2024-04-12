@@ -19,4 +19,6 @@ public interface DiseaseService {
     Page<Disease> getByPage(Integer pageNum, Integer pageSize);
 
     List<Disease> getPageByType(Integer pageNum, Integer pageSize, String type);
+
+    long getPageByTypeCount(Integer pageNum, Integer pageSize, String type);
 }

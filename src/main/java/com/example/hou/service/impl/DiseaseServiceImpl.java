@@ -101,5 +101,14 @@ public class DiseaseServiceImpl implements DiseaseService {
         return diseases;
     }
 
+    @Override
+    public long getPageByTypeCount(Integer pageNum, Integer pageSize, String type) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("type").is(type));
+        query.skip((pageNum - 1) * pageSize).limit(pageSize);
+
+        return template.count(query, Disease.class);
+    }
+
 
 }

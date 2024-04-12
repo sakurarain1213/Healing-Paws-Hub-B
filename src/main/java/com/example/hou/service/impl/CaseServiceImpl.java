@@ -135,4 +135,15 @@ public class CaseServiceImpl implements CaseService {
 
         return cases;
     }
+
+    @Override
+    public long getCaseByCombinedNameCount(Integer pageNum, Integer pageSize, String diseases) {
+        Query query = new Query();
+
+        TextCriteria matching = TextCriteria.forDefaultLanguage().matching(diseases);
+        query.addCriteria(matching);
+        query.skip((pageNum - 1) * pageSize).limit(pageSize);
+
+        return template.count(query, Case.class);
+    }
 }
