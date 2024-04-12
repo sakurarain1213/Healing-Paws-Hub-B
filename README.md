@@ -43,6 +43,7 @@ mysql+redis+MongoDB
 
 开会内容：
 department和item增加pic的Size
+查科室id下的所有item
 分页需要返回总页数
 
 item需要根据List<Affair> getRecommendAffairs类比 添加一个推荐接口
