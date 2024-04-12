@@ -1,8 +1,10 @@
 package com.example.hou.controller;
 
 import com.example.hou.entity.Department;
+import com.example.hou.entity.Item;
 import com.example.hou.result.Result;
 import com.example.hou.service.DepartmentService;
+import com.example.hou.service.ItemService;
 import com.example.hou.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,6 +34,9 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private ItemService itemService;
 
     // 创建部门
     @PostMapping
@@ -101,6 +106,14 @@ public class DepartmentController {
     public Result getDepartmentById(@PathVariable String id) {
         Department department = departmentService.getDepartmentById(id);
         return new Result(200, "success", department) ;
+    }
+
+    //查询特定部门下的所有item
+    @GetMapping("/getItem/{DepartmentId}")
+    public Result getItemsInDepartment(@PathVariable String DepartmentId) {
+        List<Item> items = itemService.searchItemByDepartment(DepartmentId);
+        if(items==null || items.size()==0) return new Result(-100, "error", "部门内无物品或查询失败") ;
+        return new Result(200, "success", items) ;
     }
 
     // 分页获取部门列表

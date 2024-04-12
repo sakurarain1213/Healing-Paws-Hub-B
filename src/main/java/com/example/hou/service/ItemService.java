@@ -15,6 +15,9 @@ public interface ItemService {
 
     Item getItemById(String id);
 
+    List<Item> searchItemByDepartment(String id);
+
+
     Page<Item> getItemByPage(Integer pageNum, Integer pageSize);
 
     List<Item> getItemByCombinedName(Integer pageNum, Integer pageSize, String searchName);

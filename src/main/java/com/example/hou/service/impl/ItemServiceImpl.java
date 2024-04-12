@@ -67,6 +67,18 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteById(id);
     }
 
+    @Override
+    public List<Item> searchItemByDepartment(String departmentId){
+        //repository要在mapper写  这边直接用template手动实现
+        // 创建查询条件
+        Criteria criteria = new Criteria("departmentId").is(departmentId);
+        // 创建查询对象
+        Query query = new Query(criteria);
+        // 执行查询并获取结果列表
+        return mongoTemplate.find(query, Item.class);
+    }
+
+
 
     @Override
     public Item getItemById(String id) {
