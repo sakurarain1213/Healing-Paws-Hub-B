@@ -2,6 +2,8 @@ package com.example.hou.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
 import com.example.hou.entity.Exam;
+import com.example.hou.entity.ExamRecord;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.result.Result;
 import com.example.hou.service.ExamService;
 import com.example.hou.util.ResultUtil;
@@ -243,12 +245,12 @@ public class ExamController {
         if (startTime != null && endTime != null && startTime.getTime() > endTime.getTime())
             return ResultUtil.error("日期不合法");
 
-        Page<Exam> res = examService.getExamsByMultiWithPagination(sortTime, examName, type, startTime, endTime, pageNum, pageSize);
-        System.out.println(res.getTotalElements()); //集合中总数
-        System.out.println(res.getTotalPages()); //按指定分页得到的总页数
+        PageSupport<Exam> res = examService.getExamsByMultiWithPagination(sortTime, examName, type, startTime, endTime, pageNum, pageSize);
+        System.out.println("总页数：" + res.getTotalPages()); //按指定分页得到的总页数
 
-        if (res == null)
-            return ResultUtil.error(null);
-        return ResultUtil.success(res.getContent());
+        /*if (res == null)
+            return ResultUtil.error(null);*/
+
+        return ResultUtil.success(res);
     }
 }

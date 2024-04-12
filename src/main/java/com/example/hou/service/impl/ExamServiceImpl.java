@@ -1,13 +1,11 @@
 package com.example.hou.service.impl;
 
 import com.example.hou.entity.Exam;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.entity.Question;
 import com.example.hou.entity.QuestionEntity;
 import com.example.hou.mapper.ExamRepository;
-import com.example.hou.mapper.QuestionRepository;
 import com.example.hou.service.ExamService;
-import com.example.hou.service.QuestionService;
-import com.example.hou.util.ResultUtil;
 import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ExamServiceImpl implements ExamService {
@@ -184,13 +181,13 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public Page<Exam> getExamsByMultiWithPagination(Boolean sortTime,
-                                                    String examName,
-                                                    Integer type,
-                                                    Date startTime,
-                                                    Date endTime,
-                                                    Integer pageNum,
-                                                    Integer pageSize){
+    public PageSupport<Exam> getExamsByMultiWithPagination(Boolean sortTime,
+                                                           String examName,
+                                                           Integer type,
+                                                           Date startTime,
+                                                           Date endTime,
+                                                           Integer pageNum,
+                                                           Integer pageSize){
 
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
         Criteria criteria = new Criteria();
@@ -208,8 +205,14 @@ public class ExamServiceImpl implements ExamService {
         Query query = Query.query(criteria);
         query.with(pageable);
         List<Exam> list = template.find(query, Exam.class);
-        Page<Exam> page = new PageImpl<>(list, pageable, list.size());
+        Query query111 = Query.query(criteria);
+        long count = template.count(query111, Exam.class);
 
-        return page;
+        System.out.println("集合总数：" + count);
+        long pages = count / pageSize + (count % pageSize == 0 ? 0 : 1);
+
+        PageSupport<Exam> pageSupport = new PageSupport<>();
+        pageSupport.setTotalPages((int) pages).setListData(list);
+        return pageSupport;
     }
 }

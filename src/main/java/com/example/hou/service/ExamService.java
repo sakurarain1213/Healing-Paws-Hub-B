@@ -1,5 +1,6 @@
 package com.example.hou.service;
 
+import com.example.hou.entity.PageSupport;
 import org.springframework.data.domain.Page;
 import com.example.hou.entity.Exam;
 
@@ -24,11 +25,11 @@ public interface ExamService {
 
     Page<Exam> getExamsByTimeWithPagination(Date startTime, Date endTime, Integer pageNum, Integer pageSize);
 
-    Page<Exam> getExamsByMultiWithPagination(Boolean sortTime,
-                                             String examName,
-                                             Integer type,
-                                             Date startTime,
-                                             Date endTime,
-                                             Integer pageNum,
-                                             Integer pageSize);
+    PageSupport<Exam> getExamsByMultiWithPagination(Boolean sortTime,
+                                                    String examName,
+                                                    Integer type,
+                                                    Date startTime,
+                                                    Date endTime,
+                                                    Integer pageNum,
+                                                    Integer pageSize);
 }
