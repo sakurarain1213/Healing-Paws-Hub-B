@@ -3,6 +3,7 @@ package com.example.hou.controller;
 import com.example.hou.entity.AffairNode;
 import com.example.hou.entity.AffairNodeCreateVo;
 import com.example.hou.entity.AffairNodeUpdateVo;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.handler.AffairNodeImgHandler;
 import com.example.hou.handler.AffairNodeVdoHandler;
 import com.example.hou.handler.FileHandler;
@@ -107,6 +108,13 @@ public class AffairNodeController {
         Page<AffairNode> page = affairNodeService.getByPage(pageNum, pageSize);
         if(page == null)return ResultUtil.error(null);
         System.out.println(page.getContent());
+
+//        PageSupport<AffairNode> respPage = new PageSupport<>();
+//        respPage.setData(page.getContent())
+//                .setTotalPages(page.getTotalPages());
+//
+//        return ResultUtil.success(respPage);
+
         return ResultUtil.success(page.getContent());
     }
 
