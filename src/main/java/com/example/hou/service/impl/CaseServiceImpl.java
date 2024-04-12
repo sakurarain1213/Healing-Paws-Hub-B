@@ -142,7 +142,6 @@ public class CaseServiceImpl implements CaseService {
 
         TextCriteria matching = TextCriteria.forDefaultLanguage().matching(diseases);
         query.addCriteria(matching);
-        query.skip((pageNum - 1) * pageSize).limit(pageSize);
 
         return template.count(query, Case.class);
     }

@@ -55,7 +55,8 @@ public class AffairRecordController {
         List<AffairRecord> records = affairRecordService.getByLateSortedPage(pageNum, pageSize);
         if (records == null)return ResultUtil.error(null);
 
-        long total = affairRecordService.getByLateSortedPageCount(pageNum, pageSize);
+        long total = (affairRecordService.getByLateSortedPageCount(pageNum, pageSize) + pageSize - 1) / pageSize;
+        System.out.println(total);
 
         PageSupport<AffairRecord> respPage = new PageSupport<>();
         respPage.setListData(records)

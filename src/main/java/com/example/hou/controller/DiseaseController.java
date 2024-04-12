@@ -95,7 +95,7 @@ public class DiseaseController {
         System.out.println(res);
         if (res == null)return ResultUtil.error(null);
 
-        long total = diseaseService.getPageByTypeCount(pageNum, pageSize, type);
+        long total = (diseaseService.getPageByTypeCount(pageNum, pageSize, type) + pageSize - 1) / pageSize;;
 
         PageSupport<Disease> respPage = new PageSupport<>();
         respPage.setListData(res)
