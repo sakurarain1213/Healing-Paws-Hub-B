@@ -1,9 +1,6 @@
 package com.example.hou.controller;
 
-import com.example.hou.entity.AffairRecCreateVo;
-import com.example.hou.entity.AffairRecord;
-import com.example.hou.entity.LogUser;
-import com.example.hou.entity.SysUser;
+import com.example.hou.entity.*;
 import com.example.hou.result.Result;
 import com.example.hou.service.AffairRecordService;
 import com.example.hou.util.ResultUtil;
@@ -57,7 +54,15 @@ public class AffairRecordController {
 
         List<AffairRecord> records = affairRecordService.getByLateSortedPage(pageNum, pageSize);
         if (records == null)return ResultUtil.error(null);
-        return ResultUtil.success(records);
+
+        long total = affairRecordService.getByLateSortedPageCount(pageNum, pageSize);
+
+        PageSupport<AffairRecord> respPage = new PageSupport<>();
+        respPage.setListData(records)
+                .setTotalPages((int)total);
+
+        return ResultUtil.success(respPage);
+//        return ResultUtil.success(records);
     }
 
     @DeleteMapping

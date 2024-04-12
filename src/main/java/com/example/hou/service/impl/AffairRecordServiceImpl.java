@@ -75,4 +75,14 @@ public class AffairRecordServiceImpl implements AffairRecordService {
         affairRecordRepository.deleteById(id);
         return 0;
     }
+
+    @Override
+    public long getByLateSortedPageCount(Integer pageNum, Integer pageSize) {
+        Query query = new Query();
+        query.with(Sort.by(Sort.Order.desc("finishTime")))
+                .skip((pageNum - 1) * pageSize)
+                .limit(pageSize);
+
+        return mongoTemplate.count(query, AffairRecord.class);
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.hou.controller;
 
 import com.example.hou.entity.Disease;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.result.Result;
 import com.example.hou.service.DiseaseService;
 import com.example.hou.util.ResultUtil;
@@ -73,7 +74,13 @@ public class DiseaseController {
         Page<Disease> res = diseaseService.getByPage(pageNum, pageSize);
         if(res == null)return ResultUtil.error(null);
         System.out.println(res.getContent());
-        return ResultUtil.success(res.getContent());
+
+        PageSupport<Disease> respPage = new PageSupport<>();
+        respPage.setListData(res.getContent())
+                .setTotalPages(res.getTotalPages());
+
+        return ResultUtil.success(respPage);
+//        return ResultUtil.success(res.getContent());
     }
 
     @GetMapping("/belong")
@@ -87,7 +94,16 @@ public class DiseaseController {
         List<Disease> res = diseaseService.getPageByType(pageNum, pageSize, type);
         System.out.println(res);
         if (res == null)return ResultUtil.error(null);
-        return ResultUtil.success(res);
+
+        long total = diseaseService.getPageByTypeCount(pageNum, pageSize, type);
+
+        PageSupport<Disease> respPage = new PageSupport<>();
+        respPage.setListData(res)
+                .setTotalPages((int)total);
+
+        return ResultUtil.success(respPage);
+
+//        return ResultUtil.success(res);
     }
 
 

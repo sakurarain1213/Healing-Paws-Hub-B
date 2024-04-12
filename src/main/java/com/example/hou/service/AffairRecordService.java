@@ -11,4 +11,6 @@ public interface AffairRecordService {
     List<AffairRecord> getByLateSortedPage(Integer pageNum, Integer pageSize);
 
     int deleteById(String id);
+
+    long getByLateSortedPageCount(Integer pageNum, Integer pageSize);
 }

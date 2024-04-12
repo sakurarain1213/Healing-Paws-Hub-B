@@ -1,8 +1,6 @@
 package com.example.hou.controller;
 
-import com.example.hou.entity.Case;
-import com.example.hou.entity.CaseCreateVo;
-import com.example.hou.entity.CaseUpdateVo;
+import com.example.hou.entity.*;
 import com.example.hou.handler.*;
 import com.example.hou.result.Result;
 import com.example.hou.service.CaseService;
@@ -23,7 +21,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -462,7 +459,14 @@ public class CaseController {
         System.out.println(res.getTotalPages()); //按指定分页得到的总页数
 
         if(res == null)return ResultUtil.error(null);
-        return ResultUtil.success(res.getContent());
+
+        PageSupport<Case> respPage = new PageSupport<>();
+        respPage.setListData(res.getContent())
+                .setTotalPages(res.getTotalPages());
+
+        return ResultUtil.success(respPage);
+
+//        return ResultUtil.success(res.getContent());
     }
 
     @GetMapping("/group")
@@ -473,7 +477,16 @@ public class CaseController {
 
         List<Case> res = caseService.getCaseByCombinedName(pageNum, pageSize, diseases);
         if(res == null)return ResultUtil.error(null);
-        return ResultUtil.success(res);
+
+        long total = caseService.getCaseByCombinedNameCount(pageNum, pageSize, diseases);
+
+        PageSupport<Case> respPage = new PageSupport<>();
+        respPage.setListData(res)
+                .setTotalPages((int)total);
+
+        return ResultUtil.success(respPage);
+
+//        return ResultUtil.success(res);
     }
 
 

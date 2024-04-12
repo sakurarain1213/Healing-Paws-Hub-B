@@ -125,7 +125,13 @@ public class AffairController {
         Page<Affair> page = affairService.getByPage(pageNum, pageSize);
         if (page == null)return ResultUtil.error(null);
         System.out.println(page.getContent());
-        return ResultUtil.success(page.getContent());
+
+        PageSupport<Affair> respPage = new PageSupport<>();
+        respPage.setListData(page.getContent())
+                .setTotalPages(page.getTotalPages());
+
+        return ResultUtil.success(respPage);
+//        return ResultUtil.success(page.getContent());
     }
 
     //添加方法 根据id返回单个事务
