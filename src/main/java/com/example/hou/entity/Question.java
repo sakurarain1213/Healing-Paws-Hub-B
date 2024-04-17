@@ -35,10 +35,15 @@ public class Question {
     private String statement;
 
     /**
+     * 1选择，2判断，3填空
+     * */
+    private Integer questionType;
+
+    /**
      * 判断 - T,F; 选择:A,B,C,D(单选)
      */
-    @Size(max = 1, message = "answer不合法")
-    @Pattern(regexp = "^[TFA-Da-d]$", message = "answer为T/F如果为判断题，Aa/Bb/Cc/Dd如果为选择题")
+    @Size(max = 30, message = "answer长度不能超过30")
+    /*@Pattern(regexp = "^[TFA-Da-d]$", message = "answer为T/F如果为判断题，Aa/Bb/Cc/Dd如果为选择题")*/
     private String answer;
 
     /**
@@ -58,14 +63,21 @@ public class Question {
     public boolean missingRequiredFields(){
         return (name == null || name.trim().isEmpty() ||
                 statement == null || statement.trim().isEmpty()
-                || answer == null
+                || questionType == null || answer == null
                 || type == null || score == null);
     }
 
     public boolean missingAllRequiredFields(){
         return ((name == null || name.trim().isEmpty())
                 && (statement == null || statement.trim().isEmpty())
-                && answer == null && type == null
+                && answer == null && questionType == null && type == null
                 && detail == null && score == null);
+    }
+
+    // 判断questionType是否和answer匹配
+    public boolean questionTypeNotMatch() {
+        if(questionType == 1 && !answer.matches("[A-Da-d]"))
+            return true;
+        return questionType == 2 && !answer.matches("[TF]");
     }
 }

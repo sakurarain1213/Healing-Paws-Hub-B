@@ -43,6 +43,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
         return false;
     }
+
     @Override
     public Question createQuestion(Question req) {
         return questionRepository.insert(req);
@@ -50,19 +51,38 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Long updateQuestion(Question req) {
+        Optional<Question> opt = questionRepository.findById(req.getId());
+        if (!opt.isPresent()) {
+            return null;
+        }
+        Question question = opt.get();
+
         Update update = new Update();
         if(req.getName() != null)
             update.set("name", req.getName());
-        if(req.getType() != null)
-            update.set("type", req.getType());
-        if(req.getAnswer() != null)
-            update.set("answer", req.getAnswer());
-        if(req.getDetail() != null)
-            update.set("detail", req.getDetail());
         if(req.getStatement() != null)
             update.set("statement", req.getStatement());
+
+        if(req.getType() != null)
+            update.set("type", req.getType());
+
+        if(req.getQuestionType() != null){
+            update.set("questionType", req.getQuestionType());
+            question.setQuestionType(req.getQuestionType());
+        }
+        if(req.getAnswer() != null) {
+            update.set("answer", req.getAnswer());
+            question.setAnswer(req.getAnswer());
+        }
+
+        if(req.getDetail() != null)
+            update.set("detail", req.getDetail());
         if (req.getScore() != null)
             update.set("score", req.getScore());
+
+        // 判断questionType是否和answer匹配
+        if(question.questionTypeNotMatch())
+            return null;
 
         Query query = new Query(Criteria.where("id").is(req.getId()));
 

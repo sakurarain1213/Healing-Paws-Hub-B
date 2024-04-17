@@ -33,6 +33,8 @@ public class QuestionController {
             return ResultUtil.error("缺少必须字段");
         if(questionService.existErrorDisease(req.getType()))
             return ResultUtil.error("所属diseases的Name有误");
+        if(req.questionTypeNotMatch())
+            return ResultUtil.error("questionType与answer不对应");
 
         Question created = questionService.createQuestion(req);
         if(created == null)
