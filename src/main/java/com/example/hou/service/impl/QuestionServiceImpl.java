@@ -51,6 +51,8 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Long updateQuestion(Question req) {
         Update update = new Update();
+        if(req.getName() != null)
+            update.set("name", req.getName());
         if(req.getType() != null)
             update.set("type", req.getType());
         if(req.getAnswer() != null)

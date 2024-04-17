@@ -32,9 +32,7 @@ public class QuestionController {
         if(req.missingRequiredFields())
             return ResultUtil.error("缺少必须字段");
         if(questionService.existErrorDisease(req.getType()))
-            return ResultUtil.error("病的Name有误");
-        /*if(req.getScore() <= 0)
-            return ResultUtil.error("分数<=0");*/
+            return ResultUtil.error("所属diseases的Name有误");
 
         Question created = questionService.createQuestion(req);
         if(created == null)
@@ -44,16 +42,14 @@ public class QuestionController {
     @PutMapping
     public Result updateQuestionById(@RequestBody @NonNull @Valid Question req){
         if (req.getId() == null)
-            return ResultUtil.error(0);
+            return ResultUtil.error(null);
 
         System.out.println(req.getId());
-//        System.out.println(req.missingRequiredFields());
+
         if(req.missingAllRequiredFields())
             return ResultUtil.error("未填写任何需要更新的信息");
         if(req.getType() != null && questionService.existErrorDisease(req.getType()))
             return ResultUtil.error("病的Name有误");
-        /*if(req.getScore() <= 0)
-            return ResultUtil.error("分数<=0");*/
 
         Long res = questionService.updateQuestion(req);
         if (res == null || res == 0)

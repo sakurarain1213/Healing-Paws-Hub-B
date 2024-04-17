@@ -26,14 +26,19 @@ public class Question {
     @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String id;
 
+    @Size(max = 30, message = "题目名长度不能超过30")
+    private String name;
 
+    /**
+     * 题目详情
+     * */
     private String statement;
 
     /**
-     * 判断 - T,F；选择:A,B,C,D(单选)//多选暂时不考虑
+     * 判断 - T,F; 选择:A,B,C,D(单选)
      */
-    @Size(max = 15, message = "answer不合法")
-    @Pattern(regexp = "^[TFA-Da-d]$", message = "answer为0,1如果为判断题，A,B,C,D如果为选择题")
+    @Size(max = 1, message = "answer不合法")
+    @Pattern(regexp = "^[TFA-Da-d]$", message = "answer为T/F如果为判断题，Aa/Bb/Cc/Dd如果为选择题")
     private String answer;
 
     /**
@@ -51,12 +56,16 @@ public class Question {
     private Long score;
 
     public boolean missingRequiredFields(){
-        return (statement == null || statement.trim().isEmpty() || answer == null
+        return (name == null || name.trim().isEmpty() ||
+                statement == null || statement.trim().isEmpty()
+                || answer == null
                 || type == null || score == null);
     }
 
     public boolean missingAllRequiredFields(){
-        return ((statement == null || statement.trim().isEmpty()) && answer == null
-                && type == null && detail == null && score == null);
+        return ((name == null || name.trim().isEmpty())
+                && (statement == null || statement.trim().isEmpty())
+                && answer == null && type == null
+                && detail == null && score == null);
     }
 }
