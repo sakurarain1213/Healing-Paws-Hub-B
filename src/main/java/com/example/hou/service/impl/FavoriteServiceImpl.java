@@ -100,6 +100,9 @@ public class FavoriteServiceImpl implements FavoriteService {
         return res;
     }
 
+
+
+
     @Override
     public boolean judgeFavored(Integer userId, String objectType, String objectId) {
         Query query = new Query();
@@ -108,6 +111,14 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .and("objectId").is(objectId));
 
         return mongoTemplate.exists(query, Favorite.class);
+    }
+
+    @Override
+    public long getTotalPageCount(Integer userId, Integer pageNum, Integer pageSize) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userId").is(userId));
+
+        return mongoTemplate.count(query, Favorite.class);
     }
 
 
