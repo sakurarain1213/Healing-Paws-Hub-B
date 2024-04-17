@@ -25,7 +25,7 @@ public interface ExamService {
 
     Page<Exam> getExamsByTimeWithPagination(Date startTime, Date endTime, Integer pageNum, Integer pageSize);
 
-    PageSupport<Exam> getExamsByMultiWithPagination(Boolean sortTime,
+    PageSupport<Exam> getExamsByMultiWithPagination(Integer sortTime,
                                                     String examName,
                                                     Integer type,
                                                     Date startTime,

@@ -14,10 +14,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Date;
 
 @RestController
@@ -93,7 +92,7 @@ public class ExamController {
             @RequestBody @NonNull @Valid Exam req) {
         try {
             boolean judge = examService.releaseExamById(req.getId());
-            if(!judge){
+            if (!judge) {
                 System.out.println("发布exam失败");
                 return ResultUtil.error("id不存在或考试已发布");
             }
@@ -112,7 +111,7 @@ public class ExamController {
                                  @RequestParam("id") String id) {
         try {
             boolean judge = examService.deleteExamById(id);
-            if(!judge){
+            if (!judge) {
                 System.out.println("删除Exam失败，id: " + id + " 不存在");
                 return ResultUtil.error("id不存在");
             }
@@ -224,8 +223,8 @@ public class ExamController {
     }
 
     @GetMapping("/page/multi")
-    public Result getExamsByMultiWithPagination(@RequestParam(value = "sortTime", required = false)
-                                                    Boolean sortTime,
+    public Result getExamsByMultiWithPagination(@RequestParam(value = "sortTime")
+                                                Integer sortTime,
                                                 @RequestParam(value = "examName", required = false)
                                                 String examName,
                                                 @RequestParam(value = "type", required = false)
@@ -239,6 +238,8 @@ public class ExamController {
                                                 Date endTime,
                                                 @NonNull @RequestParam("pageNum") Integer pageNum,
                                                 @NonNull @RequestParam("pageSize") Integer pageSize) {
+        if(sortTime < 0 || sortTime > 2)
+            return ResultUtil.error("sortTime不合法");
         if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
         if (type != null && (type <= 0 || type >= 3))
             return ResultUtil.error("type不合法");

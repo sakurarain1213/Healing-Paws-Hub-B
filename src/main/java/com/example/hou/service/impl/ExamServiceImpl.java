@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -181,7 +182,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public PageSupport<Exam> getExamsByMultiWithPagination(Boolean sortTime,
+    public PageSupport<Exam> getExamsByMultiWithPagination(Integer sortTime,
                                                            String examName,
                                                            Integer type,
                                                            Date startTime,
@@ -193,12 +194,17 @@ public class ExamServiceImpl implements ExamService {
         Criteria criteria = new Criteria();
 
         // 包装类防止为null时判断出错
-        if(Boolean.TRUE.equals(sortTime))
+        if(sortTime == 1)
             pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").descending());
+        else
+            pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").ascending());
+
         if(examName != null)
             criteria.and("examName").regex("^.*" + examName + ".*$");
+
         if(type != null)
             criteria.and("type").is(type);
+
         if(startTime != null && endTime != null)
             criteria.and("startTime").gte(startTime).and("endTime").lte(endTime);
 
