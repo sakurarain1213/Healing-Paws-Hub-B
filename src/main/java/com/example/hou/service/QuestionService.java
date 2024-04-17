@@ -1,6 +1,7 @@
 package com.example.hou.service;
 
 import com.example.hou.entity.Disease;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.entity.Question;
 import org.springframework.data.domain.Page;
 
@@ -16,7 +17,7 @@ public interface QuestionService {
 
     Question getQuestionById(String id);
 
-    Page<Question> getQuestionByPage(Integer pageNum, Integer pageSize);
+    PageSupport<Question> getQuestionByPage(Integer pageNum, Integer pageSize);
 
-    Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, List<String> diseases);
+    PageSupport<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, List<String> diseases);
 }

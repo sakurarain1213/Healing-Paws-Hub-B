@@ -95,14 +95,13 @@ public class QuestionController {
                                     @NonNull @RequestParam("pageSize") Integer pageSize){
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
 
-        Page<Question> res = questionService.getQuestionByPage(pageNum, pageSize);
+        PageSupport<Question> res = questionService.getQuestionByPage(pageNum, pageSize);
 
         if(res == null)return ResultUtil.error(null);
 
         System.out.println("总页数：" + res.getTotalPages()); //按指定分页得到的总页数
 
-        PageSupport<Question> pageSupport = new PageSupport<>(res);
-        return ResultUtil.success(pageSupport);
+        return ResultUtil.success(res);
     }
 
     @GetMapping("/group")
@@ -114,14 +113,13 @@ public class QuestionController {
         if(diseases != null && questionService.existErrorDisease(diseases))
             return ResultUtil.error("病的Name有误,请检查是否有空格");
 
-        Page<Question> res = questionService.getQuestionByGroup(pageNum, pageSize, diseases);
+        PageSupport<Question> res = questionService.getQuestionByGroup(pageNum, pageSize, diseases);
 
         if (res == null) return ResultUtil.error(null);
 
         System.out.println("总页数：" + res.getTotalPages()); //按指定分页得到的总页数
 
-        PageSupport<Question> pageSupport = new PageSupport<>(res);
-        return ResultUtil.success(pageSupport);
+        return ResultUtil.success(res);
     }
 
     /*@GetMapping("/group")

@@ -204,8 +204,10 @@ public class ExamServiceImpl implements ExamService {
 
         Query query = Query.query(criteria);
         query.with(pageable);
+        // 查询对应页码数据
         List<Exam> list = template.find(query, Exam.class);
         Query query111 = Query.query(criteria);
+        // 查询总数
         long count = template.count(query111, Exam.class);
 
         System.out.println("集合总数：" + count);

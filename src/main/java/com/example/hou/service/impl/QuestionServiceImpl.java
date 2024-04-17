@@ -2,6 +2,7 @@ package com.example.hou.service.impl;
 
 import com.example.hou.entity.Disease;
 import com.example.hou.entity.Exam;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.entity.Question;
 import com.example.hou.mapper.QuestionRepository;
 import com.example.hou.service.DiseaseService;
@@ -128,24 +129,39 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Page<Question> getQuestionByPage(Integer pageNum, Integer pageSize) {
-        return questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
+    public PageSupport<Question> getQuestionByPage(Integer pageNum, Integer pageSize) {
+//        return questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
+        // 查询对应页码数据
+        Query query = new Query().with(PageRequest.of(pageNum - 1, pageSize));
+        // 查询对应页码数据
+        List<Question> list = template.find(query, Question.class);
+        // 查询总数
+        long count = template.count(new Query(), Question.class);
+        long pages = count / pageSize + (count % pageSize == 0 ? 0 : 1);
+
+        PageSupport<Question> pageSupport = new PageSupport<>();
+        pageSupport.setTotalPages((int) pages).setListData(list);
+        return pageSupport;
+
     }
 
     @Override
-    public Page<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, List<String> diseases) {
+    public PageSupport<Question> getQuestionByGroup(Integer pageNum, Integer pageSize, List<String> diseases) {
         if(diseases == null || diseases.isEmpty())
-            return questionRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
+            return this.getQuestionByPage(pageNum, pageSize);
 
         Criteria criteria = Criteria.where("type").all(diseases);
-        Query query = new Query(criteria);
+        Query query = new Query(criteria).with(PageRequest.of(pageNum - 1, pageSize));
+        // 查询对应页码数据
         List<Question> list = template.find(query, Question.class);
+        Query query111 = new Query(criteria);
+        // 查询总数
+        long count = template.count(query111, Question.class);
+        long pages = count / pageSize + (count % pageSize == 0 ? 0 : 1);
 
-        System.out.println("题目列表: " + list);
-
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
-        Page<Question> page = new PageImpl<>(list, pageable, list.size());
-        return page;
+        PageSupport<Question> pageSupport = new PageSupport<>();
+        pageSupport.setTotalPages((int) pages).setListData(list);
+        return pageSupport;
     }
 
 }
