@@ -20,8 +20,8 @@ spring:
       date: yyyy-MM-dd HH:mm:ss
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB #配置文件上传属性
+      max-file-size: 100MB
+      max-request-size: 100MB #配置文件上传属性
 
 
   #可以直接在配置文件中统一配置时间格式
