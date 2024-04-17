@@ -1,9 +1,6 @@
 package com.example.hou.controller;
 
-import com.example.hou.entity.Favorite;
-import com.example.hou.entity.FavoriteDTO;
-import com.example.hou.entity.LogUser;
-import com.example.hou.entity.SysUser;
+import com.example.hou.entity.*;
 import com.example.hou.result.Result;
 import com.example.hou.service.FavoriteService;
 import com.example.hou.util.ResultUtil;
@@ -65,6 +62,7 @@ public class FavoriteController {
         }
     }
 
+
     @GetMapping
     public Result getByPage(@NonNull @RequestParam("pageNum") Integer pageNum,
                             @NonNull @RequestParam("pageSize") Integer pageSize){
@@ -83,7 +81,15 @@ public class FavoriteController {
 
         List<FavoriteDTO> res = favoriteService.getByPage(userId, pageNum, pageSize);
         res.stream().forEach(System.out::println);
-        return ResultUtil.success(res);
+
+        long total = (favoriteService.getTotalPageCount(userId, pageNum, pageSize) + pageSize - 1) / pageSize;
+        System.out.println("total:" + total);
+
+        PageSupport<FavoriteDTO> respPage = new PageSupport<>();
+        respPage.setListData(res)
+                .setTotalPages((int)total);
+
+        return ResultUtil.success(respPage);
     }
 
     @GetMapping("/favored")

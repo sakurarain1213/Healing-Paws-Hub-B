@@ -14,4 +14,6 @@ public interface FavoriteService {
     List<FavoriteDTO> getByPage(Integer userId, Integer pageNum, Integer pageSize);
 
     boolean judgeFavored(Integer userId, String objectType, String objectId);
+
+    long getTotalPageCount(Integer userId, Integer pageNum, Integer pageSize);
 }

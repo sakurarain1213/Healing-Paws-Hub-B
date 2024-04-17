@@ -478,7 +478,7 @@ public class CaseController {
         List<Case> res = caseService.getCaseByCombinedName(pageNum, pageSize, diseases);
         if(res == null)return ResultUtil.error(null);
 
-        long total = (caseService.getCaseByCombinedNameCount(pageNum, pageSize, diseases) + pageSize - 1) / pageSize;;
+        long total = (caseService.getCaseByCombinedNameCount(pageNum, pageSize, diseases) + pageSize - 1) / pageSize;
 
         PageSupport<Case> respPage = new PageSupport<>();
         respPage.setListData(res)
