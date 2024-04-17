@@ -61,7 +61,9 @@ public class FileController {
                 .map(SysUser::getUserName)
                 .orElse(null);
 
-        if (userName == null)return ResultUtil.error("未登录");
+        if (userName == null){
+            userName = "default";
+        }
 
 
 
