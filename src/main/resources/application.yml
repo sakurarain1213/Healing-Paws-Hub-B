@@ -105,7 +105,19 @@ spring:
     # 昵称  是自定义属性 能引用到即可 无视解析报错
     nickname: PawsHub官方
 
-
+  # rabbitmq相关配置
+  rabbitmq:
+    host: 150.158.110.63  # 服务器ip注意开放安全组  建议部署在服务器上并用127.0.0.1
+    port: 5672  # 默认5672
+    virtual-host: /  # 虚拟主机名称 例如：/
+    username: test  # admin
+    password: test  # N4Re84bw
+    listener:
+      simple:
+        retry:
+          enabled: true # 开启重试
+          max-attempts: 3 # 重试次数
+          initial-interval: 3000 # 重试间隔
 
 
 
