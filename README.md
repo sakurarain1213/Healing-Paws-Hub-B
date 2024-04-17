@@ -39,21 +39,19 @@ mysql+redis+MongoDB
 + 4.6 favorite收藏功能 token刷新时效暂略 department item高性能多字段模糊查询发布
 + 4.9 redis每分钟自动清除缓存（包括token）的问题 考虑绑定ip为127.0.0.1本地访问和改密和换版本  部署flask微服务支持GPT调用 百度千帆appBuilder   item和depart支持按id查  item的usage存md的源码  
 + 4.10 affair接口优化 注册时设置默认头像
-+ 4.11 department和item增加图片字段 标准化返回
++ 4.11 department和item增加图片字段 标准化返回 模糊搜索问题优化（ES的中文分词器生效）
++ 4.12 GPT模型文本切片训练完成
 
 开会内容：
 department和item增加pic的Size
-查科室id下的所有item
 分页需要返回总页数
 
 item需要根据List<Affair> getRecommendAffairs类比 添加一个推荐接口
-搜索引擎的模糊搜索问题要优化
 
 affair不传图片POST也需要允许
 
 
 文件系统 需要一张上传文件的记录 用id查所有文件的url 以便删除和复用
-
 
 考虑已学习的记录表 类比收藏
 添加已学习和学习次数的查询（等价 只是不能取消）  推荐算法可以安装收藏次数和学习次数来推荐

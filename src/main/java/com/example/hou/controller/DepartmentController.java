@@ -1,11 +1,14 @@
 package com.example.hou.controller;
 
+import com.example.hou.entity.AffairNode;
 import com.example.hou.entity.Department;
 import com.example.hou.entity.Item;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.result.Result;
 import com.example.hou.service.DepartmentService;
 import com.example.hou.service.ItemService;
 import com.example.hou.util.FileUtil;
+import com.example.hou.util.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -118,10 +121,16 @@ public class DepartmentController {
 
     // 分页获取部门列表
     @GetMapping("/page")
-    public ResponseEntity<Page<Department>> getDepartmentByPage(@RequestParam(defaultValue = "1") Integer pageNum,
+    public Result getDepartmentByPage(@RequestParam(defaultValue = "1") Integer pageNum,
                                                                 @RequestParam(defaultValue = "5") Integer pageSize) {
         Page<Department> departments = departmentService.getDepartmentByPage(pageNum, pageSize);
-        return ResponseEntity.ok(departments);
+
+        //封装一个分页标准返回
+        PageSupport<Department> respPage = new PageSupport<>();
+        respPage.setListData(departments.getContent())
+                .setTotalPages(departments.getTotalPages());
+
+        return ResultUtil.success(respPage);
     }
 
     // 根据部门名称组合查询部门（这里需要定义具体的查询逻辑）
