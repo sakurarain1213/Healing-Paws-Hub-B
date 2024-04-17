@@ -88,8 +88,8 @@ public class FileController {
 
 //            File destFile = new File(newFileName);
             String fullPath = BASE_DIR + newFileName;
-            System.out.println(fullPath);
-            System.out.println(newFileName);
+            System.out.println("fullPath: " + fullPath);
+            System.out.println("newFileName: " + newFileName);
 
 //            完成一个大文件的上传
             try(FileOutputStream fileOutputStream = new FileOutputStream(fullPath);
