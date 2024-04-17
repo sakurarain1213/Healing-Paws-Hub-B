@@ -2,9 +2,11 @@ package com.example.hou.controller;
 
 import com.example.hou.entity.Department;
 import com.example.hou.entity.Item;
+import com.example.hou.entity.PageSupport;
 import com.example.hou.result.Result;
 import com.example.hou.service.ItemService;
 import com.example.hou.util.FileUtil;
+import com.example.hou.util.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -96,10 +98,16 @@ public class ItemController {
 
     // 分页获取商品列表
     @GetMapping("/page")
-    public ResponseEntity<Page<Item>> getItemByPage(@RequestParam(defaultValue = "1") Integer pageNum,
+    public Result getItemByPage(@RequestParam(defaultValue = "1") Integer pageNum,
                                                     @RequestParam(defaultValue = "5") Integer pageSize) {
         Page<Item> items = itemService.getItemByPage(pageNum, pageSize);
-        return ResponseEntity.ok(items);
+
+        //封装一个分页标准返回
+        PageSupport<Item> respPage = new PageSupport<>();
+        respPage.setListData(items.getContent())
+                .setTotalPages(items.getTotalPages());
+
+        return ResultUtil.success(respPage);
     }
 
     // 根据商品名称组合查询商品（这里需要定义具体的查询逻辑）
