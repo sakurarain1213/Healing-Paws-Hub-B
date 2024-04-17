@@ -41,39 +41,39 @@ mysql+redis+MongoDB
 + 4.10 affair接口优化 注册时设置默认头像
 + 4.11 department和item增加图片字段 标准化返回 模糊搜索问题优化（ES的中文分词器生效）
 + 4.12 GPT模型文本切片训练完成
-
-考虑消息队列  或者
++ 4.17 优化分页返回  增加rabbitMQ处理限时考试逻辑
 
 开会内容：
 department和item增加pic的Size
-分页需要返回总页数
-
 item需要根据List<Affair> getRecommendAffairs类比 添加一个推荐接口
-
-affair不传图片POST也需要允许
-
-
 文件系统 需要一张上传文件的记录 用id查所有文件的url 以便删除和复用
-
 考虑已学习的记录表 类比收藏
 添加已学习和学习次数的查询（等价 只是不能取消）  推荐算法可以安装收藏次数和学习次数来推荐
 添加收藏次数的查询（等价）
-
-
-
 question的list要求传disease的name而不是id
 
 # 延伸阅读
 
 部署：Tencent cloud
 管理：宝塔面板
-配置：  
-Nginx 1.18.0  
-MySQL 5.7.43  
-PHP-7.4.33  
-Redis 7.2.3  
+配置：
 Java项目一键部署 3.5  
+Nginx	1.20.2
+PHP	    7.4.33
+
+MySQL	5.7.44
 phpMyAdmin 5.0  
+MongoDB	4.0.10
+Redis	7.0.11
+
+elasticsearch	8.9.0
+kibana	1.0
+
+rabbitmq	3.12.4
+
+Docker管理器	3.9.3
+Python项目管理器	2.5.1
+
 
 模块：  
 见pom配置文件  
