@@ -4,9 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.example.hou.entity.LogUser;
+import com.example.hou.mapper.DepartmentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.ArrayList;
@@ -18,6 +21,9 @@ class HouApplicationTests {
     //测login的redis
 
     @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     private static final String USER_PREFIX = "login:";
@@ -25,7 +31,8 @@ class HouApplicationTests {
 
     @Test
     void contextLoads() {
-        int userId=3;
+        Pageable pageable = PageRequest.of(1- 1,5);
+        System.out.println(departmentRepository.findAll(pageable));
 
 
             // 1.从Redis获取用户数据

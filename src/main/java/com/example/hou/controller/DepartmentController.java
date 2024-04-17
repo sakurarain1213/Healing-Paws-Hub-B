@@ -124,7 +124,7 @@ public class DepartmentController {
     public Result getDepartmentByPage(@RequestParam(defaultValue = "1") Integer pageNum,
                                                                 @RequestParam(defaultValue = "5") Integer pageSize) {
         Page<Department> departments = departmentService.getDepartmentByPage(pageNum, pageSize);
-
+        //System.out.println(departments);
         //封装一个分页标准返回
         PageSupport<Department> respPage = new PageSupport<>();
         respPage.setListData(departments.getContent())
@@ -135,10 +135,10 @@ public class DepartmentController {
 
     // 根据部门名称组合查询部门（这里需要定义具体的查询逻辑）
     @GetMapping("/search")
-    public ResponseEntity<List<Department>> getDepartmentByCombinedName(@RequestParam(defaultValue = "1") Integer pageNum,
+    public Result getDepartmentByCombinedName(@RequestParam(defaultValue = "1") Integer pageNum,
                                                                         @RequestParam(defaultValue = "5") Integer pageSize,
                                                                         @RequestParam("name") String name) {
         List<Department> departments = departmentService.getDepartmentByCombinedName(pageNum, pageSize,name); // 假设服务层有这个方法
-        return ResponseEntity.ok(departments);
+        return ResultUtil.success(departments);
     }
 }

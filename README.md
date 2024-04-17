@@ -42,6 +42,8 @@ mysql+redis+MongoDB
 + 4.11 department和item增加图片字段 标准化返回 模糊搜索问题优化（ES的中文分词器生效）
 + 4.12 GPT模型文本切片训练完成
 
+考虑消息队列  或者
+
 开会内容：
 department和item增加pic的Size
 分页需要返回总页数
