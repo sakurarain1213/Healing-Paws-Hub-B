@@ -2,11 +2,18 @@ package com.example.hou;
 
 import com.example.hou.config.RabbitMQConfig;
 import com.example.hou.entity.Exam;
+import com.example.hou.mapper.ExamRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @program: Healing-Paws-Hub-B
@@ -108,17 +115,101 @@ public class ExamAutoSubmitTask {
 处理失败的秒杀请求，放入死信队列（DLX），以便后续重试或人工干预。
 
     */
+    @Autowired
+    private ExamRepository examRepository;
 
+    //定时改状态的逻辑
     @Test
+    @Scheduled(fixedDelay = 60000) // 每分钟检查一次
     void test() {
 
-
-
-
-
-
-
-
+            List<Integer> states = Arrays.asList(0, 1);
+            List<Exam> exams = examRepository.findByStateIn(states); // 找到状态为0或1的exam
+            Date now = new Date(); // 获取当前时间
+            for (Exam exam : exams) {
+                Date endTime = exam.getEndTime(); // 获取每个考试的截止时间
+                if (endTime != null && endTime.before(now)) { // 如果截止时间早于当前时间
+                    exam.setState(-1); // 更新考试状态为-1
+                    examRepository.save(exam); // 保存更新后的考试对象到数据库
+                }
+            }
     }
+
+
+    @Scheduled(fixedDelay = 60000) // 每分钟检查一次
+    void save_redis() {
+        //先写一个接口：根据考试id和用户id  每道题更新list
+        // 每调用这个改题接口
+        /*
+        --------
+        get  Date now
+        检查考试id的endtime  is before now
+        if 时间截止 {
+             需要自动提交
+             for(这场考试id下的所有redis用户record){
+                redisTemplate 打包成Record
+                调 createRecord 存到mongo  //等价于用户自己点提交
+                清redis当前缓存
+             }
+        }
+        else 还能作答{
+                先检查redis是否有缓存{
+                         有则更新redis里的record.list
+                  }
+                  else 没有redis缓存{
+                          把record整个加到redis
+                    }
+        }
+
+        redis操作
+
+        */
+    }
+
+
+
+/*
+
+@Service
+public class ExamRecordService {
+    private static final String EXAMRECORD_DIR = "examrecord";
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    public void saveExamRecord(ExamRecord examRecord) {
+        // 设置时间（如果还没有设置的话）
+        if (examRecord.getTime() == null) {
+            examRecord.setTime(new Date());
+        }
+
+        // 转换为JSON字符串
+        String json = redisTemplate.getValueSerializer().serialize(examRecord);
+
+        // 获取hash操作的实例
+        HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+
+        // 将JSON字符串保存到hash中，使用目录名作为key，对象的id作为field
+        hashOps.put(EXAMRECORD_DIR, examRecord.getId(), json);
+    }
+}
+获取ExamRecord对象：
+如果需要从Redis中获取ExamRecord对象，你可以使用opsForHash来获取hash值，然后反序列化回ExamRecord对象。
+
+java
+复制代码
+public ExamRecord getExamRecordById(String id) {
+    HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+    String json = (String) hashOps.get(EXAMRECORD_DIR, id);
+
+    if (json != null) {
+        // 反序列化回ExamRecord对象
+        return (ExamRecord) redisTemplate.getValueSerializer().deserialize(json);
+    }
+    return null;
+}
+
+*/
+
+
 
 }

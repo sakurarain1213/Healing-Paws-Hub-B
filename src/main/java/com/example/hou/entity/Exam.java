@@ -42,6 +42,8 @@ public class Exam {
      *  发布的状态
      */
     private Boolean release;
+    //-1 0 1
+    private Integer state;
 
     /**
     * 约束约束前端传入的时间类型参数格式和后端响应前端的时间类型格式
