@@ -20,11 +20,9 @@ import java.util.List;
 @AllArgsConstructor/*全参构造器*/
 @Accessors(chain = true)/*链式*/
 public class QuestionEntity {
+    private String name;
     private String statement;
-
     private String answer;
-
     private String detail;
-
     private Long score;
 }

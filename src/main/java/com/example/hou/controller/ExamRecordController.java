@@ -61,8 +61,8 @@ public class ExamRecordController {
                 i++;
                 continue;
             }
-            if(!answer.matches("[TFA-Da-d]"))
-                return ResultUtil.error("解答不合法");
+            /*if(!answer.matches("[TFA-Da-d]"))
+                return ResultUtil.error("解答不合法");*/
             QuestionEntity question = exam.getQuestionList().get(i);
             if(answer.equalsIgnoreCase(question.getAnswer()))
                 score += question.getScore();
