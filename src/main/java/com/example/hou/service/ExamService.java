@@ -12,6 +12,7 @@ public interface ExamService {
     Exam createExam(Exam req);
     Long updateExam(Exam req);
     boolean releaseExamById(String id);
+    boolean releaseById(String id);
     boolean deleteExamById(String id);
     Exam getExamById(String id);
     Page<Exam> getExamByPage(Integer pageNum, Integer pageSize);

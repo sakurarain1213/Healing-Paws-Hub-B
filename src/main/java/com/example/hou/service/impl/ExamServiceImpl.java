@@ -86,8 +86,11 @@ public class ExamServiceImpl implements ExamService {
         if(addTime > endTime)
             return null;
 
-        // 只能修改未发布的exam
+       /* // 只能修改未发布的exam
         Query query = new Query(Criteria.where("id").is(req.getId()).and("release").is(false));
+       */
+        // 只能发布未发布的exam
+        Query query = new Query(Criteria.where("id").is(req.getId()).and("state").is(0));
         UpdateResult updateResult = template.updateFirst(query, update, Exam.class);
         System.out.println(updateResult.getModifiedCount());
 
@@ -130,6 +133,43 @@ public class ExamServiceImpl implements ExamService {
         return true;
     }
 
+    @Override
+    public boolean releaseById(String id) {
+        Optional<Exam> res = examRepository.findById(id);
+
+        if(!res.isPresent())
+            return false;
+        if(res.get().getState() != 0)
+            return false;
+
+        System.out.println("release");
+        // 更新release, questionList
+        Exam exam = res.get();
+        List<String> questionIdList = exam.getQuestionIdList();
+        Criteria criteria = Criteria.where("id").in(questionIdList);
+        Query questionQuery = new Query(criteria);
+        List<Question> questionList = template.find(questionQuery, Question.class);
+//        System.out.println(questionList);
+
+        List<QuestionEntity> questionEntityList = new ArrayList<>();
+        for (Question question : questionList) {
+            QuestionEntity questionEntity = new QuestionEntity(question.getStatement(),
+                    question.getAnswer(), question.getDetail(), question.getScore());
+            questionEntityList.add(questionEntity);
+        }
+
+        Query query = new Query(Criteria.where("id").is(id).
+                and("state").is(0));
+
+        Update update = new Update();
+        update.set("state", 1);
+        update.set("questionIdList", null);
+        update.set("questionList", questionEntityList);
+
+        UpdateResult result = template.updateFirst(query, update, Exam.class);
+        System.out.println(result.getModifiedCount());
+        return true;
+    }
 
     @Override
     public boolean deleteExamById(String id) {
@@ -196,7 +236,7 @@ public class ExamServiceImpl implements ExamService {
         // 包装类防止为null时判断出错
         if(sortTime == 1)
             pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").descending());
-        else
+        else if(sortTime == 2)
             pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").ascending());
 
         if(examName != null)
