@@ -21,7 +21,7 @@ public class CaseCreateVo {
     @Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "name为中文、英文、数字、下划线组合")
     private String name;
 
-    @Size(max = 200, message = "description不合法")
+    @Size(max = 65536, message = "description不合法")
     private String description;
     private MultipartFile descriptionImg;
     private MultipartFile descriptionVideo;

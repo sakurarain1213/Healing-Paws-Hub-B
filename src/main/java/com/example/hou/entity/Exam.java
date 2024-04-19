@@ -43,6 +43,8 @@ public class Exam {
      *  发布的状态
      */
     private Boolean release;
+    //-1 0 1
+    private Integer state;
 
     /**
      * 状态，替代上面的字段, -1 已结束， 0 未发布， 已发布
