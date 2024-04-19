@@ -23,10 +23,10 @@ public class AffairUpdateVo {
     @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
     private String id;
 
-    @Size(max = 200, message = "name不合法")
+    @Size(max = 65536, message = "name不合法")
     private String name;
 
-    @Size(max = 200, message = "description不合法")
+    @Size(max = 65536, message = "description不合法")
     private String description;
 
     private MultipartFile pic;
