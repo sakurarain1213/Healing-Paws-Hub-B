@@ -5,7 +5,10 @@ import com.example.hou.entity.Exam;
 import com.example.hou.entity.ExamRecord;
 import com.example.hou.entity.PageSupport;
 import com.example.hou.result.Result;
+import com.example.hou.result.ResultCode;
 import com.example.hou.service.ExamService;
+//import com.example.hou.service.websocket.WebSocketServer;
+import com.example.hou.service.websocket.WebSocketServer;
 import com.example.hou.util.ResultUtil;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 
 @RestController
 @RequestMapping("/exam")
@@ -87,27 +92,6 @@ public class ExamController {
         return ResultUtil.success(res);
     }
 
-    @Deprecated
-    @PutMapping("/release")
-    public Result releaseExamById(/*@NotBlank(message = "id不能是空串或只有空格")
-                                  @Size(min = 24, max = 24, message = "id不合法")
-                                  @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
-                                  @RequestParam("id") String id*/
-            @RequestBody @NonNull @Valid Exam req) {
-        try {
-            boolean judge = examService.releaseExamById(req.getId());
-            if (!judge) {
-                System.out.println("发布exam失败");
-                return ResultUtil.error("id不存在或考试已发布或已结束");
-            }
-            System.out.println("发布Exam成功：" + req.getId());
-            return ResultUtil.success();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultUtil.error(null);
-        }
-    }
-
     @PutMapping("/newrelease")
     public Result releaseById(/*@NotBlank(message = "id不能是空串或只有空格")
                                   @Size(min = 24, max = 24, message = "id不合法")
@@ -147,7 +131,6 @@ public class ExamController {
         }
     }
 
-    @Deprecated
     @GetMapping
     public Result getExamById(@NotBlank(message = "id不能是空串或只有空格")
                               @Size(min = 24, max = 24, message = "id不合法")
@@ -159,6 +142,22 @@ public class ExamController {
             return ResultUtil.error(null);
         return ResultUtil.success(res);
     }
+
+    /*@GetMapping("/socket/endexam/{examId}")
+    public Result endExam(@PathVariable("examId") String examId, String message) {
+        try {
+            WebSocketServer.sendMessage("服务端推送消息：" + message, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Result result = new Result();
+        result.setCode(ResultCode.SUCCESS.getCode());
+        result.setMsg(ResultCode.SUCCESS.getMsg());
+        result.setData(message);
+
+        return result;
+    }*/
 
     @GetMapping("/page/multi")
     public Result getExamsByMultiWithPagination(@RequestParam(value = "sortTime")
@@ -206,6 +205,27 @@ public class ExamController {
 
 
 
+
+    @Deprecated
+    @PutMapping("/release")
+    public Result releaseExamById(/*@NotBlank(message = "id不能是空串或只有空格")
+                                  @Size(min = 24, max = 24, message = "id不合法")
+                                  @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+                                  @RequestParam("id") String id*/
+            @RequestBody @NonNull @Valid Exam req) {
+        try {
+            boolean judge = examService.releaseExamById(req.getId());
+            if (!judge) {
+                System.out.println("发布exam失败");
+                return ResultUtil.error("id不存在或考试已发布或已结束");
+            }
+            System.out.println("发布Exam成功：" + req.getId());
+            return ResultUtil.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.error(null);
+        }
+    }
 
     @Deprecated
     @GetMapping("/page")

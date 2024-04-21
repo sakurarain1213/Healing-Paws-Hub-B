@@ -49,6 +49,8 @@ public class ExamRecordController {
             return ResultUtil.error("Exam的ID有误");
         if (exam.getState() != 1)
             return ResultUtil.error("Exam发布状态有误");
+        if(exam.getQuestionList().size() != req.getResult().size())
+            return ResultUtil.error("解答数与题目总数不对应");
 
 
         req.setUserId(Long.valueOf(userId))
@@ -58,9 +60,7 @@ public class ExamRecordController {
                 .setTime(exam.getEndTime());
 
         /*向redis存储解答*/
-        boolean result = examRecordService.addExamRecord(req);
-        if(!result)
-            return ResultUtil.error("examId不存在");
+        examRecordService.addExamRecord(req);
 
         return ResultUtil.success();
     }
@@ -85,22 +85,6 @@ public class ExamRecordController {
         if(exam.getQuestionList().size() != req.getResult().size())
             return ResultUtil.error("解答数与题目总数不对应");
 
-        /*
-        逻辑处理放在service层
-        long score = 0;
-
-        int i = 0;
-        for(String answer : req.getResult()){
-            if(answer == null){
-                i++;
-                continue;
-            }
-
-            QuestionEntity question = exam.getQuestionList().get(i);
-            if(answer.equalsIgnoreCase(question.getAnswer()))
-                score += question.getScore();
-            i++;
-        }*/
         req.setUserId(Long.valueOf(userId))
                 .setExamName(exam.getExamName())
                 .setTime(new Date());

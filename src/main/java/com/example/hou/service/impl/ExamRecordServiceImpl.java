@@ -39,12 +39,7 @@ public class ExamRecordServiceImpl implements ExamRecordService {
 
     // 将解答暂时存入redis
     @Override
-    public boolean addExamRecord(ExamRecord req) {
-        Optional<Exam> opt = examRepository.findById(req.getExamId());
-        if (!opt.isPresent())
-            return false;
-
-//        Exam exam = opt.get();
+    public void addExamRecord(ExamRecord req) {
         String value = JSON.toJSONString(req);
 
         // 这里value代表该exam的endTime(CommitController将其赋值)
@@ -52,8 +47,6 @@ public class ExamRecordServiceImpl implements ExamRecordService {
         redisTemplate.opsForHash().put("exam:exam", req.getExamId(), req.getTime());
         // 由于每次CommitController都要调用此方法，故用哈希更快匹配更新value
         redisTemplate.opsForHash().put("examRecord:" + req.getExamId(), String.valueOf(req.getUserId()), value);
-
-        return true;
     }
 
     @Override
@@ -76,6 +69,9 @@ public class ExamRecordServiceImpl implements ExamRecordService {
         }
 
         req.setScore(score);
+
+        // 先清除redis缓存里的数据，防止到时候覆盖
+        redisTemplate.opsForHash().delete("examRecord:" + req.getExamId(), String.valueOf(req.getUserId()));
 
         return examRecordRepository.insert(req);
     }

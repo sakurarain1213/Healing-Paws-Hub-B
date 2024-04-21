@@ -96,41 +96,6 @@ public class ExamServiceImpl implements ExamService {
         return updateResult.getModifiedCount();
     }
 
-    @Override
-    public boolean releaseExamById(String id) {
-        Optional<Exam> res = examRepository.findById(id);
-
-        if(!res.isPresent() || res.get().getRelease()) {
-            return false;
-        }
-        System.out.println("release");
-        // 更新release, questionList
-        Exam exam = res.get();
-        List<String> questionIdList = exam.getQuestionIdList();
-        Criteria criteria = Criteria.where("id").in(questionIdList);
-        Query questionQuery = new Query(criteria);
-        List<Question> questionList = template.find(questionQuery, Question.class);
-//        System.out.println(questionList);
-
-        List<QuestionEntity> questionEntityList = new ArrayList<>();
-        for (Question question : questionList) {
-            QuestionEntity questionEntity = new QuestionEntity(question.getName(), question.getStatement(),
-                    question.getAnswer(), question.getDetail(), question.getScore());
-            questionEntityList.add(questionEntity);
-        }
-
-        Query query = new Query(Criteria.where("id").is(id).
-                and("release").is(false));
-
-        Update update = new Update();
-        update.set("release", true);
-        update.set("questionIdList", null);
-        update.set("questionList", questionEntityList);
-
-        UpdateResult result = template.updateFirst(query, update, Exam.class);
-        System.out.println(result.getModifiedCount());
-        return true;
-    }
 
     @Override
     public boolean releaseById(String id) {
@@ -178,46 +143,10 @@ public class ExamServiceImpl implements ExamService {
         return true;
     }
 
-
-
     @Override
     public Exam getExamById(String id) {
         Optional<Exam> res = examRepository.findById(id);
         return res.orElse(null);
-    }
-
-    @Override
-    public Page<Exam> getExamByPage(Integer pageNum, Integer pageSize) {
-        return examRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
-    }
-
-    @Override
-    public Page<Exam> getExamsByReleaseWithPagination(boolean release, Integer pageNum, Integer pageSize) {
-        return examRepository.findByRelease(release, PageRequest.of(pageNum - 1, pageSize));
-    }
-
-    @Override
-    public Page<Exam> getExamsByTimeOrderWithPagination(Integer pageNum, Integer pageSize) {
-        // 按时间降序排序
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").descending());
-        return examRepository.findAll(pageable);
-    }
-    @Override
-    public Page<Exam> getExamsByNameLikeWithPagination(String examName, Integer pageNum, Integer pageSize) {
-        return examRepository.findByExamNameLike(examName, PageRequest.of(pageNum - 1, pageSize));
-    }
-    @Override
-    public Page<Exam> getExamsByTypeWithPagination(int type, Integer pageNum, Integer pageSize) {
-        return examRepository.findByType(type, PageRequest.of(pageNum - 1, pageSize));
-    }
-    @Override
-    public Page<Exam> getExamsByTimeWithPagination(Date startTime, Date endTime, Integer pageNum, Integer pageSize) {
-        Criteria criteria = Criteria.where("startTime").gte(startTime).and("endTime").lte(endTime);
-        Query query = Query.query(criteria);
-        List<Exam> list = template.find(query, Exam.class);
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
-        Page<Exam> page = new PageImpl<>(list, pageable, list.size());
-        return page;
     }
 
     @Override
@@ -262,4 +191,84 @@ public class ExamServiceImpl implements ExamService {
         pageSupport.setTotalPages((int) pages).setListData(list);
         return pageSupport;
     }
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public boolean releaseExamById(String id) {
+        Optional<Exam> res = examRepository.findById(id);
+
+        if(!res.isPresent() || res.get().getRelease()) {
+            return false;
+        }
+        System.out.println("release");
+        // 更新release, questionList
+        Exam exam = res.get();
+        List<String> questionIdList = exam.getQuestionIdList();
+        Criteria criteria = Criteria.where("id").in(questionIdList);
+        Query questionQuery = new Query(criteria);
+        List<Question> questionList = template.find(questionQuery, Question.class);
+//        System.out.println(questionList);
+
+        List<QuestionEntity> questionEntityList = new ArrayList<>();
+        for (Question question : questionList) {
+            QuestionEntity questionEntity = new QuestionEntity(question.getName(), question.getStatement(),
+                    question.getAnswer(), question.getDetail(), question.getScore());
+            questionEntityList.add(questionEntity);
+        }
+
+        Query query = new Query(Criteria.where("id").is(id).
+                and("release").is(false));
+
+        Update update = new Update();
+        update.set("release", true);
+        update.set("questionIdList", null);
+        update.set("questionList", questionEntityList);
+
+        UpdateResult result = template.updateFirst(query, update, Exam.class);
+        System.out.println(result.getModifiedCount());
+        return true;
+    }
+
+    @Override
+    public Page<Exam> getExamByPage(Integer pageNum, Integer pageSize) {
+        return examRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
+    }
+
+    @Override
+    public Page<Exam> getExamsByReleaseWithPagination(boolean release, Integer pageNum, Integer pageSize) {
+        return examRepository.findByRelease(release, PageRequest.of(pageNum - 1, pageSize));
+    }
+
+    @Override
+    public Page<Exam> getExamsByTimeOrderWithPagination(Integer pageNum, Integer pageSize) {
+        // 按时间降序排序
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").descending());
+        return examRepository.findAll(pageable);
+    }
+    @Override
+    public Page<Exam> getExamsByNameLikeWithPagination(String examName, Integer pageNum, Integer pageSize) {
+        return examRepository.findByExamNameLike(examName, PageRequest.of(pageNum - 1, pageSize));
+    }
+    @Override
+    public Page<Exam> getExamsByTypeWithPagination(int type, Integer pageNum, Integer pageSize) {
+        return examRepository.findByType(type, PageRequest.of(pageNum - 1, pageSize));
+    }
+    @Override
+    public Page<Exam> getExamsByTimeWithPagination(Date startTime, Date endTime, Integer pageNum, Integer pageSize) {
+        Criteria criteria = Criteria.where("startTime").gte(startTime).and("endTime").lte(endTime);
+        Query query = Query.query(criteria);
+        List<Exam> list = template.find(query, Exam.class);
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        Page<Exam> page = new PageImpl<>(list, pageable, list.size());
+        return page;
+    }
+
 }
