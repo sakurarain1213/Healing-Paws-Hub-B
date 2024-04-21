@@ -32,6 +32,39 @@ public class ExamRecordController {
     @Autowired
     private ExamService examService;
 
+    @PostMapping("/commit")
+    public Result commitAnswer(@RequestBody @NonNull @Valid ExamRecord req) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!authentication.isAuthenticated())return ResultUtil.error("未登录");
+
+        LogUser loginUser = (LogUser) authentication.getPrincipal();
+        Integer userId = Optional.ofNullable(loginUser)
+                .map(LogUser::getUser)
+                .map(SysUser::getUserId)
+                .orElse(null);
+        if (userId == null)return ResultUtil.error("未登录");
+
+        Exam exam = examService.getExamById(req.getExamId());
+        if(exam == null)
+            return ResultUtil.error("Exam的ID有误");
+        if (exam.getState() != 1)
+            return ResultUtil.error("Exam发布状态有误");
+
+
+        req.setUserId(Long.valueOf(userId))
+                .setExamName(exam.getExamName())
+                // 这里与createExamRecord不同，设置为endTime，因为在redis中的record被存到mongo只可能超过endTime
+                // 而createExamRecord是用户主动结束考试，time < endTime
+                .setTime(exam.getEndTime());
+
+        /*向redis存储解答*/
+        boolean result = examRecordService.addExamRecord(req);
+        if(!result)
+            return ResultUtil.error("examId不存在");
+
+        return ResultUtil.success();
+    }
+
     @PostMapping
     public Result createExamRecord(@RequestBody @NonNull @Valid ExamRecord req) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,30 +80,29 @@ public class ExamRecordController {
         Exam exam = examService.getExamById(req.getExamId());
         if(exam == null)
             return ResultUtil.error("Exam的ID有误");
-        if (!exam.getRelease())
+        if (exam.getState() != 1)
             return ResultUtil.error("Exam发布状态有误");
         if(exam.getQuestionList().size() != req.getResult().size())
             return ResultUtil.error("解答数与题目总数不对应");
 
+        /*
+        逻辑处理放在service层
         long score = 0;
-        /*List<String> answers = exam.getQuestionList().stream().map(QuestionEntity::getAnswer).collect(Collectors.toList());
-        List<Long> scores = exam.getQuestionList().stream().map(QuestionEntity::getScore).collect(Collectors.toList());*/
+
         int i = 0;
         for(String answer : req.getResult()){
             if(answer == null){
                 i++;
                 continue;
             }
-            /*if(!answer.matches("[TFA-Da-d]"))
-                return ResultUtil.error("解答不合法");*/
+
             QuestionEntity question = exam.getQuestionList().get(i);
             if(answer.equalsIgnoreCase(question.getAnswer()))
                 score += question.getScore();
             i++;
-        }
+        }*/
         req.setUserId(Long.valueOf(userId))
                 .setExamName(exam.getExamName())
-                .setScore(score)
                 .setTime(new Date());
 
         ExamRecord created = examRecordService.createExamRecord(req);
