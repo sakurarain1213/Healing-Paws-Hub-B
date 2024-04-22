@@ -3,6 +3,7 @@ package com.example.hou.service;
 import com.example.hou.entity.Affair;
 import com.example.hou.entity.AffairNode;
 import com.example.hou.entity.LogUser;
+import com.example.hou.entity.NodeFlowDia;
 import com.example.hou.result.Result;
 import org.springframework.data.domain.Page;
 
@@ -20,7 +21,7 @@ public interface AffairService {
 
     Page<Affair> getByPage(Integer pageNum, Integer pageSize);
 
-    List<AffairNode> getAllNodesByAffairid(String affairId);
+    NodeFlowDia getGraphByAffairid(String affairId);
 
     List<Affair> getRecommendAffairs(LogUser user, Integer count);
 
@@ -29,5 +30,7 @@ public interface AffairService {
     Result addNodeToAffair(String affairId, String nodeId);
 
     boolean validateAffairs(List<String> affairs);
+
+    boolean validateEdges(List<String[]> edges, List<String> affairs);
 
 }

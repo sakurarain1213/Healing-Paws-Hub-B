@@ -86,6 +86,8 @@ public class AffairServiceImpl implements AffairService {
         Optional.ofNullable(affair.getPic()).ifPresent(c -> upt.set("pic", c));
         Optional.ofNullable(affair.getPicSize()).ifPresent(c -> upt.set("picSize", c));
 
+        Optional.ofNullable(affair.getEdges()).ifPresent(c -> upt.set("edges", c));
+
         UpdateResult updateResult = mongoTemplate.updateFirst(query, upt, Affair.class);
         return updateResult.getModifiedCount();
     }
@@ -96,14 +98,18 @@ public class AffairServiceImpl implements AffairService {
     }
 
     @Override
-    public List<AffairNode> getAllNodesByAffairid(String affairId) {
+    public NodeFlowDia getGraphByAffairid(String affairId) {
         Optional<Affair> cur = affairRepository.findById(affairId);
         Affair affair = cur.orElse(null);
         if (affair == null)return null;
 
 //        List<AffairNode> res = new ArrayList<>();
-        List<AffairNode> res = (List<AffairNode>)affairNodeRepository.findAllById(affair.getAffairs());
-        return res;
+        List<AffairNode> nodes = (List<AffairNode>)affairNodeRepository.findAllById(affair.getAffairs());
+
+        NodeFlowDia nodeFlowDia = new NodeFlowDia()
+                .setNodes(nodes)
+                .setEdges(affair.getEdges());
+        return nodeFlowDia;
     }
 
     @Override
@@ -113,7 +119,7 @@ public class AffairServiceImpl implements AffairService {
 //        List<String> permissions = user.getPermissions();
 //        if (permissions == null || permissions.size() == 0)return null;
 
-//        TODO 未确定role
+
 //        String userRole = permissions.get(0);
         QueryWrapper<SysUserPermissionRelation> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userId);
@@ -399,6 +405,21 @@ public class AffairServiceImpl implements AffairService {
         System.out.println("validateAffairs exist nodes.size: " + nodes.size());
 
         return nodes.size() == affairs.size();
+    }
+
+    @Override
+    public boolean validateEdges(List<String[]> edges, List<String> affairs) {
+        HashSet<String> st = new HashSet<>(affairs);
+
+        for(String[] e : edges){
+            if(e.length != 2)return false;
+            if(!st.contains(e[0]))return false;
+            if(!st.contains(e[1]))return false;
+        }
+
+        return true;
+//        List<AffairNode> nodes = (List<AffairNode>) affairNodeRepository.findAllById(st);
+//        return nodes.size() == st.size();
     }
 
 

@@ -38,4 +38,6 @@ public class AffairUpdateVo {
     @AffairUpdateConstraint
     private List<String> affairs;
 
+    private List<String[]> edges;
+
 }

@@ -44,7 +44,11 @@ public class Affair implements FavoriteInfo{
 //    @AffairUpdateConstraint(groups = AffairUpdateGroup.class)
     private List<String> affairs;
 
+//    e: (src, target)
+    private List<String[]> edges;
+
     public boolean nullFieldsExceptId(){
-        return name == null && description == null && pic == null && role == null && affairs == null;
+        return name == null && description == null && pic == null && role == null && affairs == null
+                && edges == null;
     }
 }

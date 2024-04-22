@@ -30,4 +30,6 @@ public class AffairCreateVo {
 
     @AffairCreateConstraint
     private List<String> affairs;
+
+    private List<String[]> edges;
 }

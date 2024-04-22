@@ -40,21 +40,40 @@ public class AffairController {
     public Result createAffair(@NonNull @Valid @ModelAttribute AffairCreateVo createVo){
         if (createVo.getName() == null ||
             createVo.getDescription() == null ||
-            createVo.getPic() == null ||
             createVo.getRole() == null ||
-            createVo.getAffairs() == null) return  ResultUtil.error("缺少必需参数");
+            createVo.getAffairs() == null ||
+            createVo.getEdges() == null) return  ResultUtil.error("缺少必需参数");
 
         boolean flag = affairService.validateAffairs(createVo.getAffairs());
         if (!flag) return ResultUtil.error("affairs存在无效id");
+
+        List<String[]> edges = createVo.getEdges();
+//        System.out.println(edges.size());
+//        for (String[] e : edges){
+//            System.out.println(e.length);
+//            System.out.println(e[0]);
+//            System.out.println(e[1]);
+//        }
+
+        if (edges.size() > 0){
+            flag = affairService.validateEdges(edges, createVo.getAffairs());
+            if (!flag) return ResultUtil.error("edges存在无效id");
+        }
+
 
         Affair affair = new Affair();
         affair.setName(createVo.getName())
                 .setDescription(createVo.getDescription())
                 .setRole(createVo.getRole())
-                .setAffairs(createVo.getAffairs());
+                .setAffairs(createVo.getAffairs())
+                .setEdges(edges);
 
-        FileHandler<Affair> handler = new AffairPicHandler(createVo.getPic(), affair);
-        handler.handleFile();
+        //pic 非必须
+        if(createVo.getPic() != null){
+            FileHandler<Affair> handler = new AffairPicHandler(createVo.getPic(), affair);
+            handler.handleFile();
+        }
+
 
         System.out.println(affair);
 
@@ -81,17 +100,37 @@ public class AffairController {
     @PutMapping
 //    @Validated(AffairUpdateGroup.class)
     public Result updateById(@NonNull @Valid @ModelAttribute AffairUpdateVo updateVo){
-        if (updateVo.getAffairs() != null){
-            boolean flag = affairService.validateAffairs(updateVo.getAffairs());
+        List<String> affairs = updateVo.getAffairs();
+        List<String[]> edges = updateVo.getEdges();
+
+        if (affairs == null && edges != null)return ResultUtil.error("缺少必需参数");
+        if (affairs != null && edges == null)return ResultUtil.error("缺少必需参数");
+
+        if (affairs != null){
+            boolean flag = affairService.validateAffairs(affairs);
             if (!flag) return ResultUtil.error("affairs存在无效id");
         }
+
+        if (edges != null && edges.size() > 0){
+            System.out.println("edges.size: " + edges.size());
+//            for (String[] e : edges){
+//                System.out.println(e.length);
+//                System.out.println(e[0]);
+//                System.out.println(e[1]);
+//            }
+
+            boolean flag = affairService.validateEdges(edges, affairs);
+            if (!flag) return ResultUtil.error("edges存在无效id");
+        }
+
 
         Affair affair = new Affair();
         affair.setId(updateVo.getId())
                 .setName(updateVo.getName())
                 .setDescription(updateVo.getDescription())
                 .setRole(updateVo.getRole())
-                .setAffairs(updateVo.getAffairs());
+                .setAffairs(affairs)
+                .setEdges(edges);
 
 
         if (updateVo.getPic() != null) {
@@ -134,16 +173,16 @@ public class AffairController {
 //        return ResultUtil.success(page.getContent());
     }
 
-    //添加方法 根据id返回单个事务
+
 
 
     @GetMapping("/subs")
     public Result getAllNodesByAffairid(@NotBlank @Size(min = 24, max = 24, message = "id不合法") @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                         @RequestParam("affairId") String affairId){
-        List<AffairNode> nodes = affairService.getAllNodesByAffairid(affairId);
-        if(nodes == null)return ResultUtil.error(null);
+        NodeFlowDia diagram = affairService.getGraphByAffairid(affairId);
 
-        return ResultUtil.success(nodes);
+        if(diagram == null)return ResultUtil.error(null);
+        return ResultUtil.success(diagram);
     }
 
     /**
