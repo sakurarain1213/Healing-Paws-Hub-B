@@ -6,6 +6,7 @@ import com.example.hou.handler.FileHandler;
 import com.example.hou.result.Result;
 import com.example.hou.service.AffairService;
 import com.example.hou.util.FileUtil;
+import com.example.hou.util.GlobalConstant;
 import com.example.hou.util.ResultUtil;
 import com.example.hou.validator.AffairCreateGroup;
 import com.example.hou.validator.AffairUpdateGroup;
@@ -48,7 +49,7 @@ public class AffairController {
         if (!flag) return ResultUtil.error("affairs存在无效id");
 
         List<String[]> edges = createVo.getEdges();
-//        System.out.println(edges.size());
+        System.out.println("edges.size: " + edges.size());
 //        for (String[] e : edges){
 //            System.out.println(e.length);
 //            System.out.println(e[0]);
@@ -72,6 +73,8 @@ public class AffairController {
         if(createVo.getPic() != null){
             FileHandler<Affair> handler = new AffairPicHandler(createVo.getPic(), affair);
             handler.handleFile();
+        }else{
+            affair.setPic(GlobalConstant.defaultAvatarUrl);
         }
 
 

@@ -7,4 +7,6 @@ public class GlobalConstant {
 
 //    http://150.158.110.63:8080/images/加密文件名.后缀名
     public static String urlAccessFilePrefix = "http://150.158.110.63:8080/images/";
+
+    public static String defaultAvatarUrl = "http://150.158.110.63:8080/images/default_avatar.png";
 }
