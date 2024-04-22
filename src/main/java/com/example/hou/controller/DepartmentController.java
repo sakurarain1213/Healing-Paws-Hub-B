@@ -4,6 +4,7 @@ import com.example.hou.entity.AffairNode;
 import com.example.hou.entity.Department;
 import com.example.hou.entity.Item;
 import com.example.hou.entity.PageSupport;
+import com.example.hou.mapper.DepartmentRepository;
 import com.example.hou.result.Result;
 import com.example.hou.service.DepartmentService;
 import com.example.hou.service.ItemService;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @program: Healing-Paws-Hub-B
@@ -40,6 +42,9 @@ public class DepartmentController {
 
     @Autowired
     private ItemService itemService;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     // 创建部门
     @PostMapping
@@ -65,8 +70,15 @@ public class DepartmentController {
             // 设置ID，确保ID被正确设置
             if(department.getId()==null ||department.getId()=="") return new Result(-100, "error", "缺少id字段") ;
 
+
+            //为了先得到数据库里的pic 的URL
+            Optional<Department> existingDepartment = departmentRepository.findById(department.getId());
+            // 如果找不到具有该id的department，返回错误
+            if (!existingDepartment.isPresent()) {
+                throw new IllegalArgumentException("Department with ID " + department.getId() + " does not exist.");
+            }
             //文件部分
-            String url = department.getPic();//默认物品文件
+            String url = existingDepartment.get().getPic();//默认物品文件
             if (pic != null && !pic.isEmpty()) {
                 url= FileUtil.fileUpload(pic);
             }

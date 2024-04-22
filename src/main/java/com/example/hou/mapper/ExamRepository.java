@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Date;
+import java.util.List;
 
 
 public interface ExamRepository extends MongoRepository<Exam, String> {
@@ -15,5 +16,8 @@ public interface ExamRepository extends MongoRepository<Exam, String> {
     Page<Exam> findByExamNameLike(String name, Pageable pageable);
     Page<Exam> findByType(int type, Pageable pageable);
     Page<Exam> findByRelease(boolean release, Pageable pageable);
+    List<Exam> findByStateIn(List<Integer> states);//0或1或-1
+
+    List<Exam> findByStateNotAndEndTimeBefore(Integer state, Date now);
     long countById(String id);
 }

@@ -3,6 +3,7 @@ package com.example.hou.controller;
 import com.example.hou.entity.Department;
 import com.example.hou.entity.Item;
 import com.example.hou.entity.PageSupport;
+import com.example.hou.mapper.ItemRepository;
 import com.example.hou.result.Result;
 import com.example.hou.service.ItemService;
 import com.example.hou.util.FileUtil;
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @program: Healing-Paws-Hub-B
@@ -32,6 +34,10 @@ public class ItemController {
 
     @Autowired
     private ItemService itemService;
+
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     // 创建项目
     @PostMapping
@@ -53,8 +59,13 @@ public class ItemController {
                 return new Result(-100, "error", "缺少id字段");
             }
 
+            //确保先拿到DB里的URL
+            Optional<Item> existingItem = itemRepository.findById(item.getId());
+            if (!existingItem.isPresent()) {
+                throw new IllegalArgumentException("Item with ID " + item.getId() + " does not exist.");
+            }
             //文件部分
-            String url=item.getPic();
+            String url=existingItem.get().getPic();
             if (pic != null && !pic.isEmpty()) {
                 url= FileUtil.fileUpload(pic);
             }

@@ -31,7 +31,7 @@ MongoRepository 提供了一套高级别的抽象 常见功能写法简单
 
  */
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class Springboot17MongodbApplicationTests {
     @Autowired //更灵活
     private MongoTemplate mongoTemplate;

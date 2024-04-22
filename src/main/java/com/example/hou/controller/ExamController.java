@@ -5,7 +5,10 @@ import com.example.hou.entity.Exam;
 import com.example.hou.entity.ExamRecord;
 import com.example.hou.entity.PageSupport;
 import com.example.hou.result.Result;
+import com.example.hou.result.ResultCode;
 import com.example.hou.service.ExamService;
+//import com.example.hou.service.websocket.WebSocketServer;
+import com.example.hou.service.websocket.WebSocketServer;
 import com.example.hou.util.ResultUtil;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 
 @RestController
 @RequestMapping("/exam")
@@ -47,12 +52,15 @@ public class ExamController {
         if (addTime > endTime)
             return ResultUtil.error("错误：endTime < startTime + totalTime");
 
+        /*// 设置exam为未发布状态
+        req.setRelease(false);*/
+
         // 设置exam为未发布状态
-        req.setRelease(false);
+        req.setState(0);
 
         Exam created = examService.createExam(req);
         if (created == null)
-            return ResultUtil.error("maybe time error");
+            return ResultUtil.error(null);
         return ResultUtil.success(created);
     }
 
@@ -84,17 +92,17 @@ public class ExamController {
         return ResultUtil.success(res);
     }
 
-    @PutMapping("/release")
-    public Result releaseExamById(/*@NotBlank(message = "id不能是空串或只有空格")
+    @PutMapping("/newrelease")
+    public Result releaseById(/*@NotBlank(message = "id不能是空串或只有空格")
                                   @Size(min = 24, max = 24, message = "id不合法")
                                   @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
                                   @RequestParam("id") String id*/
             @RequestBody @NonNull @Valid Exam req) {
         try {
-            boolean judge = examService.releaseExamById(req.getId());
+            boolean judge = examService.releaseById(req.getId());
             if (!judge) {
                 System.out.println("发布exam失败");
-                return ResultUtil.error("id不存在或考试已发布");
+                return ResultUtil.error("id不存在或考试已发布或已结束");
             }
             System.out.println("发布Exam成功：" + req.getId());
             return ResultUtil.success();
@@ -123,7 +131,6 @@ public class ExamController {
         }
     }
 
-    @Deprecated
     @GetMapping
     public Result getExamById(@NotBlank(message = "id不能是空串或只有空格")
                               @Size(min = 24, max = 24, message = "id不合法")
@@ -134,6 +141,90 @@ public class ExamController {
         if (res == null)
             return ResultUtil.error(null);
         return ResultUtil.success(res);
+    }
+
+    /*@GetMapping("/socket/endexam/{examId}")
+    public Result endExam(@PathVariable("examId") String examId, String message) {
+        try {
+            WebSocketServer.sendMessage("服务端推送消息：" + message, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Result result = new Result();
+        result.setCode(ResultCode.SUCCESS.getCode());
+        result.setMsg(ResultCode.SUCCESS.getMsg());
+        result.setData(message);
+
+        return result;
+    }*/
+
+    @GetMapping("/page/multi")
+    public Result getExamsByMultiWithPagination(@RequestParam(value = "sortTime")
+                                                Integer sortTime,
+                                                @RequestParam(value = "examName", required = false)
+                                                String examName,
+                                                @RequestParam(value = "type", required = false)
+                                                Integer type,
+                                                // 设置非必需
+                                                @RequestParam(value = "startTime", required = false)
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                Date startTime,
+                                                @RequestParam(value = "endTime", required = false)
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                Date endTime,
+                                                @NonNull @RequestParam("pageNum") Integer pageNum,
+                                                @NonNull @RequestParam("pageSize") Integer pageSize) {
+        if (sortTime < 0 || sortTime > 2)
+            return ResultUtil.error("sortTime不合法");
+        if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
+        if (type != null && (type <= 0 || type >= 3))
+            return ResultUtil.error("type不合法");
+        if (startTime != null && endTime != null && startTime.getTime() > endTime.getTime())
+            return ResultUtil.error("日期不合法");
+
+        PageSupport<Exam> res = examService.getExamsByMultiWithPagination(sortTime, examName, type, startTime, endTime, pageNum, pageSize);
+        System.out.println("总页数：" + res.getTotalPages()); //按指定分页得到的总页数
+
+        /*if (res == null)
+            return ResultUtil.error(null);*/
+
+        return ResultUtil.success(res);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Deprecated
+    @PutMapping("/release")
+    public Result releaseExamById(/*@NotBlank(message = "id不能是空串或只有空格")
+                                  @Size(min = 24, max = 24, message = "id不合法")
+                                  @Pattern(regexp = "^[a-z0-9]+$", message = "id不合法")
+                                  @RequestParam("id") String id*/
+            @RequestBody @NonNull @Valid Exam req) {
+        try {
+            boolean judge = examService.releaseExamById(req.getId());
+            if (!judge) {
+                System.out.println("发布exam失败");
+                return ResultUtil.error("id不存在或考试已发布或已结束");
+            }
+            System.out.println("发布Exam成功：" + req.getId());
+            return ResultUtil.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.error(null);
+        }
     }
 
     @Deprecated
@@ -222,36 +313,5 @@ public class ExamController {
         return ResultUtil.success(res.getContent());
     }
 
-    @GetMapping("/page/multi")
-    public Result getExamsByMultiWithPagination(@RequestParam(value = "sortTime")
-                                                Integer sortTime,
-                                                @RequestParam(value = "examName", required = false)
-                                                String examName,
-                                                @RequestParam(value = "type", required = false)
-                                                Integer type,
-                                                // 设置非必需
-                                                @RequestParam(value = "startTime", required = false)
-                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                Date startTime,
-                                                @RequestParam(value = "endTime", required = false)
-                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                Date endTime,
-                                                @NonNull @RequestParam("pageNum") Integer pageNum,
-                                                @NonNull @RequestParam("pageSize") Integer pageSize) {
-        if(sortTime < 0 || sortTime > 2)
-            return ResultUtil.error("sortTime不合法");
-        if (pageNum < 1 || pageSize < 1) return ResultUtil.error("pageNum或pageSize不合法");
-        if (type != null && (type <= 0 || type >= 3))
-            return ResultUtil.error("type不合法");
-        if (startTime != null && endTime != null && startTime.getTime() > endTime.getTime())
-            return ResultUtil.error("日期不合法");
 
-        PageSupport<Exam> res = examService.getExamsByMultiWithPagination(sortTime, examName, type, startTime, endTime, pageNum, pageSize);
-        System.out.println("总页数：" + res.getTotalPages()); //按指定分页得到的总页数
-
-        /*if (res == null)
-            return ResultUtil.error(null);*/
-
-        return ResultUtil.success(res);
-    }
 }

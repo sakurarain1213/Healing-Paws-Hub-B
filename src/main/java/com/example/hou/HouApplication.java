@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@EnableScheduling   // 开启定时任务
 
 @SpringBootApplication  (exclude = {GsonAutoConfiguration.class})  //这个括号涉及到gson能否运行
 

@@ -12,4 +12,5 @@ public interface ExamRecordService {
     Page<ExamRecord> getExamRecordsByUserIdWithPagination(long userId, Integer pageNum, Integer pageSize);
     boolean deleteExamRecordById(String id, Integer userId);
 
+    void addExamRecord(ExamRecord req);
 }

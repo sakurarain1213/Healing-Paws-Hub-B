@@ -16,10 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 @Accessors(chain = true)
 public class AffairCreateVo {
-    @Size(max = 200, message = "name不合法")
+    @Size(max = 65536, message = "name不合法")
     private String name;
 
-    @Size(max = 200, message = "description不合法")
+    @Size(max = 65536, message = "description不合法")
     private String description;
 
     private MultipartFile pic;

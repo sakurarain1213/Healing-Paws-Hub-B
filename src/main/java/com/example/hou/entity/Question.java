@@ -42,7 +42,7 @@ public class Question {
     /**
      * 判断 - T,F; 选择:A,B,C,D(单选)
      */
-    @Size(max = 30, message = "answer长度不能超过30")
+    @Size(max = 65536, message = "answer长度不能超过30")
     /*@Pattern(regexp = "^[TFA-Da-d]$", message = "answer为T/F如果为判断题，Aa/Bb/Cc/Dd如果为选择题")*/
     private String answer;
 

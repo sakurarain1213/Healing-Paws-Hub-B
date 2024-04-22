@@ -78,7 +78,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                      //   "/affairnode/**",
 //                        "/affair/**"
                         "/question/**",
-                        "/exam/**"
+                        "/exam/**",
+                        "/websocket/**"
+//                        "/**"
 //                        "/examrecord/**"
                 ).anonymous()
 //                开发中所有可访问
