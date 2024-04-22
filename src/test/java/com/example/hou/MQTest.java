@@ -21,20 +21,20 @@ import java.util.List;
  * @author: 作者
  * @create: 2024-04-17 20:18
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MQTest {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+   // @Autowired
+ //   private RabbitTemplate rabbitTemplate;
 
     //首先在service层          // 发布考试开始消息到RabbitMQ
-    public void startExam(Exam exam) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXAM_EXCHANGE, RabbitMQConfig.EXAM_ROUTING_KEY, exam);
-    }
+   // public void startExam(Exam exam) {
+  //      rabbitTemplate.convertAndSend(RabbitMQConfig.EXAM_EXCHANGE, RabbitMQConfig.EXAM_ROUTING_KEY, exam);
+  //  }
 
-    public void submitAnswer(String examId, Answer answer) {
+  //  public void submitAnswer(String examId, Answer answer) {
         // 提交答案逻辑，这里可以保存到redis作为缓存  注意检测时间
-    }
+  //  }
 
     // 其他考试相关的逻辑...
 
@@ -115,7 +115,9 @@ public class ExamAutoSubmitTask {
 处理失败的秒杀请求，放入死信队列（DLX），以便后续重试或人工干预。
 
     */
-    @Autowired
+    /*
+
+     @Autowired
     private ExamRepository examRepository;
 
     //定时改状态的逻辑
@@ -135,9 +137,12 @@ public class ExamAutoSubmitTask {
             }
     }
 
+    */
 
-    @Scheduled(fixedDelay = 60000) // 每分钟检查一次
-    void save_redis() {
+
+
+   //// @Scheduled(fixedDelay = 60000) // 每分钟检查一次
+ //   void save_redis() {
         //先写一个接口：根据考试id和用户id  每道题更新list
         // 每调用这个改题接口
         /*
@@ -164,7 +169,7 @@ public class ExamAutoSubmitTask {
         redis操作
 
         */
-    }
+  //  }
 
 
 

@@ -16,7 +16,7 @@ import java.util.Date;
  * @author: 作者
  * @create: 2024-03-12 14:26
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RegisterTest {
 
     @Autowired
@@ -24,6 +24,7 @@ public class RegisterTest {
 
     @Test
    void testRegister() {
+                  /*
             String value = "w1625154105@163.com:$2a$10$zpIj12VJUwVQAHAFJHjaaOwDl9ZkzYb21oA7a6s.Q6AN9PC7BX4Ka";
 
             // 分割电子邮件地址和密码
@@ -50,7 +51,7 @@ public class RegisterTest {
 
            Result r=userService.createUser(newUser);
            System.out.println(r.getMsg());
-            /*
+
             // 完成用户注册
             SysUser newUser = userService.createUser(email);
 

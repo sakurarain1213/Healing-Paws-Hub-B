@@ -19,8 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -59,8 +61,28 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new IllegalArgumentException("Department with ID " + department.getId() + " does not exist.");
         }
 
-        // 如果找到了，就更新department并保存
-        Department updatedDepartment = departmentRepository.save(department);
+        // 如果找到了，就更新department并保存   注意需求是不覆盖原有内容
+        Department exist=existingDepartment.get();
+
+        if (StringUtils.hasText(department.getDepartmentName()) && !department.getDepartmentName().equals(exist.getDepartmentName())) {
+            exist.setDepartmentName(department.getDepartmentName());
+        }
+        if (StringUtils.hasText(department.getIntroduction()) && !department.getIntroduction().equals(exist.getIntroduction())) {
+            exist.setIntroduction(department.getIntroduction());
+        }
+        //列表元素去重判断
+        Set<String> newConnectIDSet = new HashSet<>(department.getConnectID());
+        Set<String> existingConnectIDSet = new HashSet<>(exist.getConnectID());
+        if (!newConnectIDSet.equals(existingConnectIDSet)) {
+            exist.setConnectID(department.getConnectID());
+        }
+
+        if (!department.getStaffList().equals(exist.getStaffList())) {
+            exist.setStaffList(department.getStaffList());
+        }
+
+        //save是直接覆盖
+        Department updatedDepartment = departmentRepository.save(exist);
 
         // 返回更新后的department的id
         return updatedDepartment.getId();

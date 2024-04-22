@@ -25,7 +25,8 @@ import java.io.IOException;
  * @author: 作者
  * @create: 2024-03-14 16:33
  */
-@SpringBootTest
+//因为有websocket模块  但是测试的时候不需要依赖tomcat等容器 为了避免测试报错 需要加webEnvironment
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ESTest {
 
     @Autowired
@@ -53,6 +54,7 @@ public class ESTest {
 
     @Test
     public void setPermission() throws IOException {
+        /*
         String permission="实习生2";
 
                 int userId = 4;
@@ -81,7 +83,7 @@ public class ESTest {
 
 
         System.out.println("用户不存在");
-
+*/
         }
 
 

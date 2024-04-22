@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Date;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RedisTests {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;

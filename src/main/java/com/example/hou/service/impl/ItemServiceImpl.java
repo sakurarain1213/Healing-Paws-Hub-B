@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.save(item);   //save= 无id的insert+和有id的update
     }
 
+
     @Override
     public String updateItemById(Item item) {
         if (item.getId() == null) {
@@ -54,7 +56,39 @@ public class ItemServiceImpl implements ItemService {
         if (!existingItem.isPresent()) {
             throw new IllegalArgumentException("Item with ID " + item.getId() + " does not exist.");
         }
-        Item updatedItem = itemRepository.save(item);
+
+
+        // 获取现有的Item和要更新的Item的实例
+        Item exist = existingItem.get();
+
+        // 更新Item的字段，只有在字段值不为空且不同于现有值时才进行更新
+        if (StringUtils.hasText(item.getName()) && !item.getName().equals(exist.getName())) {
+            exist.setName(item.getName());
+        }
+
+        if (StringUtils.hasText(item.getIntroduction()) && !item.getIntroduction().equals(exist.getIntroduction())) {
+            exist.setIntroduction(item.getIntroduction());
+        }
+
+        if (StringUtils.hasText(item.getUsage()) && !item.getUsage().equals(exist.getUsage())) {
+            exist.setUsage(item.getUsage());
+        }
+
+        if (item.getPrice() != null && !item.getPrice().equals(exist.getPrice())) {
+            exist.setPrice(item.getPrice());
+        }
+
+        if (StringUtils.hasText(item.getDepartmentId()) && !item.getDepartmentId().equals(exist.getDepartmentId())) {
+            exist.setDepartmentId(item.getDepartmentId());
+        }
+
+        if (StringUtils.hasText(item.getType()) && !item.getType().equals(exist.getType())) {
+            exist.setType(item.getType());
+        }
+
+        // 保存更新后的Item
+        Item updatedItem = itemRepository.save(exist);
+
         return updatedItem.getId();
     }
 
