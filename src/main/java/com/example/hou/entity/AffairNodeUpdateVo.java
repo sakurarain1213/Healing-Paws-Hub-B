@@ -24,6 +24,13 @@ public class AffairNodeUpdateVo {
 
     @Size(max = 65535, message = "content不合法") //长度限制
     private String content;
+
+    /**
+     * 位置信息
+     */
+    private Integer positionX;
+    private Integer positionY;
+
     private MultipartFile contentImg;
     private MultipartFile contentVideo;
 }

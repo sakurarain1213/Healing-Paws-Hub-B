@@ -58,6 +58,10 @@ public class AffairNodeServiceImpl implements AffairNodeService {
         Update upt = new Update();
         Optional.ofNullable(affairNode.getName()).ifPresent(c -> upt.set("name", c));
         Optional.ofNullable(affairNode.getContent()).ifPresent(c -> upt.set("content", c));
+
+        Optional.ofNullable(affairNode.getPositionX()).ifPresent(c -> upt.set("positionX", c));
+        Optional.ofNullable(affairNode.getPositionY()).ifPresent(c -> upt.set("positionY", c));
+
         Optional.ofNullable(affairNode.getContentImg()).ifPresent(c -> upt.set("contentImg", c));
         Optional.ofNullable(affairNode.getContentVideo()).ifPresent(c -> upt.set("contentVideo", c));
 

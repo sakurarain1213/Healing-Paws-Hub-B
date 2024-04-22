@@ -21,7 +21,11 @@ public class AffairNode implements FavoriteInfo{
     private String contentImg;
     private String contentVideo;
 
+    private Integer positionX;
+    private Integer positionY;
+
     public boolean nullFieldsExceptId(){
-        return name == null && content == null && contentImg == null && contentVideo == null;
+        return name == null && content == null && contentImg == null && contentVideo == null && positionX == null
+                && positionY == null;
     }
 }

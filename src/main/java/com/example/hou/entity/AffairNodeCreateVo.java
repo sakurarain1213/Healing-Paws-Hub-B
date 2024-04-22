@@ -20,6 +20,13 @@ public class AffairNodeCreateVo {
     @NotBlank
     @Size(max = 65535, message = "content不合法")
     private String content;
+
+    /**
+     * 位置信息
+     */
+    private Integer positionX;
+    private Integer positionY;
+
     private MultipartFile contentImg;
     private MultipartFile contentVideo;
 }

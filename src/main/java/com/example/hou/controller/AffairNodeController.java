@@ -36,6 +36,8 @@ public class AffairNodeController {
         AffairNode affairNode = new AffairNode();
         affairNode.setContent(createVo.getContent());
         affairNode.setName(createVo.getName());
+        affairNode.setPositionX(createVo.getPositionX());
+        affairNode.setPositionY(createVo.getPositionY());
 
         List<FileHandler<AffairNode>> handlers = new ArrayList<>();
         if (createVo.getContentImg() != null)handlers.add(new AffairNodeImgHandler(createVo.getContentImg(), affairNode));
@@ -72,7 +74,9 @@ public class AffairNodeController {
 
         affairNode.setId(updateVo.getId())
                 .setContent(updateVo.getContent())
-                .setName(updateVo.getName());
+                .setName(updateVo.getName())
+                .setPositionX(updateVo.getPositionX())
+                .setPositionY(updateVo.getPositionY());
 
         List<FileHandler<AffairNode>> handlers = new ArrayList<>();
         if (updateVo.getContentImg() != null)handlers.add(new AffairNodeImgHandler(updateVo.getContentImg(), affairNode));
