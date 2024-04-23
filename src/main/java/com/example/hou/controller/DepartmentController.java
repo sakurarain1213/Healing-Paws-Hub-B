@@ -125,12 +125,19 @@ public class DepartmentController {
 
     //查询特定部门下的所有item
     @GetMapping("/getItem/{DepartmentId}")
-    public Result getItemsInDepartment(@PathVariable String DepartmentId) {
-        List<Item> items = itemService.searchItemByDepartment(DepartmentId);
-        if(items==null || items.size()==0) return new Result(-100, "error", "部门内无物品或查询失败") ;
-        return new Result(200, "success", items) ;
-    }
+    public Result getItemsInDepartment(@PathVariable String DepartmentId,
+                                        @RequestParam(defaultValue = "1") Integer pageNum,
+                                       @RequestParam(defaultValue = "5") Integer pageSize ) {
+        Page<Item> items = itemService.getItemByDepartPage(pageNum, pageSize, DepartmentId);
+        if (items.getContent().isEmpty()) {
+            return new Result(-100, "error", "部门内无物品或部门ID错误");
+        }
+        PageSupport<Item> respPage = new PageSupport<>();
+        respPage.setListData(items.getContent())
+                .setTotalPages(items.getTotalPages());
 
+        return new Result(200, "success", respPage);
+    }
     // 分页获取部门列表
     @GetMapping("/page")
     public Result getDepartmentByPage(@RequestParam(defaultValue = "1") Integer pageNum,

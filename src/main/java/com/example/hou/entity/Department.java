@@ -51,7 +51,10 @@ public class Department {
      */
     //private String connect;todo 部门不多 考虑直接存id的list 利于查询   后续可以考虑存edge类的数据表  空间复杂度E
 
-    private List<String> connectID;
+    private List<String> connectID;//暂时不用
+
+    private Position position;//三维
+
     /**
      * 职员列表
      */

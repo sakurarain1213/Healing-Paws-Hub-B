@@ -19,4 +19,7 @@ public interface ItemRepository extends MongoRepository<Item, String> {
     // 例如，根据名称查找物品 略
     //List<Item> findByName(String name);
     // ...
+    Page<Item> findByDepartmentId(String departmentId, Pageable pageable);
+
+
 }

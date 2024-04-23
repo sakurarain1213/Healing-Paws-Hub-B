@@ -132,6 +132,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Page<Item> getItemByDepartPage(Integer pageNum, Integer pageSize,String departID) {
+        // 创建分页请求对象，注意pageNum需要减1，因为PageRequest的页码是从0开始的
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        // 调用Repository的自定义方法进行分页查询
+        return itemRepository.findByDepartmentId(departID, pageable);//mapper自动实现
+        /*
+       Pageable 是向数据源的请求，想要什么数据。
+        Page<T> 是数据源返回响应，包含了请求的数据以及分页额外信息 */
+    }
+
+
+
+
+    @Override
     public List<Item> getItemByCombinedName(Integer pageNum, Integer pageSize, String searchName) {
         // 使用正则表达式进行模糊查询
         Pattern pattern = Pattern.compile(".*" + Pattern.quote(searchName) + ".*", Pattern.CASE_INSENSITIVE);

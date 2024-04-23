@@ -2,6 +2,7 @@ package com.example.hou.service.impl;
 
 import com.example.hou.entity.Case;
 import com.example.hou.entity.Department;
+import com.example.hou.entity.Position;
 import com.example.hou.entity.Staff;
 import com.example.hou.mapper.DepartmentRepository;
 import com.example.hou.service.DepartmentService;
@@ -61,10 +62,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new IllegalArgumentException("Department with ID " + department.getId() + " does not exist.");
         }
 
-
-
-
-
         // 如果找到了，就更新department并保存   注意需求是不覆盖原有内容
         Department exist=existingDepartment.get();
         //URL优先覆盖
@@ -77,6 +74,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (StringUtils.hasText(department.getIntroduction()) ) {
             exist.setIntroduction(department.getIntroduction());
         }
+
+        Position pos=department.getPosition();
+        if (pos != null) {
+            exist.setPosition(pos);
+        }
+
         //列表元素去重判断   注意类型匹配问题的报错
        // Set<String> newConnectIDSet = new HashSet<>(department.getConnectID());
       //  Set<String> existingConnectIDSet = new HashSet<>(exist.getConnectID());

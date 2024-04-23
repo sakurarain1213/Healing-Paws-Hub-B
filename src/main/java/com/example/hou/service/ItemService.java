@@ -20,6 +20,8 @@ public interface ItemService {
 
     Page<Item> getItemByPage(Integer pageNum, Integer pageSize);
 
+    Page<Item> getItemByDepartPage(Integer pageNum, Integer pageSize,String departID);
+
     List<Item> getItemByCombinedName(Integer pageNum, Integer pageSize, String searchName);
 
     // 可以按需添加其他与物品相关的业务方法
