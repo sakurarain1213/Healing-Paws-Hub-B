@@ -82,11 +82,13 @@ public class AffairServiceImpl implements AffairService {
         Optional.ofNullable(affair.getRole()).ifPresent(c -> upt.set("role", c));
         Optional.ofNullable(affair.getName()).ifPresent(c -> upt.set("name", c));
         Optional.ofNullable(affair.getDescription()).ifPresent(c -> upt.set("description", c));
-        Optional.ofNullable(affair.getAffairs()).ifPresent(c -> upt.set("affairs", c));
         Optional.ofNullable(affair.getPic()).ifPresent(c -> upt.set("pic", c));
         Optional.ofNullable(affair.getPicSize()).ifPresent(c -> upt.set("picSize", c));
 
-        Optional.ofNullable(affair.getEdges()).ifPresent(c -> upt.set("edges", c));
+        upt.set("affairs", affair.getAffairs());
+        upt.set("edges", affair.getEdges());
+//        Optional.ofNullable(affair.getAffairs()).ifPresent(c -> upt.set("affairs", c));
+//        Optional.ofNullable(affair.getEdges()).ifPresent(c -> upt.set("edges", c));
 
         UpdateResult updateResult = mongoTemplate.updateFirst(query, upt, Affair.class);
         return updateResult.getModifiedCount();

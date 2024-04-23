@@ -44,23 +44,21 @@ public class AffairController {
         if (createVo.getName() == null ||
             createVo.getDescription() == null ||
             createVo.getRole() == null ||
-            createVo.getAffairs() == null ||
-            createVo.getEdges() == null) return  ResultUtil.error("缺少必需参数");
+            createVo.getAffairs() == null) return  ResultUtil.error("缺少必需参数");
 
         boolean flag = affairService.validateAffairs(createVo.getAffairs());
         if (!flag) return ResultUtil.error("affairs存在无效id");
 
         List<String[]> edges = createVo.getEdges();
-        System.out.println("edges.size: " + edges.size());
-        for (String[] e : edges){
-            System.out.println(e.length);
-            System.out.println(e[0]);
+
+        if (edges != null && edges.size() > 0){
+            System.out.println("edges.size: " + edges.size());
+            for (String[] e : edges){
+                System.out.println(e.length);
+//                System.out.println(e[0]);
 //            System.out.println(e[1]);
-        }
+            }
 
-//        return ResultUtil.success(null);
-
-        if (edges.size() > 0){
             if(edges.size() == 2){
                edges = MapObjectUtil.convertEdges(edges);
             }
@@ -115,9 +113,9 @@ public class AffairController {
         List<String[]> edges = updateVo.getEdges();
 
         if (affairs == null && edges != null)return ResultUtil.error("缺少必需参数");
-        if (affairs != null && edges == null)return ResultUtil.error("缺少必需参数");
+//        if (affairs != null && edges == null)return ResultUtil.error("缺少必需参数");
 
-        if (affairs != null){
+        if (affairs != null && affairs.size() > 0){
             boolean flag = affairService.validateAffairs(affairs);
             if (!flag) return ResultUtil.error("affairs存在无效id");
         }
@@ -155,7 +153,7 @@ public class AffairController {
 
         System.out.println(affair);
 
-        if(affair.nullFieldsExceptId())return ResultUtil.error("未填写任何需要更新的信息");
+//        if(affair.nullFieldsExceptId())return ResultUtil.error("未填写任何需要更新的信息");
 
         long res = affairService.updateById(affair);
         if (res <= 0)return ResultUtil.error(null);
