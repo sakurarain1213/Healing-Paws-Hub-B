@@ -7,6 +7,7 @@ import com.example.hou.result.Result;
 import com.example.hou.service.AffairService;
 import com.example.hou.util.FileUtil;
 import com.example.hou.util.GlobalConstant;
+import com.example.hou.util.MapObjectUtil;
 import com.example.hou.util.ResultUtil;
 import com.example.hou.validator.AffairCreateGroup;
 import com.example.hou.validator.AffairUpdateGroup;
@@ -26,6 +27,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,13 +52,19 @@ public class AffairController {
 
         List<String[]> edges = createVo.getEdges();
         System.out.println("edges.size: " + edges.size());
-//        for (String[] e : edges){
-//            System.out.println(e.length);
-//            System.out.println(e[0]);
+        for (String[] e : edges){
+            System.out.println(e.length);
+            System.out.println(e[0]);
 //            System.out.println(e[1]);
-//        }
+        }
+
+//        return ResultUtil.success(null);
 
         if (edges.size() > 0){
+            if(edges.size() == 2){
+               edges = MapObjectUtil.convertEdges(edges);
+            }
+
             flag = affairService.validateEdges(edges, createVo.getAffairs());
             if (!flag) return ResultUtil.error("edges存在无效id");
         }
@@ -116,6 +124,10 @@ public class AffairController {
 
         if (edges != null && edges.size() > 0){
             System.out.println("edges.size: " + edges.size());
+
+            if(edges.size() == 2){
+                edges = MapObjectUtil.convertEdges(edges);
+            }
 //            for (String[] e : edges){
 //                System.out.println(e.length);
 //                System.out.println(e[0]);
