@@ -124,6 +124,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public List<Department> getDepartments(){
+        return departmentRepository.findAll();
+    }
+
+    @Override
     public List<Department> getDepartmentByCombinedName(Integer pageNum, Integer pageSize, String searchName) {
         // 使用正则表达式进行模糊查询
         Pattern pattern = Pattern.compile(".*" + Pattern.quote(searchName) + ".*", Pattern.CASE_INSENSITIVE);

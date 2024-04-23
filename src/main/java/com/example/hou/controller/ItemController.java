@@ -44,7 +44,7 @@ public class ItemController {
     public Result createItem(@Validated @RequestPart Item item, @RequestPart(value = "pic", required = false) MultipartFile pic) {
         Item createdItem = itemService.createItem(item,pic);
         if (createdItem == null) {
-            return new Result(-100, "error", "上传文件有误导致上传失败");
+            return new Result(-100, "上传文件有误导致上传失败", "error");
         }
         //Result可以嵌入response的体
         return new Result(200, "success", createdItem);
@@ -56,7 +56,7 @@ public class ItemController {
         try {
             // 确保ID被正确设置
             if (item.getId() == null) {
-                return new Result(-100, "error", "缺少id字段");
+                return new Result(-100, "缺少id字段", "error");
             }
 
             //确保先拿到DB里的URL
@@ -77,11 +77,11 @@ public class ItemController {
             if (Objects.equals(updatedId, String.valueOf(item.getId()))) {
                 return new Result(200, "success", "更新成功");
             } else {
-                return new Result(-100, "error", "更新后的ID与传入的ID不匹配");
+                return new Result(-100, "更新后的ID与传入的ID不匹配", "error");
             }
         } catch (Exception e) {
             // 捕获异常，并返回错误响应
-            return new Result(-100, "error", "更新项目时发生错误");
+            return new Result(-100, "更新项目时发生错误", "error");
         }
     }
 
@@ -93,7 +93,7 @@ public class ItemController {
             return new Result(200, "success", "删除成功");
         } catch (Exception e) {
             // 捕获异常，并返回错误响应
-            return new Result(-100, "error", "item的ID不存在或数据库错误");
+            return new Result(-100, "item的ID不存在或数据库错误", "error");
         }
     }
 

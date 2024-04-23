@@ -17,6 +17,8 @@ public interface DepartmentService {
 
     Department getDepartmentById(String id);
 
+    List<Department>  getDepartments();
+
     Page<Department> getDepartmentByPage(Integer pageNum, Integer pageSize);
 
     List<Department> getDepartmentByCombinedName(Integer pageNum, Integer pageSize, String searchName);

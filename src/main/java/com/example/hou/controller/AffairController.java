@@ -165,7 +165,7 @@ public class AffairController {
     public Result getAffairById(@PathVariable String id) {
         Affair affair = affairService.getById(id);
         if(affair!=null)return new Result(200,"success",affair);
-        else return new Result(-100,"error","获取失败 见控制台日志");
+        else return new Result(-100,"获取失败 见控制台日志","error");
     }
 
 

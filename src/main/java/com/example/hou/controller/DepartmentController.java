@@ -1,9 +1,6 @@
 package com.example.hou.controller;
 
-import com.example.hou.entity.AffairNode;
-import com.example.hou.entity.Department;
-import com.example.hou.entity.Item;
-import com.example.hou.entity.PageSupport;
+import com.example.hou.entity.*;
 import com.example.hou.mapper.DepartmentRepository;
 import com.example.hou.result.Result;
 import com.example.hou.service.DepartmentService;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,7 +56,7 @@ public class DepartmentController {
         Department createdDepartment = departmentService.createDepartment(department);
         // 框架默认的返回体
         //return ResponseEntity.created(URI.create("/department/" + createdDepartment.getId())).body(createdDepartment);
-        if(createdDepartment==null) return new Result(-100,"error", "DepartmentName参数必要,或文件传输失败");
+        if(createdDepartment==null) return new Result(-100,"DepartmentName参数必要,或文件传输失败", "error");
         else return new Result(200,"success",createdDepartment);
     }
 
@@ -68,7 +66,7 @@ public class DepartmentController {
     public Result updateDepartmentById(@Validated @RequestPart Department department, @RequestPart(value = "pic", required = false) MultipartFile pic) {
         try {
             // 设置ID，确保ID被正确设置
-            if(department.getId()==null ||department.getId()=="") return new Result(-100, "error", "缺少id字段") ;
+            if(department.getId()==null ||department.getId()=="") return new Result(-100, "缺少id字段", "error") ;
 
 
             //为了先得到数据库里的pic 的URL
@@ -92,14 +90,14 @@ public class DepartmentController {
                 return  new Result(200, "success", "更新成功") ;
             } else {
                 // 如果不匹配，可以抛出异常或者返回错误结果
-                return  new Result(-100, "error", "更新后的ID与传入的ID不匹配");
+                return  new Result(-100, "更新后的ID与传入的ID不匹配", "error");
             }
         } catch (IllegalArgumentException e) {
             // 捕获IllegalArgumentException异常，并返回错误响应
-            return new Result(-100, "error", e.getMessage());
+            return new Result(-100, e.getMessage(),"error" );
         } catch (Exception e) {
             // 捕获其他异常，并返回通用错误响应
-            return new Result(-100, "error", "更新部门时发生错误") ;
+            return new Result(-100, "更新部门时发生错误", "error") ;
         }
 
 }
@@ -112,7 +110,7 @@ public class DepartmentController {
             return  new Result(200, "success", "删除成功") ;
         } catch (Exception e) {
             // 没用到
-            return  new Result(-100, "error", "id不存在或数据库异常") ;
+            return  new Result(-100, "id不存在或数据库异常", "error") ;
         }
 }
 
@@ -130,7 +128,7 @@ public class DepartmentController {
                                        @RequestParam(defaultValue = "5") Integer pageSize ) {
         Page<Item> items = itemService.getItemByDepartPage(pageNum, pageSize, DepartmentId);
         if (items.getContent().isEmpty()) {
-            return new Result(-100, "error", "部门内无物品或部门ID错误");
+            return new Result(-100, "部门内无物品或部门ID错误", "error");
         }
         PageSupport<Item> respPage = new PageSupport<>();
         respPage.setListData(items.getContent())
@@ -138,6 +136,26 @@ public class DepartmentController {
 
         return new Result(200, "success", respPage);
     }
+
+    @PostMapping ("/getAll") //注意防止和get{id}这个接口冲突
+    public Result getItemsInDepartment() {
+       List<Department>  tempDepartments = departmentService.getDepartments();
+       List<DepartmentDTO> departmentDTOs = new ArrayList<>();
+
+        for (Department d : tempDepartments) {
+            DepartmentDTO departmentDTO = new DepartmentDTO();
+            departmentDTO.setId(d.getId()); // 假设Department有getId()方法
+            departmentDTO.setDepartmentName(d.getDepartmentName()); // 假设Department有getDepartmentName()方法
+            departmentDTO.setPic(d.getPic()); // 假设Department有getPic()方法，用于获取图片字段
+            departmentDTO.setPosition(d.getPosition());
+
+            // 将DepartmentDTO添加到列表中
+            departmentDTOs.add(departmentDTO);
+        }
+        return new Result(200, "success", departmentDTOs);
+    }
+
+
     // 分页获取部门列表
     @GetMapping("/page")
     public Result getDepartmentByPage(@RequestParam(defaultValue = "1") Integer pageNum,
