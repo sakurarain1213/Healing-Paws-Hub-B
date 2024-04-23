@@ -23,8 +23,8 @@ public class JwtUtils {
 
     private static String secretKey="hsinchien";   //秘钥一定要固定且大于四位数否则会报key null错误
 
-    private static final Integer amount = 1800;//   jwt的过期时间设置  周期/秒 默认30分钟
-
+    private static final Integer amount = 7200;//   jwt的过期时间设置  周期/秒 默认30分钟
+    //token过期时间  改成2小时 即7200s
 
     // @Value("${jwt.secretKey}")   加了这行会报错
     //实现依赖注入需要属性具有set方法

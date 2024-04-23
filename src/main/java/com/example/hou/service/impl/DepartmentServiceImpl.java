@@ -61,23 +61,30 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new IllegalArgumentException("Department with ID " + department.getId() + " does not exist.");
         }
 
+
+
+
+
         // 如果找到了，就更新department并保存   注意需求是不覆盖原有内容
         Department exist=existingDepartment.get();
+        //URL优先覆盖
+        exist.setPic(department.getPic());
 
-        if (StringUtils.hasText(department.getDepartmentName()) && !department.getDepartmentName().equals(exist.getDepartmentName())) {
+
+        if (StringUtils.hasText(department.getDepartmentName()) ) {
             exist.setDepartmentName(department.getDepartmentName());
         }
-        if (StringUtils.hasText(department.getIntroduction()) && !department.getIntroduction().equals(exist.getIntroduction())) {
+        if (StringUtils.hasText(department.getIntroduction()) ) {
             exist.setIntroduction(department.getIntroduction());
         }
-        //列表元素去重判断
-        Set<String> newConnectIDSet = new HashSet<>(department.getConnectID());
-        Set<String> existingConnectIDSet = new HashSet<>(exist.getConnectID());
-        if (!newConnectIDSet.equals(existingConnectIDSet)) {
+        //列表元素去重判断   注意类型匹配问题的报错
+       // Set<String> newConnectIDSet = new HashSet<>(department.getConnectID());
+      //  Set<String> existingConnectIDSet = new HashSet<>(exist.getConnectID());
+        if (department.getConnectID()!=null && department.getConnectID().size()>0) {
             exist.setConnectID(department.getConnectID());
         }
 
-        if (!department.getStaffList().equals(exist.getStaffList())) {
+        if (department.getStaffList()!=null && department.getStaffList().size()>0) {
             exist.setStaffList(department.getStaffList());
         }
 

@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -60,6 +61,9 @@ public class ItemServiceImpl implements ItemService {
 
         // 获取现有的Item和要更新的Item的实例
         Item exist = existingItem.get();
+        //URL优先覆盖
+        exist.setPic(item.getPic());
+
 
         // 更新Item的字段，只有在字段值不为空且不同于现有值时才进行更新
         if (StringUtils.hasText(item.getName()) && !item.getName().equals(exist.getName())) {
@@ -73,12 +77,11 @@ public class ItemServiceImpl implements ItemService {
         if (StringUtils.hasText(item.getUsage()) && !item.getUsage().equals(exist.getUsage())) {
             exist.setUsage(item.getUsage());
         }
-
-        if (item.getPrice() != null && !item.getPrice().equals(exist.getPrice())) {
+        if (item.getPrice() != null && !Objects.equals(item.getPrice(), exist.getPrice())) {
             exist.setPrice(item.getPrice());
         }
 
-        if (StringUtils.hasText(item.getDepartmentId()) && !item.getDepartmentId().equals(exist.getDepartmentId())) {
+        if (StringUtils.hasText(item.getDepartmentId()) && !Objects.equals(item.getDepartmentId(), exist.getDepartmentId())) {
             exist.setDepartmentId(item.getDepartmentId());
         }
 
