@@ -6,6 +6,7 @@ import com.example.hou.result.Result;
 import com.example.hou.service.FavoriteService;
 import com.example.hou.util.MapObjectUtil;
 import com.example.hou.util.ResultUtil;
+import com.mongodb.client.result.DeleteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,8 +39,8 @@ public class FavoriteServiceImpl implements FavoriteService {
             flag = mongoTemplate.exists(query, AffairNode.class);
 
         }else if(objType.equals("item")){
-//            TODO 设置item
-
+//            TODO 设置item   尝试修改
+            flag = mongoTemplate.exists(query, Item.class);
         }
 
         if (!flag)return ResultUtil.error("objectId不存在");
@@ -57,10 +58,24 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public int deleteById(String id) {
-        Favorite cur = favoriteRepository.findById(id).orElse(null);
-        if(cur == null)return -1;
-        favoriteRepository.deleteById(id);
-        return 0;
+        // 构建查询条件
+        //  这个查的不是主键！  是objectId"!!!!!!!!!!
+        Query query = new Query(Criteria.where("objectId").is(id));
+
+        // 执行查询以检查是否有匹配的文档
+        long count = mongoTemplate.count(query, Favorite.class);
+
+        // 如果没有匹配的文档，返回0或相应的错误代码
+        if (count == 0) {
+            return -1; // 或者返回你想要的任何错误代码，比如-1
+        }
+
+        // 执行删除操作
+        DeleteResult deleteResult = mongoTemplate.remove(query, Favorite.class);
+
+        // 返回被删除的文档数
+        return (int) deleteResult.getDeletedCount();
+
     }
 
     @Override

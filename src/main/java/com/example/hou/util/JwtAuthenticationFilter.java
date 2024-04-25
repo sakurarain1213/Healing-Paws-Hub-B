@@ -45,8 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-
         // 解析token
         String userId = null;
 

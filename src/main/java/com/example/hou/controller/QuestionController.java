@@ -17,6 +17,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -105,15 +106,26 @@ public class QuestionController {
     }
 
     @GetMapping("/group")
+    //修改一下  应该传string 而不是list 后端手工分词
     public Result getQuestionByGroup(@RequestParam(value = "diseases", required = false)
-                                     List<String> diseases,
+                                     String diseases,
                                      @NonNull @RequestParam Integer pageNum,
                                      @NonNull @RequestParam Integer pageSize) {
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
-        if(diseases != null && questionService.existErrorDisease(diseases))
+
+        if(diseases==null||diseases.equals("")) return  ResultUtil.error("需要搜索条件");
+        //debug
+        // 定义一个正则表达式，匹配空格、分号、逗号或点号等等
+        String regex = "[\\s;,.`|]";
+        // 使用split方法根据正则表达式分割字符串
+        String[] splitDiseases = diseases.split(regex);
+        // 将字符串数组转换为List<String>
+        List<String> diseaseList = Arrays.asList(splitDiseases);
+
+        if(questionService.existErrorDisease(diseaseList))
             return ResultUtil.error("病的Name有误,请检查是否有空格");
 
-        PageSupport<Question> res = questionService.getQuestionByGroup(pageNum, pageSize, diseases);
+        PageSupport<Question> res = questionService.getQuestionByGroup(pageNum, pageSize, diseaseList);
 
         if (res == null) return ResultUtil.error(null);
 
