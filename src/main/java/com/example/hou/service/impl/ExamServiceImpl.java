@@ -118,7 +118,7 @@ public class ExamServiceImpl implements ExamService {
         List<QuestionEntity> questionEntityList = new ArrayList<>();
         for (Question question : questionList) {
             QuestionEntity questionEntity = new QuestionEntity(question.getName(),question.getStatement(),
-                    question.getAnswer(), question.getDetail(), question.getScore());
+                    question.getAnswer(), question.getDetail(), question.getScore(), question.getQuestionType());
             questionEntityList.add(questionEntity);
         }
 
@@ -220,7 +220,7 @@ public class ExamServiceImpl implements ExamService {
         List<QuestionEntity> questionEntityList = new ArrayList<>();
         for (Question question : questionList) {
             QuestionEntity questionEntity = new QuestionEntity(question.getName(), question.getStatement(),
-                    question.getAnswer(), question.getDetail(), question.getScore());
+                    question.getAnswer(), question.getDetail(), question.getScore(), question.getQuestionType());
             questionEntityList.add(questionEntity);
         }
 

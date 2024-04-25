@@ -25,4 +25,5 @@ public class QuestionEntity {
     private String answer;
     private String detail;
     private Long score;
+    private Integer questionType;
 }
