@@ -192,6 +192,51 @@ public class ExamServiceImpl implements ExamService {
         return pageSupport;
     }
 
+    @Override
+    public PageSupport<Exam> getReleasedExamsByMultiWithPagination(Integer sortTime,
+                                                           String examName,
+                                                           Integer type,
+                                                           Date startTime,
+                                                           Date endTime,
+                                                           Integer pageNum,
+                                                           Integer pageSize){
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        Criteria criteria = new Criteria();
+
+        // 包装类防止为null时判断出错
+        if(sortTime == 1)
+            pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").descending());
+        else if(sortTime == 2)
+            pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("startTime").ascending());
+
+        if(examName != null)
+            criteria.and("examName").regex("^.*" + examName + ".*$");
+
+        if(type != null)
+            criteria.and("type").is(type);
+
+        if(startTime != null && endTime != null)
+            criteria.and("startTime").gte(startTime).and("endTime").lte(endTime);
+
+        // 只查找已发布的考试
+        criteria.and("state").is(1);
+
+        Query query = Query.query(criteria);
+        query.with(pageable);
+        // 查询对应页码数据
+        List<Exam> list = template.find(query, Exam.class);
+        Query query111 = Query.query(criteria);
+        // 查询总数
+        long count = template.count(query111, Exam.class);
+
+        System.out.println("集合总数：" + count);
+        long pages = count / pageSize + (count % pageSize == 0 ? 0 : 1);
+
+        PageSupport<Exam> pageSupport = new PageSupport<>();
+        pageSupport.setTotalPages((int) pages).setListData(list);
+        return pageSupport;
+    }
 
 
 

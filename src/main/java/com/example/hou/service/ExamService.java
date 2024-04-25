@@ -33,4 +33,12 @@ public interface ExamService {
                                                     Date endTime,
                                                     Integer pageNum,
                                                     Integer pageSize);
+
+    PageSupport<Exam> getReleasedExamsByMultiWithPagination(Integer sortTime,
+                                                            String examName,
+                                                            Integer type,
+                                                            Date startTime,
+                                                            Date endTime,
+                                                            Integer pageNum,
+                                                            Integer pageSize);
 }

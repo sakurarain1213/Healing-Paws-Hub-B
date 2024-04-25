@@ -45,7 +45,7 @@ public class Exam {
     private Boolean release;
 
     /**
-     * 状态，替代上面的字段, -1 已结束， 0 未发布， 已发布
+     * 状态，替代上面的字段, -1 已结束， 0 未发布，1 已发布
      * */
     private Integer state;
 
