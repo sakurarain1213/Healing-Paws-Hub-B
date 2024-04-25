@@ -12,8 +12,13 @@ import com.example.hou.util.ResultUtil;
 import com.example.hou.validator.AffairCreateGroup;
 import com.example.hou.validator.AffairUpdateGroup;
 import lombok.NonNull;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +42,10 @@ import java.util.Optional;
 public class AffairController {
     @Autowired
     private AffairService affairService;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
 
     @PostMapping
 //    @Validated(AffairCreateGroup.class)
@@ -174,11 +183,11 @@ public class AffairController {
                             @NonNull @RequestParam("pageSize") Integer pageSize){
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
 
-        Page<Affair> page = affairService.getByPage(pageNum, pageSize);
+        Page<AffairAndFavoriteDTO> page = affairService.getByPage(pageNum, pageSize);
         if (page == null)return ResultUtil.error(null);
         System.out.println(page.getContent());
 
-        PageSupport<Affair> respPage = new PageSupport<>();
+        PageSupport<AffairAndFavoriteDTO> respPage = new PageSupport<>();
         respPage.setListData(page.getContent())
                 .setTotalPages(page.getTotalPages());
 
@@ -227,8 +236,33 @@ public class AffairController {
         List<Affair> recommendAffairs = affairService.getRecommendAffairs(loginUser, count);
         if (recommendAffairs == null)return ResultUtil.error(null);
 
-        recommendAffairs.stream().forEach(System.out::println);
-        return ResultUtil.success(recommendAffairs);
+
+        //4.26更新
+        //debug   开始包装成list pair<affair,boolean>
+        List<AffairAndFavoriteDTO> isFavoriteAffairs= new ArrayList<>();
+        for (Affair affair : recommendAffairs) {
+            String affairId = affair.getId(); // 假设Affair有一个getId()方法返回用于查询的ID
+
+            Query query = new Query();
+            query.addCriteria(Criteria.where("objectId").is(affairId)
+                    .and("userId").is(userId));
+
+            // 执行查询，检查是否有匹配的Favorite对象
+            Favorite favorite = mongoTemplate.findOne(query, Favorite.class, "favorite");
+
+            // 根据查询结果设置bool值
+            boolean isFavorite = favorite != null;
+
+            AffairAndFavoriteDTO temp=new AffairAndFavoriteDTO(affair,isFavorite);
+            // 将Affair和bool值组成Pair，并添加到结果列表中
+            isFavoriteAffairs.add(temp);
+        }
+
+
+    //recommendAffairs.stream().forEach(System.out::println);
+
+        //return ResultUtil.success(recommendAffairs);
+        return ResultUtil.success(isFavoriteAffairs);
     }
 
 

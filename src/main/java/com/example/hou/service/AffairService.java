@@ -1,10 +1,8 @@
 package com.example.hou.service;
 
-import com.example.hou.entity.Affair;
-import com.example.hou.entity.AffairNode;
-import com.example.hou.entity.LogUser;
-import com.example.hou.entity.NodeFlowDia;
+import com.example.hou.entity.*;
 import com.example.hou.result.Result;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -19,7 +17,7 @@ public interface AffairService {
 
     long updateById(Affair affair);
 
-    Page<Affair> getByPage(Integer pageNum, Integer pageSize);
+    Page<AffairAndFavoriteDTO> getByPage(Integer pageNum, Integer pageSize);
 
     NodeFlowDia getGraphByAffairid(String affairId);
 

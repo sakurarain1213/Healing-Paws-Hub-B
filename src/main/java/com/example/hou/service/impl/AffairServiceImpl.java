@@ -18,11 +18,15 @@ import com.example.hou.util.ResultUtil;
 import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -95,9 +99,50 @@ public class AffairServiceImpl implements AffairService {
     }
 
     @Override
-    public Page<Affair> getByPage(Integer pageNum, Integer pageSize) {
-        return affairRepository.findAll(PageRequest.of(pageNum - 1, pageSize));
-    }
+    public Page<AffairAndFavoriteDTO> getByPage(Integer pageNum, Integer pageSize) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int userId=-1;
+        // 检查用户是否已经登录
+        if (authentication.isAuthenticated()) {
+            Object o = authentication.getPrincipal();
+            if (o instanceof LogUser) {
+                LogUser logUser = (LogUser) o;
+                userId = logUser.getUser().getUserId();
+            }
+        }
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        Page<Affair> pageAffairs =affairRepository.findAll(pageable);
+
+
+        //List<Affair> affairs=affairRepository.findAll();
+        List <AffairAndFavoriteDTO> isFavoriteAffairs = new ArrayList<>();
+        // 遍历Affair列表，为每个Affair查询Favorite状态
+        for (Affair affair : pageAffairs.getContent()) {
+            String affairId = affair.getId(); // 假设Affair有一个getId()方法返回用于查询的ID
+            Query query = new Query();
+            query.addCriteria(Criteria.where("objectId").is(affairId)
+                    .and("userId").is(userId));
+            // 执行查询，检查是否有匹配的Favorite对象
+            Favorite favorite = mongoTemplate.findOne(query, Favorite.class);
+            // 创建AffairAndFavoriteDTO对象
+            AffairAndFavoriteDTO affairAndFavoriteDTO = new AffairAndFavoriteDTO(affair, favorite != null);
+            // 添加到结果列表中
+            isFavoriteAffairs.add(affairAndFavoriteDTO);
+        }
+
+        //    //封装成分页创建新的Page对象，包含转换后的DTO列表
+
+        //System.out.println(departments);
+        //封装一个分页标准返回
+        //PageSupport<AffairAndFavoriteDTO> respPage = new PageSupport<>();
+       // respPage.setListData(dtos.getContent())
+        //        .setTotalPages(dtos.getTotalPages());
+
+        return new PageImpl<>(isFavoriteAffairs, pageable, pageAffairs.getTotalElements());
+        // 返回结果列表
+
+}
 
     @Override
     public NodeFlowDia getGraphByAffairid(String affairId) {
