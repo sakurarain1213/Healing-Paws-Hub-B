@@ -113,7 +113,9 @@ public class QuestionController {
                                      @NonNull @RequestParam Integer pageSize) {
         if(pageNum < 1 || pageSize < 1)return ResultUtil.error("pageNum或pageSize不合法");
 
-        if(diseases==null||diseases.equals("")) return  ResultUtil.error("需要搜索条件");
+        if(diseases==null||diseases.equals("")) {
+            return ResultUtil.success(questionService.getQuestionByPage(pageNum, pageSize));
+        }
         //debug
         // 定义一个正则表达式，匹配空格、分号、逗号或点号等等
         String regex = "[\\s;,.`|]";
