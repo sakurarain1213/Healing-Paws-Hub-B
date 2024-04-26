@@ -90,7 +90,7 @@ public class CaseController {
 //                .setType(types);
 //
 //
-//        //todo 后续上传修改成服务器版本
+//
 //        //以下是单个文件上传样例  使用file工具类的方法上传 要结合下面的存在检测逻辑
 ////        if(descriptionImg!=null){
 ////            String feedback= FileUtil.fileUpload(descriptionImg);
