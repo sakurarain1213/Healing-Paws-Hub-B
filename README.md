@@ -2,6 +2,10 @@
 
 # 工程简介
 赛博宠物医院学习平台后端
+
+# 架构
+![架构图](sys.png)
+
 # 技术栈
 springboot+mybatisplus  
 mysql+redis+MongoDB  
@@ -42,6 +46,7 @@ mysql+redis+MongoDB
 + 4.11 department和item增加图片字段 标准化返回 模糊搜索问题优化（ES的中文分词器生效）
 + 4.12 GPT模型文本切片训练完成
 + 4.17 优化分页返回  增加rabbitMQ处理限时考试逻辑
++ 4.26 FIN
 
 开会内容：
 department和item增加pic的Size
@@ -51,6 +56,11 @@ item需要根据List<Affair> getRecommendAffairs类比 添加一个推荐接口
 添加已学习和学习次数的查询（等价 只是不能取消）  推荐算法可以安装收藏次数和学习次数来推荐
 添加收藏次数的查询（等价）
 question的list要求传disease的name而不是id
+
+# 性能测试
+![十分钟梯度压力测试](test.png)
+
+
 
 # 延伸阅读
 
