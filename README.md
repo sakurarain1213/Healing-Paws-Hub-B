@@ -4,7 +4,7 @@
 赛博宠物医院学习平台后端
 
 # 架构
-![架构图](sys.png)
+[![sys.png](https://i.postimg.cc/65mj0gJC/sys.png)](https://postimg.cc/kBWvMj55)
 
 # 技术栈
 springboot+mybatisplus  
@@ -58,7 +58,7 @@ item需要根据List<Affair> getRecommendAffairs类比 添加一个推荐接口
 question的list要求传disease的name而不是id
 
 # 性能测试
-![十分钟梯度压力测试](test.png)
+[![test.png](https://i.postimg.cc/bw6tkc7j/test.png)](https://postimg.cc/zygvYMDd)
 
 
 
